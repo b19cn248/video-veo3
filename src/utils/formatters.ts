@@ -58,13 +58,23 @@ export const formatCurrency = (amount: number | undefined): string => {
 };
 
 // Lấy màu CSS class theo trạng thái
-export const getStatusColor = (status: VideoStatus): string => {
+export const getStatusColor = (status: VideoStatus | DeliveryStatus | PaymentStatus): string => {
     const colorMap = {
+        // Video status colors
         [VideoStatus.CHUA_AI_NHAN]: 'status-pending',
         [VideoStatus.DANG_LAM]: 'status-working',
         [VideoStatus.DA_XONG]: 'status-completed',
         [VideoStatus.DANG_SUA]: 'status-editing',
-        [VideoStatus.DA_SUA_XONG]: 'status-edit-completed'
+        [VideoStatus.DA_SUA_XONG]: 'status-edit-completed',
+        
+        // Delivery status colors
+        [DeliveryStatus.CHUA_GUI]: 'status-pending',
+        [DeliveryStatus.DA_GUI]: 'status-completed',
+        
+        // Payment status colors
+        [PaymentStatus.CHUA_THANH_TOAN]: 'status-pending',
+        [PaymentStatus.DA_THANH_TOAN]: 'status-completed',
+        [PaymentStatus.BUNG]: 'status-danger'
     };
     return colorMap[status] || 'status-default';
 };

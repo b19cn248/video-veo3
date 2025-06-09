@@ -52,7 +52,7 @@ export class VideoService {
             const response = await apiClient.get(`/videos/${id}`);
             return response.data;
         } catch (error) {
-            console.error(`Error fetching video ${id}:`, error);
+            console.error('Error fetching video detail:', error);
             throw error;
         }
     }

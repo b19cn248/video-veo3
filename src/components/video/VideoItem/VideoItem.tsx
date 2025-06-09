@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Video } from '../../../types/video.types';
-import { formatVideoStatus, formatDate, formatCurrency, getStatusColor } from '../../../utils/formatters';
+import { formatVideoStatus, formatDate, formatDeliveryStatus, formatPaymentStatus, getStatusColor } from '../../../utils/formatters';
 
 interface VideoItemProps {
     video: Video;                          // Dữ liệu video
@@ -18,14 +18,22 @@ const VideoItem: React.FC<VideoItemProps> = ({ video, onEdit, onDelete, onViewDe
             <td>{video.id}</td>
             <td>{video.customerName}</td>
             <td>
-        <span className={`status-badge ${getStatusColor(video.status)}`}>
-          {formatVideoStatus(video.status)}
-        </span>
+                <span className={`status-badge ${getStatusColor(video.status)}`}>
+                    {formatVideoStatus(video.status)}
+                </span>
             </td>
             <td>{video.assignedStaff || '--'}</td>
-            <td>{formatDate(video.deliveryTime || '')}</td>
-            <td>{formatCurrency(video.orderValue)}</td>
-            <td>{formatDate(video.createdAt)}</td>
+            <td>{formatDate(video.createdAt || '')}</td>
+            <td>
+                <span className={`status-badge ${getStatusColor(video.deliveryStatus)}`}>
+                    {formatDeliveryStatus(video.deliveryStatus)}
+                </span>
+            </td>
+            <td>
+                <span className={`status-badge ${getStatusColor(video.paymentStatus)}`}>
+                    {formatPaymentStatus(video.paymentStatus)}
+                </span>
+            </td>
             <td>
                 <div style={{ display: 'flex', gap: '8px' }}>
                     <button

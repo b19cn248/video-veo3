@@ -10,6 +10,7 @@ import VideoForm from '../VideoForm/VideoForm';
 import Loading from '../../common/Loading/Loading';
 import Modal from '../../common/Modal/Modal';
 import Pagination from '../../common/Pagination/Pagination';
+import { useNavigate } from 'react-router-dom';
 
 const VideoList: React.FC = () => {
     // State management với useState hooks
@@ -32,6 +33,8 @@ const VideoList: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');                     // Từ khóa tìm kiếm
     const [statusFilter, setStatusFilter] = useState<VideoStatus | ''>(''); // Lọc theo trạng thái
     const [isFiltering, setIsFiltering] = useState(false);               // Đang filter hay không
+
+    const navigate = useNavigate();
 
     // useEffect hook - chạy khi component mount lần đầu
     useEffect(() => {
@@ -216,10 +219,9 @@ const VideoList: React.FC = () => {
         }
     };
 
-    // Hàm xử lý xem chi tiết (placeholder)
+    // Hàm xử lý xem chi tiết
     const handleViewDetail = (id: number) => {
-        alert(`Xem chi tiết video ID: ${id}`);
-        // TODO: Navigate to detail page
+        navigate(`/videos/${id}`);
     };
 
     // Hàm xử lý đổi trang
@@ -300,8 +302,8 @@ const VideoList: React.FC = () => {
                             <th>Trạng thái</th>
                             <th>Nhân viên</th>
                             <th>Thời gian giao</th>
-                            <th>Giá trị</th>
-                            <th>Ngày tạo</th>
+                            <th>Sending</th>
+                            <th>Payment</th>
                             <th>Thao tác</th>
                         </tr>
                         </thead>

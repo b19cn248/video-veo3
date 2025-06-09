@@ -12,6 +12,8 @@ interface VideoFormProps {
     isLoading?: boolean;                        // Có đang loading không
 }
 
+const STAFF_LIST = ["Hiếu", "Đăng", "Công", "Khánh", "Cường"];
+
 const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoading = false }) => {
     // useState hook để quản lý state của form
     // FormData chứa tất cả dữ liệu form
@@ -158,14 +160,18 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
 
             <div className="form-group">
                 <label className="form-label">Nhân viên được giao</label>
-                <input
-                    type="text"
+                <select
                     name="assignedStaff"
                     value={formData.assignedStaff}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="form-select"
                     disabled={isLoading}
-                />
+                >
+                    <option value="">-- Chọn nhân viên --</option>
+                    {STAFF_LIST.map(staff => (
+                        <option key={staff} value={staff}>{staff}</option>
+                    ))}
+                </select>
             </div>
 
             <div className="form-group">
