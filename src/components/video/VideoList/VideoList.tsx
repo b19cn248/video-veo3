@@ -442,7 +442,8 @@ const VideoList: React.FC = () => {
                                     👤 Nhân viên
                                     <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để giao</div>
                                 </th>
-                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thời lượng</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Time</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Tiền</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Ngày tạo</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Giao hàng</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thanh toán</th>

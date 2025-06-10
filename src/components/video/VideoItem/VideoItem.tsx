@@ -277,6 +277,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
             </td>
 
             <td>{formatSimpleDuration(video.videoDuration)}</td>
+            <td>{video.orderValue}</td>
             <td>{formatDate(video.createdAt || '')}</td>
             <td>
                 <span className={`status-badge ${getStatusColor(video.deliveryStatus)}`}>

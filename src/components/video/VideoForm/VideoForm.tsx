@@ -18,6 +18,7 @@ const STAFF_LIST = ["Hiếu", "Đăng", "Công", "Khánh", "Cường"];
 const VIDEO_DURATION_OPTIONS = [
     { value: 8, label: '8 giây' },
     { value: 16, label: '16 giây' },
+    { value: 24, label: '24 giây' },
     { value: 32, label: '32 giây' }
 ];
 
