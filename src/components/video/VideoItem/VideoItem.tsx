@@ -1,5 +1,5 @@
 // Component hiển thị một dòng video trong table với khả năng inline editing
-// Cho phép cập nhật nhanh assigned staff và status trực tiếp trong bảng
+// Cho phép cập nhật nhanh assigned staff, status và video URL trực tiếp trong bảng
 
 import React, { useState } from 'react';
 import { Video, VideoStatus } from '../../../types/video.types';
@@ -22,6 +22,17 @@ const formatSimpleDuration = (seconds: number | undefined): string => {
     return `${seconds}s`;
 };
 
+// Hàm validate URL
+const isValidUrl = (url: string): boolean => {
+    if (!url.trim()) return true; // Empty URL is allowed
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 const VideoItem: React.FC<VideoItemProps> = ({
                                                  video,
                                                  onEdit,
@@ -32,6 +43,12 @@ const VideoItem: React.FC<VideoItemProps> = ({
     // State để tracking việc loading khi update
     const [isUpdatingStaff, setIsUpdatingStaff] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+    const [isUpdatingVideoUrl, setIsUpdatingVideoUrl] = useState(false);
+
+    // State cho video URL editing
+    const [editingVideoUrl, setEditingVideoUrl] = useState(false);
+    const [tempVideoUrl, setTempVideoUrl] = useState(video.videoUrl || '');
+    const [urlError, setUrlError] = useState('');
 
     // Hàm xử lý cập nhật nhân viên
     const handleStaffChange = async (newStaff: string) => {
@@ -70,6 +87,76 @@ const VideoItem: React.FC<VideoItemProps> = ({
             showToast('Lỗi khi cập nhật trạng thái', 'error');
         } finally {
             setIsUpdatingStatus(false);
+        }
+    };
+
+    // Hàm xử lý khi bắt đầu edit video URL
+    const handleVideoUrlEditStart = () => {
+        setEditingVideoUrl(true);
+        setTempVideoUrl(video.videoUrl || '');
+        setUrlError('');
+    };
+
+    // Hàm xử lý khi hủy edit video URL
+    const handleVideoUrlEditCancel = () => {
+        setEditingVideoUrl(false);
+        setTempVideoUrl(video.videoUrl || '');
+        setUrlError('');
+    };
+
+    // Hàm xử lý khi thay đổi video URL
+    const handleVideoUrlChange = (newUrl: string) => {
+        setTempVideoUrl(newUrl);
+
+        // Validate URL realtime
+        if (newUrl.trim() && !isValidUrl(newUrl)) {
+            setUrlError('URL không hợp lệ');
+        } else {
+            setUrlError('');
+        }
+    };
+
+    // Hàm xử lý cập nhật video URL
+    const handleVideoUrlUpdate = async () => {
+        const trimmedUrl = tempVideoUrl.trim();
+
+        // Validate URL
+        if (trimmedUrl && !isValidUrl(trimmedUrl)) {
+            setUrlError('URL không hợp lệ');
+            return;
+        }
+
+        // Nếu URL không thay đổi
+        if (trimmedUrl === (video.videoUrl || '')) {
+            setEditingVideoUrl(false);
+            return;
+        }
+
+        setIsUpdatingVideoUrl(true);
+        try {
+            const response = await VideoService.updateVideoUrl(video.id, trimmedUrl);
+            if (response.success && onVideoUpdate) {
+                onVideoUpdate(response.data);
+                setEditingVideoUrl(false);
+                showToast(
+                    trimmedUrl ? 'Đã cập nhật link video' : 'Đã xóa link video',
+                    'success'
+                );
+            }
+        } catch (error) {
+            console.error('Error updating video URL:', error);
+            showToast('Lỗi khi cập nhật link video', 'error');
+        } finally {
+            setIsUpdatingVideoUrl(false);
+        }
+    };
+
+    // Hàm xử lý key press trong input video URL
+    const handleVideoUrlKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleVideoUrlUpdate();
+        } else if (e.key === 'Escape') {
+            handleVideoUrlEditCancel();
         }
     };
 
@@ -201,6 +288,111 @@ const VideoItem: React.FC<VideoItemProps> = ({
                     {formatPaymentStatus(video.paymentStatus)}
                 </span>
             </td>
+
+            {/* Inline Video URL Editor */}
+            <td style={{ minWidth: '180px' }}>
+                {editingVideoUrl ? (
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="text"
+                            value={tempVideoUrl}
+                            onChange={(e) => handleVideoUrlChange(e.target.value)}
+                            onBlur={handleVideoUrlUpdate}
+                            onKeyDown={handleVideoUrlKeyPress}
+                            disabled={isUpdatingVideoUrl}
+                            placeholder="Nhập link video..."
+                            autoFocus
+                            style={{
+                                width: '100%',
+                                padding: '4px 8px',
+                                fontSize: '12px',
+                                border: urlError ? '1px solid #ef4444' : '1px solid #3b82f6',
+                                borderRadius: '4px',
+                                outline: 'none'
+                            }}
+                        />
+                        {urlError && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '100%',
+                                left: '0',
+                                backgroundColor: '#fef2f2',
+                                color: '#dc2626',
+                                padding: '2px 6px',
+                                fontSize: '10px',
+                                borderRadius: '3px',
+                                marginTop: '2px',
+                                whiteSpace: 'nowrap',
+                                zIndex: 10
+                            }}>
+                                {urlError}
+                            </div>
+                        )}
+                        {isUpdatingVideoUrl && (
+                            <div style={{
+                                position: 'absolute',
+                                right: '8px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                fontSize: '10px'
+                            }}>
+                                ⏳
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div
+                        style={{
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            border: '1px solid transparent',
+                            transition: 'all 0.2s',
+                            fontSize: '12px',
+                            minHeight: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            backgroundColor: video.videoUrl ? '#f0fdf4' : '#f9fafb',
+                            color: video.videoUrl ? '#059669' : '#6b7280'
+                        }}
+                        onClick={handleVideoUrlEditStart}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#d1d5db';
+                            e.currentTarget.style.backgroundColor = video.videoUrl ? '#ecfdf5' : '#f3f4f6';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = 'transparent';
+                            e.currentTarget.style.backgroundColor = video.videoUrl ? '#f0fdf4' : '#f9fafb';
+                        }}
+                        title={video.videoUrl ? `Click để sửa: ${video.videoUrl}` : 'Click để thêm link video'}
+                    >
+                        {video.videoUrl ? (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                overflow: 'hidden'
+                            }}>
+                                <span>🎥</span>
+                                <span style={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    maxWidth: '120px'
+                                }}>
+                                    {video.videoUrl.length > 20
+                                        ? `${video.videoUrl.substring(0, 20)}...`
+                                        : video.videoUrl
+                                    }
+                                </span>
+                            </div>
+                        ) : (
+                            <span style={{ fontStyle: 'italic' }}>+ Thêm link</span>
+                        )}
+                    </div>
+                )}
+            </td>
+
             <td>
                 <div style={{ display: 'flex', gap: '6px' }}>
                     <button

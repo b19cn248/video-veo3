@@ -207,6 +207,19 @@ export class VideoService {
         }
     }
 
+    // Cập nhật video URL - API mới
+    static async updateVideoUrl(id: number, videoUrl: string): Promise<ApiResponse<Video>> {
+        try {
+            const response = await apiClient.patch(`/videos/${id}/video-url`, null, {
+                params: {videoUrl}
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating video URL for video ${id}:`, error);
+            throw error;
+        }
+    }
+
     // ===== UTILITY METHODS =====
 
     // Kiểm tra kết nối API

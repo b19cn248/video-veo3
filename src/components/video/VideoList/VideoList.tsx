@@ -1,6 +1,6 @@
 // Component chính hiển thị danh sách video
 // Đây là component phức tạp nhất, quản lý nhiều state và logic
-// Hỗ trợ inline updates cho staff và status
+// Hỗ trợ inline updates cho staff, status và video URL
 
 import React, { useState, useEffect } from 'react';
 import { Video, VideoStatus, VideoFilter } from '../../../types/video.types';
@@ -292,7 +292,7 @@ const VideoList: React.FC = () => {
                 alignItems: 'center',
                 gap: '8px'
             }}>
-                💡 <strong>Mẹo:</strong> Click trực tiếp vào <strong>Trạng thái</strong> hoặc <strong>Nhân viên</strong> trong bảng để cập nhật nhanh mà không cần mở form!
+                💡 <strong>Mẹo:</strong> Click trực tiếp vào <strong>Trạng thái</strong>, <strong>Nhân viên</strong> hoặc <strong>Link video</strong> trong bảng để cập nhật nhanh!
             </div>
 
             {/* Search and Filter Bar */}
@@ -446,13 +446,17 @@ const VideoList: React.FC = () => {
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Ngày tạo</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Giao hàng</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thanh toán</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
+                                    🎥 Link video
+                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
+                                </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thao tác</th>
                             </tr>
                             </thead>
                             <tbody>
                             {videos.length === 0 ? (
                                 <tr>
-                                    <td colSpan={9} style={{
+                                    <td colSpan={10} style={{
                                         textAlign: 'center',
                                         padding: '60px 20px',
                                         color: '#6b7280',
