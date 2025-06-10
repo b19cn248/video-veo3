@@ -21,7 +21,7 @@ interface VideoItemProps {
 }
 
 // const STAFF_LIST = ["", "Hiếu", "Đăng", "Công", "Khánh", "Cường"];
-const STAFF_LIST = ["","Nguyen Hong", "Nguyen Dung Tuan"];
+const STAFF_LIST = ["","Nguyen Hong", "Nguyen Dung Tuan", "Nguyen Huu Duc"];
 
 // Hàm format thời lượng video đơn giản - chỉ hiển thị số + "s"
 const formatSimpleDuration = (seconds: number | undefined): string => {
