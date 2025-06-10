@@ -1,5 +1,6 @@
 // Component form để tạo mới hoặc sửa video
 // Sử dụng useState để quản lý state của form
+// Cập nhật với quyền admin để ẩn/hiện thông tin khách hàng
 
 import React, { useState, useEffect } from 'react';
 import { VideoFormData, Video, VideoStatus, DeliveryStatus, PaymentStatus } from '../../../types/video.types';
@@ -10,10 +11,11 @@ interface VideoFormProps {
     onSubmit: (data: VideoFormData) => void;    // Hàm gọi khi submit form
     onCancel: () => void;                       // Hàm gọi khi hủy
     isLoading?: boolean;                        // Có đang loading không
+    isAdmin: boolean;                           // Kiểm tra quyền admin
 }
 
 // const STAFF_LIST = ["Hiếu", "Đăng", "Công", "Khánh", "Cường"];
-const STAFF_LIST = ["Nguyen Hong", "Nguyen Dung Tuan", "Nguyen Huu Duc"];
+const STAFF_LIST = ["Nguyen Hong", "Nguyen Dung Tuan", "Nguyen Huu Duc", "Duc Anh"];
 
 // Các options thời lượng video cố định (tính bằng giây)
 const VIDEO_DURATION_OPTIONS = [
@@ -23,7 +25,7 @@ const VIDEO_DURATION_OPTIONS = [
     { value: 32, label: '32 giây' }
 ];
 
-const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoading = false }) => {
+const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoading = false, isAdmin }) => {
     // useState hook để quản lý state của form
     // FormData chứa tất cả dữ liệu form
     const [formData, setFormData] = useState<VideoFormData>({
@@ -103,19 +105,21 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
 
     return (
         <form onSubmit={handleSubmit}>
-            {/* Thông tin khách hàng */}
-            <div className="form-group">
-                <label className="form-label">Tên khách hàng *</label>
-                <input
-                    type="text"
-                    name="customerName"
-                    value={formData.customerName}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    required
-                    disabled={isLoading}
-                />
-            </div>
+            {/* Thông tin khách hàng - chỉ hiển thị cho admin */}
+            {isAdmin && (
+                <div className="form-group">
+                    <label className="form-label">Tên khách hàng *</label>
+                    <input
+                        type="text"
+                        name="customerName"
+                        value={formData.customerName}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        required
+                        disabled={isLoading}
+                    />
+                </div>
+            )}
 
             <div className="form-group">
                 <label className="form-label">Nội dung video</label>
@@ -243,17 +247,20 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 </label>
             </div>
 
-            <div className="form-group">
-                <label className="form-label">Ghi chú khách hàng</label>
-                <textarea
-                    name="customerNote"
-                    value={formData.customerNote}
-                    onChange={handleInputChange}
-                    className="form-textarea"
-                    rows={2}
-                    disabled={isLoading}
-                />
-            </div>
+            {/* Ghi chú khách hàng - chỉ hiển thị cho admin */}
+            {isAdmin && (
+                <div className="form-group">
+                    <label className="form-label">Ghi chú khách hàng</label>
+                    <textarea
+                        name="customerNote"
+                        value={formData.customerNote}
+                        onChange={handleInputChange}
+                        className="form-textarea"
+                        rows={2}
+                        disabled={isLoading}
+                    />
+                </div>
+            )}
 
             <div className="form-group">
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -314,6 +321,23 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                     disabled={isLoading}
                 />
             </div>
+
+            {/* Giá trị đơn hàng - chỉ hiển thị cho admin */}
+            {isAdmin && (
+                <div className="form-group">
+                    <label className="form-label">Giá trị đơn hàng</label>
+                    <input
+                        type="number"
+                        name="orderValue"
+                        value={formData.orderValue}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        disabled={isLoading}
+                        min="0"
+                        step="1000"
+                    />
+                </div>
+            )}
 
             {/* Buttons */}
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '30px' }}>

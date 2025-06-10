@@ -1,11 +1,13 @@
 // Component chính hiển thị danh sách video
 // Đây là component phức tạp nhất, quản lý nhiều state và logic
 // Hỗ trợ inline updates cho staff, status và video URL
+// Cập nhật với quyền admin để ẩn/hiện thông tin khách hàng
 
 import React, { useState, useEffect } from 'react';
 import { Video, VideoStatus, VideoFilter } from '../../../types/video.types';
 import { VideoService } from '../../../services/videoService';
 import { formatVideoStatus } from '../../../utils/formatters';
+import { useIsAdmin } from '../../../contexts/AuthContext';
 import VideoItem from '../VideoItem/VideoItem';
 import VideoForm from '../VideoForm/VideoForm';
 import Loading from '../../common/Loading/Loading';
@@ -34,6 +36,9 @@ const VideoList: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');                     // Từ khóa tìm kiếm
     const [statusFilter, setStatusFilter] = useState<VideoStatus | ''>(''); // Lọc theo trạng thái
     const [isFiltering, setIsFiltering] = useState(false);               // Đang filter hay không
+
+    // Admin check
+    const isAdmin = useIsAdmin();
 
     const navigate = useNavigate();
 
@@ -67,8 +72,10 @@ const VideoList: React.FC = () => {
         }
     };
 
-    // Hàm tìm kiếm theo tên khách hàng
+    // Hàm tìm kiếm theo tên khách hàng - chỉ cho admin
     const handleSearch = async () => {
+        if (!isAdmin) return; // Chỉ admin mới được search theo tên khách hàng
+
         if (!searchTerm.trim()) {
             setIsFiltering(false);
             setCurrentPage(0);
@@ -153,8 +160,10 @@ const VideoList: React.FC = () => {
         );
     };
 
-    // Hàm xử lý tạo video mới
+    // Hàm xử lý tạo video mới - chỉ admin
     const handleCreate = async (videoData: any) => {
+        if (!isAdmin) return;
+
         try {
             setSubmitting(true);
             const response = await VideoService.createVideo(videoData);
@@ -176,15 +185,16 @@ const VideoList: React.FC = () => {
         }
     };
 
-    // Hàm xử lý sửa video
+    // Hàm xử lý sửa video - chỉ admin
     const handleEdit = (video: Video) => {
+        if (!isAdmin) return;
         setEditingVideo(video);
         setShowEditModal(true);
     };
 
-    // Hàm xử lý cập nhật video
+    // Hàm xử lý cập nhật video - chỉ admin
     const handleUpdate = async (videoData: any) => {
-        if (!editingVideo) return;
+        if (!editingVideo || !isAdmin) return;
 
         try {
             setSubmitting(true);
@@ -208,8 +218,9 @@ const VideoList: React.FC = () => {
         }
     };
 
-    // Hàm xử lý xóa video
+    // Hàm xử lý xóa video - chỉ admin
     const handleDelete = async (id: number) => {
+        if (!isAdmin) return;
 
         try {
             const response = await VideoService.deleteVideo(id);
@@ -280,20 +291,22 @@ const VideoList: React.FC = () => {
 
     return (
         <div>
-            {/* Quick Actions Tip */}
-            <div style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                padding: '12px 20px',
-                borderRadius: '8px',
-                marginBottom: '20px',
-                fontSize: '13px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-            }}>
-                💡 <strong>Mẹo:</strong> Click trực tiếp vào <strong>Trạng thái</strong>, <strong>Nhân viên</strong> hoặc <strong>Link video</strong> trong bảng để cập nhật nhanh!
-            </div>
+            {/* Quick Actions Tip - chỉ hiển thị cho admin */}
+            {isAdmin && (
+                <div style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    padding: '12px 20px',
+                    borderRadius: '8px',
+                    marginBottom: '20px',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                }}>
+                    💡 <strong>Mẹo:</strong> Click trực tiếp vào <strong>Trạng thái</strong>, <strong>Nhân viên</strong> hoặc <strong>Link video</strong> trong bảng để cập nhật nhanh!
+                </div>
+            )}
 
             {/* Search and Filter Bar */}
             <div className="search-bar" style={{
@@ -303,35 +316,41 @@ const VideoList: React.FC = () => {
                 marginBottom: '20px',
                 flexWrap: 'wrap'
             }}>
-                <div className="search-input" style={{ flex: 1, minWidth: '200px' }}>
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm theo tên khách hàng..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="form-input"
-                        onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                        style={{
-                            padding: '8px 12px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            fontSize: '14px'
-                        }}
-                    />
-                </div>
+                {/* Search input - chỉ hiển thị cho admin */}
+                {isAdmin && (
+                    <>
+                        <div className="search-input" style={{ flex: 1, minWidth: '200px' }}>
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm theo tên khách hàng..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="form-input"
+                                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                                style={{
+                                    padding: '8px 12px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    fontSize: '14px'
+                                }}
+                            />
+                        </div>
 
-                <button
-                    onClick={handleSearch}
-                    className="btn btn-primary"
-                    style={{
-                        padding: '8px 16px',
-                        fontSize: '14px',
-                        borderRadius: '6px'
-                    }}
-                >
-                    🔍 Tìm kiếm
-                </button>
+                        <button
+                            onClick={handleSearch}
+                            className="btn btn-primary"
+                            style={{
+                                padding: '8px 16px',
+                                fontSize: '14px',
+                                borderRadius: '6px'
+                            }}
+                        >
+                            🔍 Tìm kiếm
+                        </button>
+                    </>
+                )}
 
+                {/* Status filter */}
                 <select
                     value={statusFilter}
                     onChange={(e) => handleStatusFilter(e.target.value as VideoStatus | '')}
@@ -366,18 +385,21 @@ const VideoList: React.FC = () => {
                     </button>
                 )}
 
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="btn btn-success"
-                    style={{
-                        padding: '8px 16px',
-                        fontSize: '14px',
-                        borderRadius: '6px',
-                        fontWeight: '600'
-                    }}
-                >
-                    ➕ Tạo video mới
-                </button>
+                {/* Create button - chỉ hiển thị cho admin */}
+                {isAdmin && (
+                    <button
+                        onClick={() => setShowCreateModal(true)}
+                        className="btn btn-success"
+                        style={{
+                            padding: '8px 16px',
+                            fontSize: '14px',
+                            borderRadius: '6px',
+                            fontWeight: '600'
+                        }}
+                    >
+                        ➕ Tạo video mới
+                    </button>
+                )}
             </div>
 
             {/* Summary */}
@@ -433,14 +455,21 @@ const VideoList: React.FC = () => {
                             <thead>
                             <tr style={{ background: '#f9fafb' }}>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>ID</th>
-                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Khách hàng</th>
+                                {/* Cột khách hàng - chỉ hiển thị cho admin */}
+                                {isAdmin && (
+                                    <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Khách hàng</th>
+                                )}
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
                                     🔄 Trạng thái
-                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
+                                    {isAdmin && (
+                                        <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
+                                    )}
                                 </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
                                     👤 Nhân viên
-                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để giao</div>
+                                    {isAdmin && (
+                                        <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để giao</div>
+                                    )}
                                 </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Time</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Tiền</th>
@@ -449,7 +478,9 @@ const VideoList: React.FC = () => {
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thanh toán</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
                                     🎥 Link video
-                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
+                                    {isAdmin && (
+                                        <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
+                                    )}
                                 </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thao tác</th>
                             </tr>
@@ -457,7 +488,7 @@ const VideoList: React.FC = () => {
                             <tbody>
                             {videos.length === 0 ? (
                                 <tr>
-                                    <td colSpan={10} style={{
+                                    <td colSpan={isAdmin ? 11 : 10} style={{
                                         textAlign: 'center',
                                         padding: '60px 20px',
                                         color: '#6b7280',
@@ -466,7 +497,7 @@ const VideoList: React.FC = () => {
                                         <div style={{ fontSize: '48px', marginBottom: '16px' }}>📹</div>
                                         {isFiltering ? 'Không tìm thấy video nào' : 'Chưa có video nào'}
                                         <div style={{ fontSize: '12px', marginTop: '8px' }}>
-                                            {!isFiltering && 'Hãy tạo video đầu tiên bằng cách click "Tạo video mới"'}
+                                            {!isFiltering && isAdmin && 'Hãy tạo video đầu tiên bằng cách click "Tạo video mới"'}
                                         </div>
                                     </td>
                                 </tr>
@@ -479,6 +510,7 @@ const VideoList: React.FC = () => {
                                         onDelete={handleDelete}
                                         onViewDetail={handleViewDetail}
                                         onVideoUpdate={handleVideoUpdate}
+                                        isAdmin={isAdmin}
                                     />
                                 ))
                             )}
@@ -501,38 +533,44 @@ const VideoList: React.FC = () => {
                 </>
             )}
 
-            {/* Create Modal */}
-            <Modal
-                isOpen={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-                title="Tạo video mới"
-            >
-                <VideoForm
-                    onSubmit={handleCreate}
-                    onCancel={() => setShowCreateModal(false)}
-                    isLoading={submitting}
-                />
-            </Modal>
+            {/* Create Modal - chỉ cho admin */}
+            {isAdmin && (
+                <Modal
+                    isOpen={showCreateModal}
+                    onClose={() => setShowCreateModal(false)}
+                    title="Tạo video mới"
+                >
+                    <VideoForm
+                        onSubmit={handleCreate}
+                        onCancel={() => setShowCreateModal(false)}
+                        isLoading={submitting}
+                        isAdmin={isAdmin}
+                    />
+                </Modal>
+            )}
 
-            {/* Edit Modal */}
-            <Modal
-                isOpen={showEditModal}
-                onClose={() => {
-                    setShowEditModal(false);
-                    setEditingVideo(null);
-                }}
-                title="Sửa video"
-            >
-                <VideoForm
-                    video={editingVideo || undefined}
-                    onSubmit={handleUpdate}
-                    onCancel={() => {
+            {/* Edit Modal - chỉ cho admin */}
+            {isAdmin && (
+                <Modal
+                    isOpen={showEditModal}
+                    onClose={() => {
                         setShowEditModal(false);
                         setEditingVideo(null);
                     }}
-                    isLoading={submitting}
-                />
-            </Modal>
+                    title="Sửa video"
+                >
+                    <VideoForm
+                        video={editingVideo || undefined}
+                        onSubmit={handleUpdate}
+                        onCancel={() => {
+                            setShowEditModal(false);
+                            setEditingVideo(null);
+                        }}
+                        isLoading={submitting}
+                        isAdmin={isAdmin}
+                    />
+                </Modal>
+            )}
         </div>
     );
 };

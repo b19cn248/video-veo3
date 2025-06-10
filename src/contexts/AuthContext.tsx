@@ -234,6 +234,12 @@ export const useIsAuthenticated = (): boolean => {
     return isAuthenticated;
 };
 
+// Custom hook để kiểm tra quyền admin - THÊM MỚI
+export const useIsAdmin = (): boolean => {
+    const { user } = useAuth();
+    return user?.username === 'admin';
+};
+
 // HOC để wrap component cần authentication
 export const withAuth = <P extends object>(
     Component: React.ComponentType<P>

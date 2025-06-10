@@ -1,5 +1,6 @@
 // Component hiển thị một dòng video trong table với khả năng inline editing
 // Cho phép cập nhật nhanh assigned staff, status và video URL trực tiếp trong bảng
+// Inline editing cho tất cả user, chỉ ẩn thông tin khách hàng và button edit/delete với user thường
 
 import React, {useState} from 'react';
 import {Video, VideoStatus} from '../../../types/video.types';
@@ -18,10 +19,11 @@ interface VideoItemProps {
     onDelete: (id: number) => void;        // Hàm gọi khi click xóa
     onViewDetail: (id: number) => void;    // Hàm gọi khi click xem chi tiết
     onVideoUpdate?: (updatedVideo: Video) => void; // Callback khi video được cập nhật
+    isAdmin: boolean;                      // Kiểm tra quyền admin
 }
 
 // const STAFF_LIST = ["", "Hiếu", "Đăng", "Công", "Khánh", "Cường"];
-const STAFF_LIST = ["","Nguyen Hong", "Nguyen Dung Tuan", "Nguyen Huu Duc"];
+const STAFF_LIST = ["","Nguyen Hong", "Nguyen Dung Tuan", "Nguyen Huu Duc", "Duc Anh"];
 
 // Hàm format thời lượng video đơn giản - chỉ hiển thị số + "s"
 const formatSimpleDuration = (seconds: number | undefined): string => {
@@ -45,7 +47,8 @@ const VideoItem: React.FC<VideoItemProps> = ({
                                                  onEdit,
                                                  onDelete,
                                                  onViewDetail,
-                                                 onVideoUpdate
+                                                 onVideoUpdate,
+                                                 isAdmin
                                              }) => {
     // State để tracking việc loading khi update
     const [isUpdatingStaff, setIsUpdatingStaff] = useState(false);
@@ -57,7 +60,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
     const [tempVideoUrl, setTempVideoUrl] = useState(video.videoUrl || '');
     const [urlError, setUrlError] = useState('');
 
-    // Hàm xử lý cập nhật nhân viên
+    // Hàm xử lý cập nhật nhân viên - cho tất cả user
     const handleStaffChange = async (newStaff: string) => {
         if (newStaff === video.assignedStaff) return; // Không thay đổi
 
@@ -77,7 +80,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
         }
     };
 
-    // Hàm xử lý cập nhật trạng thái
+    // Hàm xử lý cập nhật trạng thái - cho tất cả user
     const handleStatusChange = async (newStatus: VideoStatus) => {
         if (newStatus === video.status) return; // Không thay đổi
 
@@ -97,7 +100,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
         }
     };
 
-    // Hàm xử lý khi bắt đầu edit video URL
+    // Hàm xử lý khi bắt đầu edit video URL - cho tất cả user
     const handleVideoUrlEditStart = () => {
         setEditingVideoUrl(true);
         setTempVideoUrl(video.videoUrl || '');
@@ -123,7 +126,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
         }
     };
 
-    // Hàm xử lý cập nhật video URL
+    // Hàm xử lý cập nhật video URL - cho tất cả user
     const handleVideoUrlUpdate = async () => {
         const trimmedUrl = tempVideoUrl.trim();
 
@@ -202,9 +205,11 @@ const VideoItem: React.FC<VideoItemProps> = ({
     return (
         <tr>
             <td>{video.id}</td>
-            <td>{video.customerName}</td>
 
-            {/* Inline Status Selector */}
+            {/* Cột khách hàng - chỉ hiển thị cho admin */}
+            {isAdmin && <td>{video.customerName}</td>}
+
+            {/* Inline Status Selector - cho tất cả user */}
             <td>
                 <div style={{position: 'relative'}}>
                     <select
@@ -246,7 +251,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 </div>
             </td>
 
-            {/* Inline Staff Selector */}
+            {/* Inline Staff Selector - cho tất cả user */}
             <td>
                 <div style={{position: 'relative'}}>
                     <select
@@ -297,7 +302,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 </span>
             </td>
 
-            {/* Inline Video URL Editor */}
+            {/* Inline Video URL Editor - cho tất cả user */}
             <td style={{minWidth: '180px'}}>
                 {editingVideoUrl ? (
                     <div style={{position: 'relative'}}>
@@ -416,32 +421,37 @@ const VideoItem: React.FC<VideoItemProps> = ({
                     >
                         👁️
                     </button>
-                    <button
-                        className="btn btn-secondary"
-                        style={{
-                            padding: '4px 8px',
-                            fontSize: '11px',
-                            minWidth: '40px',
-                            borderRadius: '4px'
-                        }}
-                        onClick={() => onEdit(video)}
-                        title="Sửa đầy đủ"
-                    >
-                        ✏️
-                    </button>
-                    <button
-                        className="btn btn-danger"
-                        style={{
-                            padding: '4px 8px',
-                            fontSize: '11px',
-                            minWidth: '40px',
-                            borderRadius: '4px'
-                        }}
-                        onClick={() => onDelete(video.id)}
-                        title="Xóa video"
-                    >
-                        🗑️
-                    </button>
+                    {/* Edit và Delete button - chỉ hiển thị cho admin */}
+                    {isAdmin && (
+                        <>
+                            <button
+                                className="btn btn-secondary"
+                                style={{
+                                    padding: '4px 8px',
+                                    fontSize: '11px',
+                                    minWidth: '40px',
+                                    borderRadius: '4px'
+                                }}
+                                onClick={() => onEdit(video)}
+                                title="Sửa đầy đủ"
+                            >
+                                ✏️
+                            </button>
+                            <button
+                                className="btn btn-danger"
+                                style={{
+                                    padding: '4px 8px',
+                                    fontSize: '11px',
+                                    minWidth: '40px',
+                                    borderRadius: '4px'
+                                }}
+                                onClick={() => onDelete(video.id)}
+                                title="Xóa video"
+                            >
+                                🗑️
+                            </button>
+                        </>
+                    )}
                 </div>
             </td>
         </tr>
