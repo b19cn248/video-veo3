@@ -3,11 +3,11 @@
 // Đã được cập nhật để tự động thêm Bearer token vào headers
 
 import axios from 'axios';
-import { Video, VideoFormData, VideoListResponse, ApiResponse, VideoFilter, VideoStatus } from '../types/video.types';
-import { AuthService } from './authService';
+import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus} from '../types/video.types';
+import {AuthService} from './authService';
 
 // Cấu hình base URL cho API
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://video.openlearnhub.io.vn/api/v1';
 
 // Tạo axios instance với cấu hình sẵn
 const apiClient = axios.create({
@@ -91,7 +91,7 @@ export class VideoService {
     ): Promise<VideoListResponse> {
         try {
             const response = await apiClient.get('/videos', {
-                params: { page, size, sortBy, sortDirection }
+                params: {page, size, sortBy, sortDirection}
             });
             return response.data;
         } catch (error) {
@@ -159,7 +159,7 @@ export class VideoService {
     static async searchByCustomerName(customerName: string): Promise<ApiResponse<Video[]>> {
         try {
             const response = await apiClient.get('/videos/search', {
-                params: { customerName }
+                params: {customerName}
             });
             return response.data;
         } catch (error) {
@@ -185,7 +185,7 @@ export class VideoService {
     static async updateAssignedStaff(id: number, assignedStaff: string): Promise<ApiResponse<Video>> {
         try {
             const response = await apiClient.patch(`/videos/${id}/assigned-staff`, null, {
-                params: { assignedStaff }
+                params: {assignedStaff}
             });
             return response.data;
         } catch (error) {
@@ -198,7 +198,7 @@ export class VideoService {
     static async updateVideoStatus(id: number, status: string): Promise<ApiResponse<Video>> {
         try {
             const response = await apiClient.patch(`/videos/${id}/status`, null, {
-                params: { status }
+                params: {status}
             });
             return response.data;
         } catch (error) {
