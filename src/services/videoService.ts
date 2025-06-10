@@ -1,10 +1,13 @@
 // File này chứa tất cả các hàm gọi API
 // Axios là thư viện để gọi HTTP requests
+// Đã được cập nhật để tự động thêm Bearer token vào headers
+
 import axios from 'axios';
 import { Video, VideoFormData, VideoListResponse, ApiResponse, VideoFilter, VideoStatus } from '../types/video.types';
+import { AuthService } from './authService';
 
 // Cấu hình base URL cho API
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api/v1';
 
 // Tạo axios instance với cấu hình sẵn
 const apiClient = axios.create({
@@ -13,6 +16,68 @@ const apiClient = axios.create({
         'Content-Type': 'application/json',
     },
 });
+
+// Request interceptor để tự động thêm Bearer token
+apiClient.interceptors.request.use(
+    async (config) => {
+        try {
+            // Đảm bảo token còn hiệu lực trước khi gửi request
+            const token = await AuthService.ensureTokenValid();
+
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        } catch (error) {
+            console.error('Failed to get valid token for request:', error);
+            // Nếu không lấy được token, có thể redirect về login
+            // AuthService.login();
+        }
+
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Response interceptor để handle các lỗi authentication
+apiClient.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    async (error) => {
+        const originalRequest = error.config;
+
+        // Nếu gặp lỗi 401 (Unauthorized) và chưa retry
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                // Thử refresh token
+                const newToken = await AuthService.ensureTokenValid();
+
+                if (newToken) {
+                    // Cập nhật header và retry request
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                    return apiClient(originalRequest);
+                } else {
+                    // Refresh token thất bại, redirect về login
+                    AuthService.login();
+                }
+            } catch (refreshError) {
+                console.error('Token refresh failed:', refreshError);
+                AuthService.login();
+            }
+        }
+
+        // Nếu gặp lỗi 403 (Forbidden), có thể hiển thị thông báo
+        if (error.response?.status === 403) {
+            console.error('Access forbidden - insufficient permissions');
+        }
+
+        return Promise.reject(error);
+    }
+);
 
 // Class chứa tất cả methods gọi API
 export class VideoService {
@@ -138,6 +203,30 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error updating status for video ${id}:`, error);
+            throw error;
+        }
+    }
+
+    // ===== UTILITY METHODS =====
+
+    // Kiểm tra kết nối API
+    static async checkHealth(): Promise<boolean> {
+        try {
+            const response = await apiClient.get('/health');
+            return response.status === 200;
+        } catch (error) {
+            console.error('API health check failed:', error);
+            return false;
+        }
+    }
+
+    // Lấy thông tin user hiện tại từ API (nếu backend có endpoint này)
+    static async getCurrentUser(): Promise<ApiResponse<any>> {
+        try {
+            const response = await apiClient.get('/auth/me');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching current user:', error);
             throw error;
         }
     }
