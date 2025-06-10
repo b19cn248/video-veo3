@@ -113,4 +113,32 @@ export class VideoService {
             throw error;
         }
     }
+
+    // ===== PATCH APIs cho việc cập nhật nhanh =====
+
+    // Cập nhật nhân viên được giao cho video
+    static async updateAssignedStaff(id: number, assignedStaff: string): Promise<ApiResponse<Video>> {
+        try {
+            const response = await apiClient.patch(`/videos/${id}/assigned-staff`, null, {
+                params: { assignedStaff }
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating assigned staff for video ${id}:`, error);
+            throw error;
+        }
+    }
+
+    // Cập nhật trạng thái video
+    static async updateVideoStatus(id: number, status: string): Promise<ApiResponse<Video>> {
+        try {
+            const response = await apiClient.patch(`/videos/${id}/status`, null, {
+                params: { status }
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating status for video ${id}:`, error);
+            throw error;
+        }
+    }
 }

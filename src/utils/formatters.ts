@@ -47,6 +47,42 @@ export const formatDate = (dateString: string): string => {
     }
 };
 
+// Format thời lượng video từ số giây sang HH:mm:ss
+export const formatVideoDuration = (seconds: number | undefined): string => {
+    if (!seconds || seconds === 0) return '--';
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
+
+// Chuyển đổi từ format HH:mm:ss sang số giây (utility function)
+export const timeStringToSeconds = (timeString: string): number => {
+    if (!timeString || timeString.trim() === '') return 0;
+
+    const parts = timeString.split(':');
+    if (parts.length !== 3) return 0;
+
+    const hours = parseInt(parts[0]) || 0;
+    const minutes = parseInt(parts[1]) || 0;
+    const seconds = parseInt(parts[2]) || 0;
+
+    return hours * 3600 + minutes * 60 + seconds;
+};
+
+// Chuyển đổi từ số giây sang format HH:mm:ss (utility function)
+export const secondsToTimeString = (seconds: number): string => {
+    if (!seconds || seconds === 0) return '';
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
+
 // Format số tiền với dấu phẩy ngăn cách
 export const formatCurrency = (amount: number | undefined): string => {
     if (!amount) return '--';
@@ -66,11 +102,11 @@ export const getStatusColor = (status: VideoStatus | DeliveryStatus | PaymentSta
         [VideoStatus.DA_XONG]: 'status-completed',
         [VideoStatus.DANG_SUA]: 'status-editing',
         [VideoStatus.DA_SUA_XONG]: 'status-edit-completed',
-        
+
         // Delivery status colors
         [DeliveryStatus.CHUA_GUI]: 'status-pending',
         [DeliveryStatus.DA_GUI]: 'status-completed',
-        
+
         // Payment status colors
         [PaymentStatus.CHUA_THANH_TOAN]: 'status-pending',
         [PaymentStatus.DA_THANH_TOAN]: 'status-completed',

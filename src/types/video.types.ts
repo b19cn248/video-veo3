@@ -26,7 +26,7 @@ export interface Video {
     customerName: string;
     videoContent?: string;
     imageUrl?: string;
-    videoDuration?: string;
+    videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
     deliveryTime?: string;
     assignedStaff?: string;
     status: VideoStatus;
@@ -48,7 +48,7 @@ export interface VideoFormData {
     customerName: string;
     videoContent?: string;
     imageUrl?: string;
-    videoDuration?: string;
+    videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
     deliveryTime?: string;
     assignedStaff?: string;
     status: VideoStatus;

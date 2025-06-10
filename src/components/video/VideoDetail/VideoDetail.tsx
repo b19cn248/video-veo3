@@ -4,6 +4,12 @@ import { Video } from '../../../types/video.types';
 import { VideoService } from '../../../services/videoService';
 import { formatVideoStatus, formatDeliveryStatus, formatPaymentStatus, formatDate, formatCurrency } from '../../../utils/formatters';
 
+// Hàm format thời lượng video đơn giản - chỉ hiển thị số + "s"
+const formatSimpleDuration = (seconds: number | undefined): string => {
+    if (!seconds && seconds !== 0) return '--';
+    return `${seconds}s`;
+};
+
 const VideoDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -52,7 +58,7 @@ const VideoDetail: React.FC = () => {
                         <div style={{ marginBottom: 16 }}><b>Khách hàng:</b> {video.customerName}</div>
                         <div style={{ marginBottom: 16 }}><b>Nội dung:</b> {video.videoContent || '--'}</div>
                         <div style={{ marginBottom: 16 }}><b>Nhân viên:</b> {video.assignedStaff || '--'}</div>
-                        <div style={{ marginBottom: 16 }}><b>Thời lượng:</b> {video.videoDuration || '--'}</div>
+                        <div style={{ marginBottom: 16 }}><b>Thời lượng:</b> {formatSimpleDuration(video.videoDuration)}</div>
                         <div style={{ marginBottom: 16 }}><b>Thời gian giao:</b> {formatDate(video.deliveryTime || '')}</div>
                         <div style={{ marginBottom: 16 }}><b>Thời gian hoàn thành:</b> {formatDate(video.completedTime || '')}</div>
                         <div style={{ marginBottom: 16 }}><b>Ngày tạo:</b> {formatDate(video.createdAt)}</div>
@@ -76,4 +82,4 @@ const VideoDetail: React.FC = () => {
     );
 };
 
-export default VideoDetail; 
+export default VideoDetail;

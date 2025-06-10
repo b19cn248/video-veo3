@@ -1,5 +1,6 @@
 // Component chính hiển thị danh sách video
 // Đây là component phức tạp nhất, quản lý nhiều state và logic
+// Hỗ trợ inline updates cho staff và status
 
 import React, { useState, useEffect } from 'react';
 import { Video, VideoStatus, VideoFilter } from '../../../types/video.types';
@@ -143,6 +144,15 @@ const VideoList: React.FC = () => {
         loadVideos();
     };
 
+    // Hàm xử lý khi video được cập nhật từ inline editing
+    const handleVideoUpdate = (updatedVideo: Video) => {
+        setVideos(prevVideos =>
+            prevVideos.map(video =>
+                video.id === updatedVideo.id ? updatedVideo : video
+            )
+        );
+    };
+
     // Hàm xử lý tạo video mới
     const handleCreate = async (videoData: any) => {
         try {
@@ -154,12 +164,12 @@ const VideoList: React.FC = () => {
                 if (!isFiltering) {
                     loadVideos(); // Reload list
                 }
-                alert('Tạo video thành công!');
+                showSuccessToast('Tạo video thành công!');
             } else {
-                alert('Lỗi: ' + response.message);
+                showErrorToast('Lỗi: ' + response.message);
             }
         } catch (err) {
-            alert('Lỗi khi tạo video');
+            showErrorToast('Lỗi khi tạo video');
             console.error('Error creating video:', err);
         } finally {
             setSubmitting(false);
@@ -186,12 +196,12 @@ const VideoList: React.FC = () => {
                 if (!isFiltering) {
                     loadVideos();
                 }
-                alert('Cập nhật video thành công!');
+                showSuccessToast('Cập nhật video thành công!');
             } else {
-                alert('Lỗi: ' + response.message);
+                showErrorToast('Lỗi: ' + response.message);
             }
         } catch (err) {
-            alert('Lỗi khi cập nhật video');
+            showErrorToast('Lỗi khi cập nhật video');
             console.error('Error updating video:', err);
         } finally {
             setSubmitting(false);
@@ -200,7 +210,6 @@ const VideoList: React.FC = () => {
 
     // Hàm xử lý xóa video
     const handleDelete = async (id: number) => {
-        // if (!confirm('Bạn có chắc chắn muốn xóa video này?')) return;
 
         try {
             const response = await VideoService.deleteVideo(id);
@@ -209,12 +218,12 @@ const VideoList: React.FC = () => {
                 if (!isFiltering) {
                     loadVideos();
                 }
-                alert('Xóa video thành công!');
+                showSuccessToast('Xóa video thành công!');
             } else {
-                alert('Lỗi: ' + response.message);
+                showErrorToast('Lỗi: ' + response.message);
             }
         } catch (err) {
-            alert('Lỗi khi xóa video');
+            showErrorToast('Lỗi khi xóa video');
             console.error('Error deleting video:', err);
         }
     };
@@ -229,11 +238,72 @@ const VideoList: React.FC = () => {
         setCurrentPage(page);
     };
 
+    // Helper functions cho toast notifications
+    const showSuccessToast = (message: string) => {
+        showToast(message, 'success');
+    };
+
+    const showErrorToast = (message: string) => {
+        showToast(message, 'error');
+    };
+
+    const showToast = (message: string, type: 'success' | 'error') => {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            background-color: ${type === 'success' ? '#10B981' : '#EF4444'};
+        `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    };
+
     return (
         <div>
+            {/* Quick Actions Tip */}
+            <div style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+            }}>
+                💡 <strong>Mẹo:</strong> Click trực tiếp vào <strong>Trạng thái</strong> hoặc <strong>Nhân viên</strong> trong bảng để cập nhật nhanh mà không cần mở form!
+            </div>
+
             {/* Search and Filter Bar */}
-            <div className="search-bar">
-                <div className="search-input">
+            <div className="search-bar" style={{
+                display: 'flex',
+                gap: '12px',
+                alignItems: 'center',
+                marginBottom: '20px',
+                flexWrap: 'wrap'
+            }}>
+                <div className="search-input" style={{ flex: 1, minWidth: '200px' }}>
                     <input
                         type="text"
                         placeholder="Tìm kiếm theo tên khách hàng..."
@@ -241,20 +311,40 @@ const VideoList: React.FC = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="form-input"
                         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                        style={{
+                            padding: '8px 12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            fontSize: '14px'
+                        }}
                     />
                 </div>
 
-                <button onClick={handleSearch} className="btn btn-primary">
-                    Tìm kiếm
+                <button
+                    onClick={handleSearch}
+                    className="btn btn-primary"
+                    style={{
+                        padding: '8px 16px',
+                        fontSize: '14px',
+                        borderRadius: '6px'
+                    }}
+                >
+                    🔍 Tìm kiếm
                 </button>
 
                 <select
                     value={statusFilter}
                     onChange={(e) => handleStatusFilter(e.target.value as VideoStatus | '')}
                     className="form-select"
-                    style={{ width: '200px' }}
+                    style={{
+                        width: '200px',
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        fontSize: '14px'
+                    }}
                 >
-                    <option value="">Tất cả trạng thái</option>
+                    <option value="">📋 Tất cả trạng thái</option>
                     {Object.values(VideoStatus).map(status => (
                         <option key={status} value={status}>
                             {formatVideoStatus(status)}
@@ -263,28 +353,67 @@ const VideoList: React.FC = () => {
                 </select>
 
                 {isFiltering && (
-                    <button onClick={resetFilters} className="btn btn-secondary">
-                        Bỏ lọc
+                    <button
+                        onClick={resetFilters}
+                        className="btn btn-secondary"
+                        style={{
+                            padding: '8px 16px',
+                            fontSize: '14px',
+                            borderRadius: '6px'
+                        }}
+                    >
+                        ❌ Bỏ lọc
                     </button>
                 )}
 
-                <button onClick={() => setShowCreateModal(true)} className="btn btn-success">
-                    + Tạo video mới
+                <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="btn btn-success"
+                    style={{
+                        padding: '8px 16px',
+                        fontSize: '14px',
+                        borderRadius: '6px',
+                        fontWeight: '600'
+                    }}
+                >
+                    ➕ Tạo video mới
                 </button>
             </div>
 
             {/* Summary */}
-            <div style={{ marginBottom: '20px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                <p>
+            <div style={{
+                marginBottom: '20px',
+                background: 'white',
+                padding: '15px 20px',
+                borderRadius: '8px',
+                border: '1px solid #e5e7eb',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+            }}>
+                <div>
                     <strong>Tổng cộng:</strong> {totalElements} video
-                    {isFiltering && <span style={{ color: '#666' }}> (đã lọc)</span>}
-                </p>
+                    {isFiltering && <span style={{ color: '#6b7280', fontStyle: 'italic' }}> (đã lọc)</span>}
+                </div>
+                <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                    Trang {currentPage + 1} / {totalPages || 1}
+                </div>
             </div>
 
             {/* Error Display */}
             {error && (
-                <div className="error">
-                    {error}
+                <div style={{
+                    background: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    color: '#dc2626',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    marginBottom: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                }}>
+                    ⚠️ {error}
                 </div>
             )}
 
@@ -294,49 +423,75 @@ const VideoList: React.FC = () => {
             {/* Video Table */}
             {!loading && !error && (
                 <>
-                    <table className="table">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Khách hàng</th>
-                            <th>Trạng thái</th>
-                            <th>Nhân viên</th>
-                            <th>Thời gian giao</th>
-                            <th>Sending</th>
-                            <th>Payment</th>
-                            <th>Thao tác</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {videos.length === 0 ? (
-                            <tr>
-                                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-                                    {isFiltering ? 'Không tìm thấy video nào' : 'Chưa có video nào'}
-                                </td>
+                    <div style={{
+                        background: 'white',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        border: '1px solid #e5e7eb'
+                    }}>
+                        <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                            <tr style={{ background: '#f9fafb' }}>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>ID</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Khách hàng</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
+                                    🔄 Trạng thái
+                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
+                                </th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
+                                    👤 Nhân viên
+                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để giao</div>
+                                </th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thời lượng</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Ngày tạo</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Giao hàng</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thanh toán</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thao tác</th>
                             </tr>
-                        ) : (
-                            videos.map(video => (
-                                <VideoItem
-                                    key={video.id}
-                                    video={video}
-                                    onEdit={handleEdit}
-                                    onDelete={handleDelete}
-                                    onViewDetail={handleViewDetail}
-                                />
-                            ))
-                        )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {videos.length === 0 ? (
+                                <tr>
+                                    <td colSpan={9} style={{
+                                        textAlign: 'center',
+                                        padding: '60px 20px',
+                                        color: '#6b7280',
+                                        fontSize: '14px'
+                                    }}>
+                                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>📹</div>
+                                        {isFiltering ? 'Không tìm thấy video nào' : 'Chưa có video nào'}
+                                        <div style={{ fontSize: '12px', marginTop: '8px' }}>
+                                            {!isFiltering && 'Hãy tạo video đầu tiên bằng cách click "Tạo video mới"'}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : (
+                                videos.map((video, index) => (
+                                    <VideoItem
+                                        key={video.id}
+                                        video={video}
+                                        onEdit={handleEdit}
+                                        onDelete={handleDelete}
+                                        onViewDetail={handleViewDetail}
+                                        onVideoUpdate={handleVideoUpdate}
+                                    />
+                                ))
+                            )}
+                            </tbody>
+                        </table>
+                    </div>
 
                     {/* Pagination - chỉ hiển thị khi không filter */}
-                    {!isFiltering && (
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={handlePageChange}
-                            hasNext={hasNext}
-                            hasPrevious={hasPrevious}
-                        />
+                    {!isFiltering && totalPages > 1 && (
+                        <div style={{ marginTop: '20px' }}>
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={handlePageChange}
+                                hasNext={hasNext}
+                                hasPrevious={hasPrevious}
+                            />
+                        </div>
                     )}
                 </>
             )}

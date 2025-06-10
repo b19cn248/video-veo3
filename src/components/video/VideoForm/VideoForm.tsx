@@ -14,6 +14,13 @@ interface VideoFormProps {
 
 const STAFF_LIST = ["Hiếu", "Đăng", "Công", "Khánh", "Cường"];
 
+// Các options thời lượng video cố định (tính bằng giây)
+const VIDEO_DURATION_OPTIONS = [
+    { value: 8, label: '8 giây' },
+    { value: 16, label: '16 giây' },
+    { value: 32, label: '32 giây' }
+];
+
 const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoading = false }) => {
     // useState hook để quản lý state của form
     // FormData chứa tất cả dữ liệu form
@@ -21,7 +28,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         customerName: '',
         videoContent: '',
         imageUrl: '',
-        videoDuration: '',
+        videoDuration: 8, // Mặc định là 8 giây
         deliveryTime: '',
         assignedStaff: '',
         status: VideoStatus.CHUA_AI_NHAN,
@@ -44,7 +51,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 customerName: video.customerName,
                 videoContent: video.videoContent || '',
                 imageUrl: video.imageUrl || '',
-                videoDuration: video.videoDuration || '',
+                videoDuration: video.videoDuration || 8, // Đảm bảo có giá trị mặc định
                 deliveryTime: video.deliveryTime || '',
                 assignedStaff: video.assignedStaff || '',
                 status: video.status,
@@ -72,11 +79,11 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 ...prev,
                 [name]: checked
             }));
-        } else if (type === 'number') {
+        } else if (type === 'number' || name === 'videoDuration') {
             // Convert string to number cho các field số
             setFormData(prev => ({
                 ...prev,
-                [name]: value === '' ? 0 : parseFloat(value)
+                [name]: value === '' ? 0 : parseInt(value)
             }));
         } else {
             setFormData(prev => ({
@@ -133,16 +140,21 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
             </div>
 
             <div className="form-group">
-                <label className="form-label">Thời lượng video (HH:mm:ss)</label>
-                <input
-                    type="text"
+                <label className="form-label">Thời lượng video</label>
+                <select
                     name="videoDuration"
                     value={formData.videoDuration}
                     onChange={handleInputChange}
-                    className="form-input"
-                    placeholder="00:02:30"
+                    className="form-select"
                     disabled={isLoading}
-                />
+                    required
+                >
+                    {VIDEO_DURATION_OPTIONS.map(option => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             {/* Thông tin quy trình */}
