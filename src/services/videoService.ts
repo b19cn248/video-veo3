@@ -1,6 +1,7 @@
 // File này chứa tất cả các hàm gọi API
 // Axios là thư viện để gọi HTTP requests
 // Đã được cập nhật để tự động thêm Bearer token vào headers
+// UPDATED: Tự động thêm header db: video_management_1
 
 import axios from 'axios';
 import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus} from '../types/video.types';
@@ -14,6 +15,7 @@ const apiClient = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
+        'db': 'video_management_1'  // THÊM MỚI: Header db cố định
     },
 });
 
@@ -27,6 +29,9 @@ apiClient.interceptors.request.use(
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
+
+            // Đảm bảo header db luôn có trong mọi request
+            config.headers.db = 'video_management_1';
         } catch (error) {
             console.error('Failed to get valid token for request:', error);
             // Nếu không lấy được token, có thể redirect về login
@@ -59,6 +64,8 @@ apiClient.interceptors.response.use(
                 if (newToken) {
                     // Cập nhật header và retry request
                     originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                    // Đảm bảo header db vẫn có khi retry
+                    originalRequest.headers.db = 'video_management_1';
                     return apiClient(originalRequest);
                 } else {
                     // Refresh token thất bại, redirect về login
