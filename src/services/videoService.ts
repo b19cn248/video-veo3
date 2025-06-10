@@ -15,7 +15,7 @@ const apiClient = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
-        'db': 'video_management_1'  // THÊM MỚI: Header db cố định
+        'db': 'video_management'  // THÊM MỚI: Header db cố định
     },
 });
 
