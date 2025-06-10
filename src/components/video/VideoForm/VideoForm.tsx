@@ -12,7 +12,8 @@ interface VideoFormProps {
     isLoading?: boolean;                        // Có đang loading không
 }
 
-const STAFF_LIST = ["Hiếu", "Đăng", "Công", "Khánh", "Cường"];
+// const STAFF_LIST = ["Hiếu", "Đăng", "Công", "Khánh", "Cường"];
+const STAFF_LIST = ["Nguyen Hong", "Nguyen Dung Tuan"];
 
 // Các options thời lượng video cố định (tính bằng giây)
 const VIDEO_DURATION_OPTIONS = [

@@ -1,10 +1,16 @@
 // Component hiển thị một dòng video trong table với khả năng inline editing
 // Cho phép cập nhật nhanh assigned staff, status và video URL trực tiếp trong bảng
 
-import React, { useState } from 'react';
-import { Video, VideoStatus } from '../../../types/video.types';
-import { VideoService } from '../../../services/videoService';
-import { formatVideoStatus, formatDate, formatDeliveryStatus, formatPaymentStatus, getStatusColor } from '../../../utils/formatters';
+import React, {useState} from 'react';
+import {Video, VideoStatus} from '../../../types/video.types';
+import {VideoService} from '../../../services/videoService';
+import {
+    formatDate,
+    formatDeliveryStatus,
+    formatPaymentStatus,
+    formatVideoStatus,
+    getStatusColor
+} from '../../../utils/formatters';
 
 interface VideoItemProps {
     video: Video;                          // Dữ liệu video
@@ -14,7 +20,8 @@ interface VideoItemProps {
     onVideoUpdate?: (updatedVideo: Video) => void; // Callback khi video được cập nhật
 }
 
-const STAFF_LIST = ["", "Hiếu", "Đăng", "Công", "Khánh", "Cường"]; // Thêm option trống để có thể bỏ assign
+// const STAFF_LIST = ["", "Hiếu", "Đăng", "Công", "Khánh", "Cường"];
+const STAFF_LIST = ["","Nguyen Hong", "Nguyen Dung Tuan"];
 
 // Hàm format thời lượng video đơn giản - chỉ hiển thị số + "s"
 const formatSimpleDuration = (seconds: number | undefined): string => {
@@ -199,7 +206,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
 
             {/* Inline Status Selector */}
             <td>
-                <div style={{ position: 'relative' }}>
+                <div style={{position: 'relative'}}>
                     <select
                         value={video.status}
                         onChange={(e) => handleStatusChange(e.target.value as VideoStatus)}
@@ -241,7 +248,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
 
             {/* Inline Staff Selector */}
             <td>
-                <div style={{ position: 'relative' }}>
+                <div style={{position: 'relative'}}>
                     <select
                         value={video.assignedStaff || ''}
                         onChange={(e) => handleStaffChange(e.target.value)}
@@ -291,9 +298,9 @@ const VideoItem: React.FC<VideoItemProps> = ({
             </td>
 
             {/* Inline Video URL Editor */}
-            <td style={{ minWidth: '180px' }}>
+            <td style={{minWidth: '180px'}}>
                 {editingVideoUrl ? (
-                    <div style={{ position: 'relative' }}>
+                    <div style={{position: 'relative'}}>
                         <input
                             type="text"
                             value={tempVideoUrl}
@@ -388,14 +395,14 @@ const VideoItem: React.FC<VideoItemProps> = ({
                                 </span>
                             </div>
                         ) : (
-                            <span style={{ fontStyle: 'italic' }}>+ Thêm link</span>
+                            <span style={{fontStyle: 'italic'}}>+ Thêm link</span>
                         )}
                     </div>
                 )}
             </td>
 
             <td>
-                <div style={{ display: 'flex', gap: '6px' }}>
+                <div style={{display: 'flex', gap: '6px'}}>
                     <button
                         className="btn btn-primary"
                         style={{
@@ -444,13 +451,13 @@ const VideoItem: React.FC<VideoItemProps> = ({
 // Helper function để get style cho status select
 const getSelectStyle = (status: VideoStatus) => {
     const colorMap = {
-        [VideoStatus.CHUA_AI_NHAN]: { color: '#dc2626', backgroundColor: '#fef2f2' },
-        [VideoStatus.DANG_LAM]: { color: '#ea580c', backgroundColor: '#fff7ed' },
-        [VideoStatus.DA_XONG]: { color: '#16a34a', backgroundColor: '#f0fdf4' },
-        [VideoStatus.DANG_SUA]: { color: '#2563eb', backgroundColor: '#eff6ff' },
-        [VideoStatus.DA_SUA_XONG]: { color: '#059669', backgroundColor: '#ecfdf5' }
+        [VideoStatus.CHUA_AI_NHAN]: {color: '#dc2626', backgroundColor: '#fef2f2'},
+        [VideoStatus.DANG_LAM]: {color: '#ea580c', backgroundColor: '#fff7ed'},
+        [VideoStatus.DA_XONG]: {color: '#16a34a', backgroundColor: '#f0fdf4'},
+        [VideoStatus.DANG_SUA]: {color: '#2563eb', backgroundColor: '#eff6ff'},
+        [VideoStatus.DA_SUA_XONG]: {color: '#059669', backgroundColor: '#ecfdf5'}
     };
-    return colorMap[status] || { color: '#6b7280', backgroundColor: '#f9fafb' };
+    return colorMap[status] || {color: '#6b7280', backgroundColor: '#f9fafb'};
 };
 
 export default VideoItem;
