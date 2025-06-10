@@ -23,7 +23,8 @@ interface VideoItemProps {
 }
 
 // const STAFF_LIST = ["", "Hiếu", "Đăng", "Công", "Khánh", "Cường"];
-const STAFF_LIST = ["","Nguyen Hong", "Nguyen Dung Tuan", "Nguyen Huu Duc", "Duc Anh"];
+const STAFF_LIST = ["","Nguyễn Minh Hiếu", "Nguyễn Quang Đăng", "Trần Quốc Cường", "Lý Chí Công",
+    "Nguyễn Mạnh Tuấn", "Nguyễn Duy Khánh", "Nguyễn Minh Khánh"];
 
 // Hàm format thời lượng video đơn giản - chỉ hiển thị số + "s"
 const formatSimpleDuration = (seconds: number | undefined): string => {
@@ -60,8 +61,12 @@ const VideoItem: React.FC<VideoItemProps> = ({
     const [tempVideoUrl, setTempVideoUrl] = useState(video.videoUrl || '');
     const [urlError, setUrlError] = useState('');
 
-    // Hàm xử lý cập nhật nhân viên - cho tất cả user
+    // Kiểm tra xem có được phép thay đổi nhân viên không (chỉ khi chưa giao)
+    const isStaffEditable = !video.assignedStaff || video.assignedStaff.trim() === '';
+
+    // Hàm xử lý cập nhật nhân viên - chỉ cho phép khi chưa giao
     const handleStaffChange = async (newStaff: string) => {
+        if (!isStaffEditable) return; // Không cho phép thay đổi nếu đã giao
         if (newStaff === video.assignedStaff) return; // Không thay đổi
 
         setIsUpdatingStaff(true);
@@ -251,29 +256,47 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 </div>
             </td>
 
-            {/* Inline Staff Selector - cho tất cả user */}
+            {/* Inline Staff Selector - chỉ cho phép chỉnh sửa khi chưa giao */}
             <td>
                 <div style={{position: 'relative'}}>
-                    <select
-                        value={video.assignedStaff || ''}
-                        onChange={(e) => handleStaffChange(e.target.value)}
-                        disabled={isUpdatingStaff}
-                        style={{
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '4px',
-                            padding: '4px 8px',
-                            fontSize: '12px',
-                            cursor: 'pointer',
-                            minWidth: '80px',
-                            background: 'white',
-                            color: video.assignedStaff ? '#374151' : '#9ca3af'
-                        }}
-                    >
-                        <option value="">Chưa giao</option>
-                        {STAFF_LIST.slice(1).map(staff => (
-                            <option key={staff} value={staff}>{staff}</option>
-                        ))}
-                    </select>
+                    {isStaffEditable ? (
+                        <select
+                            value={video.assignedStaff || ''}
+                            onChange={(e) => handleStaffChange(e.target.value)}
+                            disabled={isUpdatingStaff}
+                            style={{
+                                border: '1px solid #e5e7eb',
+                                borderRadius: '4px',
+                                padding: '4px 8px',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                minWidth: '80px',
+                                background: 'white',
+                                color: video.assignedStaff ? '#374151' : '#9ca3af'
+                            }}
+                        >
+                            <option value="">Chưa giao</option>
+                            {STAFF_LIST.slice(1).map(staff => (
+                                <option key={staff} value={staff}>{staff}</option>
+                            ))}
+                        </select>
+                    ) : (
+                        <div
+                            style={{
+                                padding: '4px 8px',
+                                fontSize: '12px',
+                                minWidth: '80px',
+                                backgroundColor: '#f3f4f6',
+                                color: '#6b7280',
+                                border: '1px solid #e5e7eb',
+                                borderRadius: '4px',
+                                cursor: 'not-allowed'
+                            }}
+                            title="Đã giao việc - không thể thay đổi"
+                        >
+                            {video.assignedStaff}
+                        </div>
+                    )}
                     {isUpdatingStaff && (
                         <div style={{
                             position: 'absolute',
