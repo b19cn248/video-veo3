@@ -315,20 +315,6 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 />
             </div>
 
-            <div className="form-group">
-                <label className="form-label">Giá trị đơn hàng (VND)</label>
-                <input
-                    type="number"
-                    name="orderValue"
-                    value={formData.orderValue}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    min="0"
-                    step="1000"
-                    disabled={isLoading}
-                />
-            </div>
-
             {/* Buttons */}
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '30px' }}>
                 <button
