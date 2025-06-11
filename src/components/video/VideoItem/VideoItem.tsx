@@ -24,7 +24,7 @@ interface VideoItemProps {
 }
 
 const STAFF_LIST = ["","Nguyễn Minh Hiếu", "Nguyễn Quang Đăng", "Trần Quốc Cường", "Lý Chí Công",
-    "Nguyễn Mạnh Tuấn", "Nguyễn Duy Khánh", "Nguyễn Minh Khánh"];
+    "Nguyễn Mạnh Tuấn", "Nguyễn Duy Khánh", "Nguyễn Minh Khánh", "Nguyễn Hữu Đức", "Nguyen Hong", "Đức Anh", "Nguyễn Dụng Tuân"];
 
 // Hàm format thời lượng video đơn giản - chỉ hiển thị số + "s"
 const formatSimpleDuration = (seconds: number | undefined): string => {

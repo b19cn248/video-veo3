@@ -15,7 +15,8 @@ interface VideoFormProps {
 }
 
 // const STAFF_LIST = ["Hiếu", "Đăng", "Công", "Khánh", "Cường"];
-const STAFF_LIST = ["Nguyen Hong", "Nguyen Dung Tuan", "Nguyen Huu Duc", "Duc Anh"];
+const STAFF_LIST = ["Nguyễn Minh Hiếu", "Nguyễn Quang Đăng", "Trần Quốc Cường", "Lý Chí Công",
+    "Nguyễn Mạnh Tuấn", "Nguyễn Duy Khánh", "Nguyễn Minh Khánh", "Nguyễn Hữu Đức", "Nguyen Hong", "Đức Anh", "Nguyễn Dụng Tuân"];
 
 // Các options thời lượng video cố định (tính bằng giây)
 const VIDEO_DURATION_OPTIONS = [
