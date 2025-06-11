@@ -90,6 +90,65 @@ body {
     background: #7f8c8d;
 }
 
+/* Assign Button Specific Styles */
+.assign-btn {
+    background: #3b82f6 !important;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 100px;
+    justify-content: center;
+}
+
+.assign-btn:hover:not(:disabled) {
+    background: #2563eb !important;
+    transform: translateY(-1px);
+}
+
+.assign-btn:disabled {
+    background: #94a3b8 !important;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.assign-btn.loading {
+    background: #94a3b8 !important;
+    cursor: not-allowed;
+}
+
+/* Assigned Staff Display Styles */
+.assigned-staff-display {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+    cursor: default;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid;
+}
+
+.assigned-staff-display.current-user {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.assigned-staff-display.other-user {
+    background-color: #f3f4f6;
+    color: #374151;
+    border-color: #e5e7eb;
+}
+
 /* Copy Button Specific Styles */
 .copy-btn {
     background: #3b82f6 !important;
@@ -150,6 +209,52 @@ body {
 .form-textarea {
     resize: vertical;
     min-height: 100px;
+}
+
+/* Assign to me checkbox styles */
+.assign-checkbox-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.assign-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.assign-checkbox-label:hover {
+    border-color: #d1d5db;
+}
+
+.assign-checkbox-label.checked {
+    background-color: #eff6ff;
+    border-color: #3b82f6;
+}
+
+.assign-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.assign-info-display {
+    padding: 8px 12px;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #166534;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* Status colors cho video status */
@@ -594,5 +699,12 @@ body {
 
     .search-input {
         min-width: auto;
+    }
+
+    /* Responsive assign button */
+    .assign-btn {
+        font-size: 10px;
+        padding: 5px 10px;
+        min-width: 80px;
     }
 }

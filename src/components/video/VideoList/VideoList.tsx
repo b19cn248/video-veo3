@@ -1,7 +1,7 @@
 // Component chính hiển thị danh sách video
 // Đây là component phức tạp nhất, quản lý nhiều state và logic
 // Hỗ trợ inline updates cho staff, status, video URL, delivery status và payment status
-// UPDATED: Cập nhật header table để hỗ trợ inline editing cho delivery và payment status
+// UPDATED: Cập nhật header table để reflect logic "Assign to me"
 // UPDATED: Thêm tooltips cho các cột có thể edit
 
 import React, { useState, useEffect } from 'react';
@@ -292,7 +292,7 @@ const VideoList: React.FC = () => {
 
     return (
         <div>
-            {/* Enhanced Quick Actions Tip - hiển thị cho tất cả user */}
+            {/* Enhanced Quick Actions Tip - hiển thị cho tất cả user với thông tin mới */}
             <div style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 color: 'white',
@@ -304,7 +304,7 @@ const VideoList: React.FC = () => {
                 alignItems: 'center',
                 gap: '8px'
             }}>
-                💡 <strong>Mẹo:</strong> Click trực tiếp vào <strong>Trạng thái</strong>, <strong>Nhân viên</strong>, <strong>Giao hàng</strong>, <strong>Thanh toán</strong> hoặc <strong>Link video</strong> trong bảng để cập nhật nhanh! 📋 Button copy để sao chép link.
+                💡 <strong>Mẹo:</strong> Click trực tiếp vào <strong>Trạng thái</strong>, <strong>Giao hàng</strong>, <strong>Thanh toán</strong> hoặc <strong>Link video</strong> trong bảng để cập nhật nhanh! 🎯 Nút <strong>"Nhận việc"</strong> để tự assign video cho mình. 📋 Button copy để sao chép link.
             </div>
 
             {/* Search and Filter Bar */}
@@ -468,8 +468,8 @@ const VideoList: React.FC = () => {
                                     <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
                                 </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
-                                    👤 Nhân viên
-                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để giao</div>
+                                    🎯 Nhân viên
+                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Nhận việc | Đã giao</div>
                                 </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Time</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Tiền</th>

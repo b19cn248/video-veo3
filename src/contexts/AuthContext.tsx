@@ -1,5 +1,6 @@
 // React Context để quản lý authentication state toàn ứng dụng
 // Cung cấp auth state và các functions cho tất cả components
+// UPDATED: Thêm helper function để lấy display name cho user
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthService, AuthState, UserInfo } from '../services/authService';
@@ -11,6 +12,7 @@ interface AuthContextValue extends AuthState {
     refreshToken: () => Promise<boolean>;
     hasRole: (role: string) => boolean;
     hasAnyRole: (roles: string[]) => boolean;
+    getUserDisplayName: () => string;  // Thêm helper function
     isInitialized: boolean;  // Thêm flag để biết đã khởi tạo xong chưa
 }
 
@@ -195,6 +197,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return AuthService.hasAnyRole(roles);
     };
 
+    // NEW: Function để lấy display name của user hiện tại
+    const getUserDisplayName = (): string => {
+        if (!authState.user) {
+            return 'Unknown User';
+        }
+
+        // Ưu tiên fullName, fallback về username, cuối cùng là 'Unknown User'
+        return authState.user.fullName?.trim() ||
+            authState.user.username?.trim() ||
+            'Unknown User';
+    };
+
     // Context value
     const contextValue: AuthContextValue = {
         ...authState,
@@ -203,6 +217,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         refreshToken,
         hasRole,
         hasAnyRole,
+        getUserDisplayName,
         isInitialized
     };
 
@@ -234,12 +249,17 @@ export const useIsAuthenticated = (): boolean => {
     return isAuthenticated;
 };
 
-// Custom hook để kiểm tra quyền admin - THÊM MỚI
+// Custom hook để kiểm tra quyền admin
 export const useIsAdmin = (): boolean => {
     const { user } = useAuth();
     return user?.username === 'admin' || user?.username === 'thuong';
 };
 
+// NEW: Custom hook để lấy display name của user hiện tại
+export const useUserDisplayName = (): string => {
+    const { getUserDisplayName } = useAuth();
+    return getUserDisplayName();
+};
 
 // HOC để wrap component cần authentication
 export const withAuth = <P extends object>(

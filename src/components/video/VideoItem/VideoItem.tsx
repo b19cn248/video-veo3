@@ -1,6 +1,6 @@
 // Component hiển thị một dòng video trong table với khả năng inline editing
 // Cho phép cập nhật nhanh assigned staff, status, video URL, delivery status và payment status trực tiếp trong bảng
-// UPDATED: Thêm inline editing cho trạng thái giao hàng và thanh toán
+// UPDATED: Thay đổi logic assign staff từ dropdown thành nút "Assign to me"
 // UPDATED: Thêm button copy link video với UX tối ưu
 
 import React, {useState} from 'react';
@@ -13,6 +13,7 @@ import {
     formatVideoStatus,
     getStatusColor
 } from '../../../utils/formatters';
+import { useAuth } from '../../../contexts/AuthContext';
 
 interface VideoItemProps {
     video: Video;                          // Dữ liệu video
@@ -22,9 +23,6 @@ interface VideoItemProps {
     onVideoUpdate?: (updatedVideo: Video) => void; // Callback khi video được cập nhật
     isAdmin: boolean;                      // Kiểm tra quyền admin
 }
-
-const STAFF_LIST = ["","Nguyễn Minh Hiếu", "Nguyễn Quang Đăng", "Trần Quốc Cường", "Lý Chí Công",
-    "Nguyễn Mạnh Tuấn", "Nguyễn Duy Khánh", "Nguyễn Minh Khánh", "Nguyễn Hữu Đức", "Nguyen Hong", "Đức Anh", "Nguyễn Dụng Tuân"];
 
 // Hàm format thời lượng video đơn giản - chỉ hiển thị số + "s"
 const formatSimpleDuration = (seconds: number | undefined): string => {
@@ -78,6 +76,9 @@ const VideoItem: React.FC<VideoItemProps> = ({
                                                  onVideoUpdate,
                                                  isAdmin
                                              }) => {
+    // Get current user info từ AuthContext
+    const { user } = useAuth();
+
     // State để tracking việc loading khi update các trạng thái
     const [isUpdatingStaff, setIsUpdatingStaff] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -90,25 +91,29 @@ const VideoItem: React.FC<VideoItemProps> = ({
     const [tempVideoUrl, setTempVideoUrl] = useState(video.videoUrl || '');
     const [urlError, setUrlError] = useState('');
 
-    // Kiểm tra xem có được phép thay đổi nhân viên không (chỉ khi chưa giao)
-    const isStaffEditable = !video.assignedStaff || video.assignedStaff.trim() === '';
+    // Kiểm tra xem video đã được assign chưa
+    const isVideoAssigned = Boolean(video.assignedStaff && video.assignedStaff.trim() !== '');
 
-    // Hàm xử lý cập nhật nhân viên - chỉ cho phép khi chưa giao
-    const handleStaffChange = async (newStaff: string) => {
-        if (!isStaffEditable) return; // Không cho phép thay đổi nếu đã giao
-        if (newStaff === video.assignedStaff) return; // Không thay đổi
+    // Kiểm tra xem user hiện tại có phải là người được assign không
+    const isAssignedToCurrentUser = video.assignedStaff === user?.fullName || video.assignedStaff === user?.username;
+
+    // Hàm xử lý assign video cho user hiện tại
+    const handleAssignToMe = async () => {
+        if (!user || isVideoAssigned) return;
+
+        const userDisplayName = user.fullName || user.username || 'Unknown User';
 
         setIsUpdatingStaff(true);
         try {
-            const response = await VideoService.updateAssignedStaff(video.id, newStaff);
+            const response = await VideoService.updateAssignedStaff(video.id, userDisplayName);
             if (response.success && onVideoUpdate) {
                 onVideoUpdate(response.data);
-                // Hiển thị toast notification nhẹ nhàng
-                showToast(`Đã cập nhật nhân viên: ${newStaff || 'Không có'}`, 'success');
+                // Hiển thị toast notification
+                showToast(`Đã nhận video thành công! 🎯`, 'success');
             }
         } catch (error) {
-            console.error('Error updating assigned staff:', error);
-            showToast('Lỗi khi cập nhật nhân viên', 'error');
+            console.error('Error assigning video to current user:', error);
+            showToast('Lỗi khi nhận video', 'error');
         } finally {
             setIsUpdatingStaff(false);
         }
@@ -353,45 +358,73 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 </div>
             </td>
 
-            {/* Inline Staff Selector - chỉ cho phép chỉnh sửa khi chưa giao */}
+            {/* Staff Assignment Column - UPDATED: Assign to me logic */}
             <td>
-                <div style={{position: 'relative'}}>
-                    {isStaffEditable ? (
-                        <select
-                            value={video.assignedStaff || ''}
-                            onChange={(e) => handleStaffChange(e.target.value)}
-                            disabled={isUpdatingStaff}
+                <div style={{position: 'relative', minWidth: '120px'}}>
+                    {!isVideoAssigned ? (
+                        // Hiển thị nút "Assign to me" khi chưa có ai nhận
+                        <button
+                            onClick={handleAssignToMe}
+                            disabled={isUpdatingStaff || !user}
                             style={{
-                                border: '1px solid #e5e7eb',
-                                borderRadius: '4px',
-                                padding: '4px 8px',
-                                fontSize: '12px',
-                                cursor: 'pointer',
-                                minWidth: '80px',
-                                background: 'white',
-                                color: video.assignedStaff ? '#374151' : '#9ca3af'
+                                background: isUpdatingStaff ? '#94a3b8' : '#3b82f6',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                padding: '6px 12px',
+                                fontSize: '11px',
+                                cursor: isUpdatingStaff ? 'not-allowed' : 'pointer',
+                                fontWeight: '500',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                minWidth: '100px',
+                                justifyContent: 'center'
                             }}
+                            onMouseEnter={(e) => {
+                                if (!isUpdatingStaff) {
+                                    e.currentTarget.style.background = '#2563eb';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!isUpdatingStaff) {
+                                    e.currentTarget.style.background = '#3b82f6';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }
+                            }}
+                            title="Nhận video này để thực hiện"
                         >
-                            <option value="">Chưa giao</option>
-                            {STAFF_LIST.slice(1).map(staff => (
-                                <option key={staff} value={staff}>{staff}</option>
-                            ))}
-                        </select>
+                            {isUpdatingStaff ? (
+                                <>⏳ Đang nhận...</>
+                            ) : (
+                                <>🎯 Nhận việc</>
+                            )}
+                        </button>
                     ) : (
+                        // Hiển thị thông tin nhân viên đã được assign (read-only)
                         <div
                             style={{
-                                padding: '4px 8px',
+                                padding: '6px 12px',
                                 fontSize: '12px',
-                                minWidth: '80px',
-                                backgroundColor: '#f3f4f6',
-                                color: '#6b7280',
-                                border: '1px solid #e5e7eb',
-                                borderRadius: '4px',
-                                cursor: 'not-allowed'
+                                backgroundColor: isAssignedToCurrentUser ? '#dcfce7' : '#f3f4f6',
+                                color: isAssignedToCurrentUser ? '#166534' : '#374151',
+                                border: `1px solid ${isAssignedToCurrentUser ? '#bbf7d0' : '#e5e7eb'}`,
+                                borderRadius: '6px',
+                                cursor: 'default',
+                                fontWeight: '500',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
                             }}
-                            title="Đã giao việc - không thể thay đổi"
+                            title={isAssignedToCurrentUser ? 'Video được giao cho bạn' : `Video được giao cho ${video.assignedStaff}`}
                         >
-                            {video.assignedStaff}
+                            {isAssignedToCurrentUser ? (
+                                <>✅ {video.assignedStaff}</>
+                            ) : (
+                                <>👤 {video.assignedStaff}</>
+                            )}
                         </div>
                     )}
                     {isUpdatingStaff && (
