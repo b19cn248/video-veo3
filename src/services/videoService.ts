@@ -2,9 +2,10 @@
 // Axios là thư viện để gọi HTTP requests
 // Đã được cập nhật để tự động thêm Bearer token vào headers
 // UPDATED: Tự động thêm header db: video_management
+// UPDATED: Thêm API cập nhật trạng thái giao hàng và thanh toán
 
 import axios from 'axios';
-import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus} from '../types/video.types';
+import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus} from '../types/video.types';
 import {AuthService} from './authService';
 
 // Cấu hình base URL cho API
@@ -15,7 +16,7 @@ const apiClient = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
-        'db': 'video_management'  // THÊM MỚI: Header db cố định
+        'db': 'video_management'  // Header db cố định
     },
 });
 
@@ -34,8 +35,6 @@ apiClient.interceptors.request.use(
             config.headers.db = 'video_management';
         } catch (error) {
             console.error('Failed to get valid token for request:', error);
-            // Nếu không lấy được token, có thể redirect về login
-            // AuthService.login();
         }
 
         return config;
@@ -214,7 +213,7 @@ export class VideoService {
         }
     }
 
-    // Cập nhật video URL - API mới
+    // Cập nhật video URL
     static async updateVideoUrl(id: number, videoUrl: string): Promise<ApiResponse<Video>> {
         try {
             const response = await apiClient.patch(`/videos/${id}/video-url`, null, {
@@ -223,6 +222,34 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error updating video URL for video ${id}:`, error);
+            throw error;
+        }
+    }
+
+    // ===== NEW APIs cho việc cập nhật trạng thái giao hàng và thanh toán =====
+
+    // Cập nhật trạng thái giao hàng
+    static async updateDeliveryStatus(id: number, status: DeliveryStatus): Promise<ApiResponse<Video>> {
+        try {
+            const response = await apiClient.put(`/videos/${id}/delivery-status`, null, {
+                params: {status}
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating delivery status for video ${id}:`, error);
+            throw error;
+        }
+    }
+
+    // Cập nhật trạng thái thanh toán
+    static async updatePaymentStatus(id: number, status: PaymentStatus): Promise<ApiResponse<Video>> {
+        try {
+            const response = await apiClient.put(`/videos/${id}/payment-status`, null, {
+                params: {status}
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating payment status for video ${id}:`, error);
             throw error;
         }
     }

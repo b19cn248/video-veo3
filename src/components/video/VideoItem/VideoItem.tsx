@@ -1,9 +1,10 @@
 // Component hiển thị một dòng video trong table với khả năng inline editing
-// Cho phép cập nhật nhanh assigned staff, status và video URL trực tiếp trong bảng
-// Inline editing cho tất cả user, chỉ ẩn thông tin khách hàng và button edit/delete với user thường
+// Cho phép cập nhật nhanh assigned staff, status, video URL, delivery status và payment status trực tiếp trong bảng
+// UPDATED: Thêm inline editing cho trạng thái giao hàng và thanh toán
+// UPDATED: Thêm button copy link video với UX tối ưu
 
 import React, {useState} from 'react';
-import {Video, VideoStatus} from '../../../types/video.types';
+import {Video, VideoStatus, DeliveryStatus, PaymentStatus} from '../../../types/video.types';
 import {VideoService} from '../../../services/videoService';
 import {
     formatDate,
@@ -22,7 +23,6 @@ interface VideoItemProps {
     isAdmin: boolean;                      // Kiểm tra quyền admin
 }
 
-// const STAFF_LIST = ["", "Hiếu", "Đăng", "Công", "Khánh", "Cường"];
 const STAFF_LIST = ["","Nguyễn Minh Hiếu", "Nguyễn Quang Đăng", "Trần Quốc Cường", "Lý Chí Công",
     "Nguyễn Mạnh Tuấn", "Nguyễn Duy Khánh", "Nguyễn Minh Khánh"];
 
@@ -43,6 +43,33 @@ const isValidUrl = (url: string): boolean => {
     }
 };
 
+// Hàm copy to clipboard với fallback
+const copyToClipboard = async (text: string): Promise<boolean> => {
+    try {
+        // Thử sử dụng modern Clipboard API trước
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } else {
+            // Fallback cho browsers cũ hoặc không secure context
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            const result = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            return result;
+        }
+    } catch (error) {
+        console.error('Failed to copy text:', error);
+        return false;
+    }
+};
+
 const VideoItem: React.FC<VideoItemProps> = ({
                                                  video,
                                                  onEdit,
@@ -51,10 +78,12 @@ const VideoItem: React.FC<VideoItemProps> = ({
                                                  onVideoUpdate,
                                                  isAdmin
                                              }) => {
-    // State để tracking việc loading khi update
+    // State để tracking việc loading khi update các trạng thái
     const [isUpdatingStaff, setIsUpdatingStaff] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [isUpdatingVideoUrl, setIsUpdatingVideoUrl] = useState(false);
+    const [isUpdatingDeliveryStatus, setIsUpdatingDeliveryStatus] = useState(false);
+    const [isUpdatingPaymentStatus, setIsUpdatingPaymentStatus] = useState(false);
 
     // State cho video URL editing
     const [editingVideoUrl, setEditingVideoUrl] = useState(false);
@@ -85,7 +114,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
         }
     };
 
-    // Hàm xử lý cập nhật trạng thái - cho tất cả user
+    // Hàm xử lý cập nhật trạng thái video - cho tất cả user
     const handleStatusChange = async (newStatus: VideoStatus) => {
         if (newStatus === video.status) return; // Không thay đổi
 
@@ -94,7 +123,6 @@ const VideoItem: React.FC<VideoItemProps> = ({
             const response = await VideoService.updateVideoStatus(video.id, newStatus);
             if (response.success && onVideoUpdate) {
                 onVideoUpdate(response.data);
-                // Hiển thị toast notification nhẹ nhàng
                 showToast(`Đã cập nhật trạng thái: ${formatVideoStatus(newStatus)}`, 'success');
             }
         } catch (error) {
@@ -102,6 +130,59 @@ const VideoItem: React.FC<VideoItemProps> = ({
             showToast('Lỗi khi cập nhật trạng thái', 'error');
         } finally {
             setIsUpdatingStatus(false);
+        }
+    };
+
+    // Hàm xử lý cập nhật trạng thái giao hàng - cho tất cả user
+    const handleDeliveryStatusChange = async (newStatus: DeliveryStatus) => {
+        if (newStatus === video.deliveryStatus) return; // Không thay đổi
+
+        setIsUpdatingDeliveryStatus(true);
+        try {
+            const response = await VideoService.updateDeliveryStatus(video.id, newStatus);
+            if (response.success && onVideoUpdate) {
+                onVideoUpdate(response.data);
+                showToast(`Đã cập nhật trạng thái giao hàng: ${formatDeliveryStatus(newStatus)}`, 'success');
+            }
+        } catch (error) {
+            console.error('Error updating delivery status:', error);
+            showToast('Lỗi khi cập nhật trạng thái giao hàng', 'error');
+        } finally {
+            setIsUpdatingDeliveryStatus(false);
+        }
+    };
+
+    // Hàm xử lý cập nhật trạng thái thanh toán - cho tất cả user
+    const handlePaymentStatusChange = async (newStatus: PaymentStatus) => {
+        if (newStatus === video.paymentStatus) return; // Không thay đổi
+
+        setIsUpdatingPaymentStatus(true);
+        try {
+            const response = await VideoService.updatePaymentStatus(video.id, newStatus);
+            if (response.success && onVideoUpdate) {
+                onVideoUpdate(response.data);
+                showToast(`Đã cập nhật trạng thái thanh toán: ${formatPaymentStatus(newStatus)}`, 'success');
+            }
+        } catch (error) {
+            console.error('Error updating payment status:', error);
+            showToast('Lỗi khi cập nhật trạng thái thanh toán', 'error');
+        } finally {
+            setIsUpdatingPaymentStatus(false);
+        }
+    };
+
+    // Hàm xử lý copy video URL
+    const handleCopyVideoUrl = async () => {
+        if (!video.videoUrl || !video.videoUrl.trim()) {
+            showToast('Không có link video để copy', 'error');
+            return;
+        }
+
+        const success = await copyToClipboard(video.videoUrl);
+        if (success) {
+            showToast('Đã copy link video!', 'success');
+        } else {
+            showToast('Không thể copy link. Vui lòng copy thủ công.', 'error');
         }
     };
 
@@ -202,7 +283,9 @@ const VideoItem: React.FC<VideoItemProps> = ({
             toast.style.opacity = '0';
             toast.style.transform = 'translateX(100%)';
             setTimeout(() => {
-                document.body.removeChild(toast);
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
             }, 300);
         }, 3000);
     };
@@ -314,19 +397,93 @@ const VideoItem: React.FC<VideoItemProps> = ({
             <td>{formatSimpleDuration(video.videoDuration)}</td>
             <td>{video.orderValue}</td>
             <td>{formatDate(video.createdAt || '')}</td>
+
+            {/* Inline Delivery Status Selector - cho tất cả user */}
             <td>
-                <span className={`status-badge ${getStatusColor(video.deliveryStatus)}`}>
-                    {formatDeliveryStatus(video.deliveryStatus)}
-                </span>
-            </td>
-            <td>
-                <span className={`status-badge ${getStatusColor(video.paymentStatus)}`}>
-                    {formatPaymentStatus(video.paymentStatus)}
-                </span>
+                <div style={{position: 'relative'}}>
+                    <select
+                        value={video.deliveryStatus}
+                        onChange={(e) => handleDeliveryStatusChange(e.target.value as DeliveryStatus)}
+                        disabled={isUpdatingDeliveryStatus}
+                        style={{
+                            border: 'none',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            appearance: 'none',
+                            width: '100%',
+                            minWidth: '80px',
+                            ...getSelectStyleForDelivery(video.deliveryStatus)
+                        }}
+                        className={`status-badge ${getStatusColor(video.deliveryStatus)}`}
+                    >
+                        {Object.values(DeliveryStatus).map(status => (
+                            <option key={status} value={status}>
+                                {formatDeliveryStatus(status)}
+                            </option>
+                        ))}
+                    </select>
+                    {isUpdatingDeliveryStatus && (
+                        <div style={{
+                            position: 'absolute',
+                            right: '8px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            fontSize: '10px'
+                        }}>
+                            ⏳
+                        </div>
+                    )}
+                </div>
             </td>
 
-            {/* Inline Video URL Editor - cho tất cả user */}
-            <td style={{minWidth: '180px'}}>
+            {/* Inline Payment Status Selector - cho tất cả user */}
+            <td>
+                <div style={{position: 'relative'}}>
+                    <select
+                        value={video.paymentStatus}
+                        onChange={(e) => handlePaymentStatusChange(e.target.value as PaymentStatus)}
+                        disabled={isUpdatingPaymentStatus}
+                        style={{
+                            border: 'none',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            appearance: 'none',
+                            width: '100%',
+                            minWidth: '100px',
+                            ...getSelectStyleForPayment(video.paymentStatus)
+                        }}
+                        className={`status-badge ${getStatusColor(video.paymentStatus)}`}
+                    >
+                        {Object.values(PaymentStatus).map(status => (
+                            <option key={status} value={status}>
+                                {formatPaymentStatus(status)}
+                            </option>
+                        ))}
+                    </select>
+                    {isUpdatingPaymentStatus && (
+                        <div style={{
+                            position: 'absolute',
+                            right: '8px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            fontSize: '10px'
+                        }}>
+                            ⏳
+                        </div>
+                    )}
+                </div>
+            </td>
+
+            {/* Inline Video URL Editor với Copy Button - cho tất cả user */}
+            <td style={{minWidth: '200px'}}>
                 {editingVideoUrl ? (
                     <div style={{position: 'relative'}}>
                         <input
@@ -377,53 +534,94 @@ const VideoItem: React.FC<VideoItemProps> = ({
                         )}
                     </div>
                 ) : (
-                    <div
-                        style={{
-                            cursor: 'pointer',
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            border: '1px solid transparent',
-                            transition: 'all 0.2s',
-                            fontSize: '12px',
-                            minHeight: '24px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            backgroundColor: video.videoUrl ? '#f0fdf4' : '#f9fafb',
-                            color: video.videoUrl ? '#059669' : '#6b7280'
-                        }}
-                        onClick={handleVideoUrlEditStart}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = '#d1d5db';
-                            e.currentTarget.style.backgroundColor = video.videoUrl ? '#ecfdf5' : '#f3f4f6';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = 'transparent';
-                            e.currentTarget.style.backgroundColor = video.videoUrl ? '#f0fdf4' : '#f9fafb';
-                        }}
-                        title={video.videoUrl ? `Click để sửa: ${video.videoUrl}` : 'Click để thêm link video'}
-                    >
-                        {video.videoUrl ? (
-                            <div style={{
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                    }}>
+                        {/* Hiển thị URL hoặc placeholder */}
+                        <div
+                            style={{
+                                cursor: 'pointer',
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                border: '1px solid transparent',
+                                transition: 'all 0.2s',
+                                fontSize: '12px',
+                                minHeight: '24px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '4px',
-                                overflow: 'hidden'
-                            }}>
-                                <span>🎥</span>
-                                <span style={{
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                    maxWidth: '120px'
+                                backgroundColor: video.videoUrl ? '#f0fdf4' : '#f9fafb',
+                                color: video.videoUrl ? '#059669' : '#6b7280',
+                                flex: 1
+                            }}
+                            onClick={handleVideoUrlEditStart}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = '#d1d5db';
+                                e.currentTarget.style.backgroundColor = video.videoUrl ? '#ecfdf5' : '#f3f4f6';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = 'transparent';
+                                e.currentTarget.style.backgroundColor = video.videoUrl ? '#f0fdf4' : '#f9fafb';
+                            }}
+                            title={video.videoUrl ? `Click để sửa: ${video.videoUrl}` : 'Click để thêm link video'}
+                        >
+                            {video.videoUrl ? (
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    overflow: 'hidden'
                                 }}>
-                                    {video.videoUrl.length > 20
-                                        ? `${video.videoUrl.substring(0, 20)}...`
-                                        : video.videoUrl
-                                    }
-                                </span>
-                            </div>
-                        ) : (
-                            <span style={{fontStyle: 'italic'}}>+ Thêm link</span>
+                                    <span>🎥</span>
+                                    <span style={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        maxWidth: '120px'
+                                    }}>
+                                        {video.videoUrl.length > 20
+                                            ? `${video.videoUrl.substring(0, 20)}...`
+                                            : video.videoUrl
+                                        }
+                                    </span>
+                                </div>
+                            ) : (
+                                <span style={{fontStyle: 'italic'}}>+ Thêm link</span>
+                            )}
+                        </div>
+
+                        {/* Copy Button - chỉ hiển thị khi có URL */}
+                        {video.videoUrl && video.videoUrl.trim() && (
+                            <button
+                                onClick={handleCopyVideoUrl}
+                                style={{
+                                    background: '#3b82f6',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    color: 'white',
+                                    padding: '4px 6px',
+                                    fontSize: '10px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    minWidth: '24px',
+                                    height: '24px',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#2563eb';
+                                    e.currentTarget.style.transform = 'scale(1.05)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#3b82f6';
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                }}
+                                title="Copy link video"
+                            >
+                                📋
+                            </button>
                         )}
                     </div>
                 )}
@@ -489,6 +687,25 @@ const getSelectStyle = (status: VideoStatus) => {
         [VideoStatus.DA_XONG]: {color: '#16a34a', backgroundColor: '#f0fdf4'},
         [VideoStatus.DANG_SUA]: {color: '#2563eb', backgroundColor: '#eff6ff'},
         [VideoStatus.DA_SUA_XONG]: {color: '#059669', backgroundColor: '#ecfdf5'}
+    };
+    return colorMap[status] || {color: '#6b7280', backgroundColor: '#f9fafb'};
+};
+
+// Helper function để get style cho delivery status select
+const getSelectStyleForDelivery = (status: DeliveryStatus) => {
+    const colorMap = {
+        [DeliveryStatus.CHUA_GUI]: {color: '#dc2626', backgroundColor: '#fef2f2'},
+        [DeliveryStatus.DA_GUI]: {color: '#16a34a', backgroundColor: '#f0fdf4'}
+    };
+    return colorMap[status] || {color: '#6b7280', backgroundColor: '#f9fafb'};
+};
+
+// Helper function để get style cho payment status select
+const getSelectStyleForPayment = (status: PaymentStatus) => {
+    const colorMap = {
+        [PaymentStatus.CHUA_THANH_TOAN]: {color: '#dc2626', backgroundColor: '#fef2f2'},
+        [PaymentStatus.DA_THANH_TOAN]: {color: '#16a34a', backgroundColor: '#f0fdf4'},
+        [PaymentStatus.BUNG]: {color: '#dc2626', backgroundColor: '#fef2f2'}
     };
     return colorMap[status] || {color: '#6b7280', backgroundColor: '#f9fafb'};
 };

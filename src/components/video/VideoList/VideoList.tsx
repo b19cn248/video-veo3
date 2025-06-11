@@ -1,7 +1,8 @@
 // Component chính hiển thị danh sách video
 // Đây là component phức tạp nhất, quản lý nhiều state và logic
-// Hỗ trợ inline updates cho staff, status và video URL
-// Cập nhật với quyền admin để ẩn/hiện thông tin khách hàng
+// Hỗ trợ inline updates cho staff, status, video URL, delivery status và payment status
+// UPDATED: Cập nhật header table để hỗ trợ inline editing cho delivery và payment status
+// UPDATED: Thêm tooltips cho các cột có thể edit
 
 import React, { useState, useEffect } from 'react';
 import { Video, VideoStatus, VideoFilter } from '../../../types/video.types';
@@ -291,22 +292,20 @@ const VideoList: React.FC = () => {
 
     return (
         <div>
-            {/* Quick Actions Tip - chỉ hiển thị cho admin */}
-            {isAdmin && (
-                <div style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: 'white',
-                    padding: '12px 20px',
-                    borderRadius: '8px',
-                    marginBottom: '20px',
-                    fontSize: '13px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                }}>
-                    💡 <strong>Mẹo:</strong> Click trực tiếp vào <strong>Trạng thái</strong>, <strong>Nhân viên</strong> hoặc <strong>Link video</strong> trong bảng để cập nhật nhanh!
-                </div>
-            )}
+            {/* Enhanced Quick Actions Tip - hiển thị cho tất cả user */}
+            <div style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+            }}>
+                💡 <strong>Mẹo:</strong> Click trực tiếp vào <strong>Trạng thái</strong>, <strong>Nhân viên</strong>, <strong>Giao hàng</strong>, <strong>Thanh toán</strong> hoặc <strong>Link video</strong> trong bảng để cập nhật nhanh! 📋 Button copy để sao chép link.
+            </div>
 
             {/* Search and Filter Bar */}
             <div className="search-bar" style={{
@@ -461,26 +460,26 @@ const VideoList: React.FC = () => {
                                 )}
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
                                     🔄 Trạng thái
-                                    {isAdmin && (
-                                        <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
-                                    )}
+                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
                                 </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
                                     👤 Nhân viên
-                                    {isAdmin && (
-                                        <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để giao</div>
-                                    )}
+                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để giao</div>
                                 </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Time</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Tiền</th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Ngày tạo</th>
-                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Giao hàng</th>
-                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thanh toán</th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
+                                    🚚 Giao hàng
+                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
+                                </th>
+                                <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
+                                    💰 Thanh toán
+                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
+                                </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
                                     🎥 Link video
-                                    {isAdmin && (
-                                        <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
-                                    )}
+                                    <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa | 📋 Copy</div>
                                 </th>
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Thao tác</th>
                             </tr>
