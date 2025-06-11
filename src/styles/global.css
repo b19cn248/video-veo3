@@ -708,3 +708,37 @@ body {
         min-width: 80px;
     }
 }
+
+/* ADDED: CSS cho trạng thái urgent (CAN_SUA_GAP) - chỉ phần bổ sung */
+
+/* Status colors cho delivery status - URGENT STATE */
+.status-urgent {
+    background: #ff6b35; /* Cam đỏ - đặc biệt cho "Cần sửa gấp" */
+    color: white;
+    animation: urgentPulse 2s infinite; /* Thêm animation để làm nổi bật */
+}
+
+/* Animation cho trạng thái urgent để thu hút sự chú ý */
+@keyframes urgentPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+}
+
+/* Override cho select option khi có urgent status */
+.inline-status-select option[value="CAN_SUA_GAP"] {
+    background-color: #ff6b35;
+    color: white;
+    font-weight: bold;
+}
+
+/* Hover effect cho urgent status */
+.status-urgent:hover {
+    background: #e55a2b !important;
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}

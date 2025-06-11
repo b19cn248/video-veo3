@@ -12,10 +12,12 @@ export const formatVideoStatus = (status: VideoStatus): string => {
     return statusMap[status] || status;
 };
 
+// UPDATED: Thêm format cho CAN_SUA_GAP
 export const formatDeliveryStatus = (status: DeliveryStatus): string => {
     const statusMap = {
         [DeliveryStatus.DA_GUI]: 'Đã gửi',
-        [DeliveryStatus.CHUA_GUI]: 'Chưa gửi'
+        [DeliveryStatus.CHUA_GUI]: 'Chưa gửi',
+        [DeliveryStatus.CAN_SUA_GAP]: 'Cần sửa gấp'  // Thêm format cho trạng thái mới
     };
     return statusMap[status] || status;
 };
@@ -93,6 +95,7 @@ export const formatCurrency = (amount: number | undefined): string => {
     });
 };
 
+// UPDATED: Thêm color mapping cho CAN_SUA_GAP
 // Lấy màu CSS class theo trạng thái
 export const getStatusColor = (status: VideoStatus | DeliveryStatus | PaymentStatus): string => {
     const colorMap = {
@@ -103,9 +106,10 @@ export const getStatusColor = (status: VideoStatus | DeliveryStatus | PaymentSta
         [VideoStatus.DANG_SUA]: 'status-editing',
         [VideoStatus.DA_SUA_XONG]: 'status-edit-completed',
 
-        // Delivery status colors
+        // Delivery status colors - UPDATED: Thêm CAN_SUA_GAP
         [DeliveryStatus.CHUA_GUI]: 'status-pending',
         [DeliveryStatus.DA_GUI]: 'status-completed',
+        [DeliveryStatus.CAN_SUA_GAP]: 'status-urgent',  // Thêm class mới cho trạng thái urgent
 
         // Payment status colors
         [PaymentStatus.CHUA_THANH_TOAN]: 'status-pending',

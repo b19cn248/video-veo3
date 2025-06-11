@@ -1,5 +1,6 @@
 // Định nghĩa các kiểu dữ liệu cho Video
 // TypeScript giúp chúng ta kiểm tra lỗi ngay khi viết code
+// UPDATED: Thêm CAN_SUA_GAP cho DeliveryStatus
 
 export enum VideoStatus {
     CHUA_AI_NHAN = 'CHUA_AI_NHAN',
@@ -9,9 +10,11 @@ export enum VideoStatus {
     DA_SUA_XONG = 'DA_SUA_XONG'
 }
 
+// UPDATED: Thêm CAN_SUA_GAP vào DeliveryStatus enum
 export enum DeliveryStatus {
     DA_GUI = 'DA_GUI',
-    CHUA_GUI = 'CHUA_GUI'
+    CHUA_GUI = 'CHUA_GUI',
+    CAN_SUA_GAP = 'CAN_SUA_GAP'  // Thêm trạng thái mới: Cần sửa gấp
 }
 
 export enum PaymentStatus {

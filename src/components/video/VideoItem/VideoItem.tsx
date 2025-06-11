@@ -738,15 +738,15 @@ const getSelectStyle = (status: VideoStatus) => {
     return colorMap[status] || {color: '#6b7280', backgroundColor: '#f9fafb'};
 };
 
-// Helper function để get style cho delivery status select
+// UPDATED: Helper function để get style cho delivery status select - Thêm CAN_SUA_GAP
 const getSelectStyleForDelivery = (status: DeliveryStatus) => {
     const colorMap = {
         [DeliveryStatus.CHUA_GUI]: {color: '#dc2626', backgroundColor: '#fef2f2'},
-        [DeliveryStatus.DA_GUI]: {color: '#16a34a', backgroundColor: '#f0fdf4'}
+        [DeliveryStatus.DA_GUI]: {color: '#16a34a', backgroundColor: '#f0fdf4'},
+        [DeliveryStatus.CAN_SUA_GAP]: {color: '#ffffff', backgroundColor: '#ff6b35'}  // Thêm style cho trạng thái mới
     };
     return colorMap[status] || {color: '#6b7280', backgroundColor: '#f9fafb'};
 };
-
 // Helper function để get style cho payment status select
 const getSelectStyleForPayment = (status: PaymentStatus) => {
     const colorMap = {
