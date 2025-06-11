@@ -1,10 +1,11 @@
 // Component form để tạo mới hoặc sửa video
 // Sử dụng useState để quản lý state của form
-// Cập nhật với quyền admin để ẩn/hiện thông tin khách hàng
+// UPDATED: Đã bỏ các trường không cần thiết theo yêu cầu
+// UPDATED: Thay đổi logic assign staff từ dropdown thành nút "Assign to me"
 
 import React, { useState, useEffect } from 'react';
 import { VideoFormData, Video, VideoStatus, DeliveryStatus, PaymentStatus } from '../../../types/video.types';
-import { formatVideoStatus, formatDeliveryStatus, formatPaymentStatus } from '../../../utils/formatters';
+import { useAuth } from '../../../contexts/AuthContext';
 
 interface VideoFormProps {
     video?: Video;                              // Video để edit (undefined nếu tạo mới)
@@ -13,10 +14,6 @@ interface VideoFormProps {
     isLoading?: boolean;                        // Có đang loading không
     isAdmin: boolean;                           // Kiểm tra quyền admin
 }
-
-// const STAFF_LIST = ["Hiếu", "Đăng", "Công", "Khánh", "Cường"];
-const STAFF_LIST = ["Nguyễn Minh Hiếu", "Nguyễn Quang Đăng", "Trần Quốc Cường", "Lý Chí Công",
-    "Nguyễn Mạnh Tuấn", "Nguyễn Duy Khánh", "Nguyễn Minh Khánh", "Nguyễn Hữu Đức", "Nguyen Hong", "Đức Anh", "Nguyễn Dụng Tuân"];
 
 // Các options thời lượng video cố định (tính bằng giây)
 const VIDEO_DURATION_OPTIONS = [
@@ -27,6 +24,9 @@ const VIDEO_DURATION_OPTIONS = [
 ];
 
 const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoading = false, isAdmin }) => {
+    // Get current user info từ AuthContext
+    const { user } = useAuth();
+
     // useState hook để quản lý state của form
     // FormData chứa tất cả dữ liệu form
     const [formData, setFormData] = useState<VideoFormData>({
@@ -164,89 +164,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 </select>
             </div>
 
-            {/* Thông tin quy trình */}
-            <div className="form-group">
-                <label className="form-label">Thời gian giao hàng</label>
-                <input
-                    type="datetime-local"
-                    name="deliveryTime"
-                    value={formData.deliveryTime}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    disabled={isLoading}
-                />
-            </div>
 
-            <div className="form-group">
-                <label className="form-label">Nhân viên được giao</label>
-                <select
-                    name="assignedStaff"
-                    value={formData.assignedStaff}
-                    onChange={handleInputChange}
-                    className="form-select"
-                    disabled={isLoading}
-                >
-                    <option value="">-- Chọn nhân viên --</option>
-                    {STAFF_LIST.map(staff => (
-                        <option key={staff} value={staff}>{staff}</option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="form-group">
-                <label className="form-label">Trạng thái</label>
-                <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                    className="form-select"
-                    disabled={isLoading}
-                >
-                    {Object.values(VideoStatus).map(status => (
-                        <option key={status} value={status}>
-                            {formatVideoStatus(status)}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="form-group">
-                <label className="form-label">URL video</label>
-                <input
-                    type="url"
-                    name="videoUrl"
-                    value={formData.videoUrl}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    disabled={isLoading}
-                />
-            </div>
-
-            <div className="form-group">
-                <label className="form-label">Thời gian hoàn thành</label>
-                <input
-                    type="datetime-local"
-                    name="completedTime"
-                    value={formData.completedTime}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    disabled={isLoading}
-                />
-            </div>
-
-            {/* Checkbox fields */}
-            <div className="form-group">
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <input
-                        type="checkbox"
-                        name="customerApproved"
-                        checked={formData.customerApproved}
-                        onChange={handleInputChange}
-                        disabled={isLoading}
-                    />
-                    Khách hàng đã duyệt
-                </label>
-            </div>
 
             {/* Ghi chú khách hàng - chỉ hiển thị cho admin */}
             {isAdmin && (
@@ -275,70 +193,6 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                     Đã kiểm tra
                 </label>
             </div>
-
-            {/* Thông tin giao hàng và thanh toán */}
-            <div className="form-group">
-                <label className="form-label">Trạng thái giao hàng</label>
-                <select
-                    name="deliveryStatus"
-                    value={formData.deliveryStatus}
-                    onChange={handleInputChange}
-                    className="form-select"
-                    disabled={isLoading}
-                >
-                    {Object.values(DeliveryStatus).map(status => (
-                        <option key={status} value={status}>
-                            {formatDeliveryStatus(status)}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="form-group">
-                <label className="form-label">Trạng thái thanh toán</label>
-                <select
-                    name="paymentStatus"
-                    value={formData.paymentStatus}
-                    onChange={handleInputChange}
-                    className="form-select"
-                    disabled={isLoading}
-                >
-                    {Object.values(PaymentStatus).map(status => (
-                        <option key={status} value={status}>
-                            {formatPaymentStatus(status)}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="form-group">
-                <label className="form-label">Ngày thanh toán</label>
-                <input
-                    type="datetime-local"
-                    name="paymentDate"
-                    value={formData.paymentDate}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    disabled={isLoading}
-                />
-            </div>
-
-            {/* Giá trị đơn hàng - chỉ hiển thị cho admin */}
-            {isAdmin && (
-                <div className="form-group">
-                    <label className="form-label">Giá trị đơn hàng</label>
-                    <input
-                        type="number"
-                        name="orderValue"
-                        value={formData.orderValue}
-                        onChange={handleInputChange}
-                        className="form-input"
-                        disabled={isLoading}
-                        min="0"
-                        step="1000"
-                    />
-                </div>
-            )}
 
             {/* Buttons */}
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '30px' }}>
