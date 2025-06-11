@@ -458,6 +458,11 @@ const VideoList: React.FC = () => {
                                 {isAdmin && (
                                     <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>Khách hàng</th>
                                 )}
+                                {isAdmin && (
+                                    <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
+                                        👤 Người tạo
+                                    </th>
+                                )}
                                 <th style={{ padding: '12px 8px', textAlign: 'left', fontWeight: '600', fontSize: '13px', color: '#374151' }}>
                                     🔄 Trạng thái
                                     <div style={{ fontSize: '10px', fontWeight: '400', color: '#6b7280' }}>Click để sửa</div>
@@ -487,7 +492,7 @@ const VideoList: React.FC = () => {
                             <tbody>
                             {videos.length === 0 ? (
                                 <tr>
-                                    <td colSpan={isAdmin ? 11 : 10} style={{
+                                    <td colSpan={isAdmin ? 12 : 10} style={{
                                         textAlign: 'center',
                                         padding: '60px 20px',
                                         color: '#6b7280',

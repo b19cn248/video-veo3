@@ -297,6 +297,20 @@ const VideoItem: React.FC<VideoItemProps> = ({
             {/* Cột khách hàng - chỉ hiển thị cho admin */}
             {isAdmin && <td>{video.customerName}</td>}
 
+            {/* Cột người tạo - chỉ hiển thị cho admin */}
+            {isAdmin && (
+                <td style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    maxWidth: '120px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                }}>
+                    {video.createdBy || '--'}
+                </td>
+            )}
+
             {/* Inline Status Selector - cho tất cả user */}
             <td>
                 <div style={{position: 'relative'}}>

@@ -36,6 +36,7 @@ export interface Video {
     customerNote?: string;
     checked?: boolean;
     createdAt: string;
+    createdBy?: string;
     updatedAt: string;
     deliveryStatus: DeliveryStatus;
     paymentStatus: PaymentStatus;
