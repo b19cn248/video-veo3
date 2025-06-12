@@ -68,7 +68,7 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
     const currentFiltersRef = useRef<VideoFilterParams | undefined>(undefined);
     const loadingRef = useRef(false);
 
-    // FIXED: Stable loadVideos function với proper memoization
+    // FIXED: Stable loadVideos function với proper memoization và customer search support
     const loadVideos = useCallback(async (filters?: VideoFilterParams) => {
         // Tránh duplicate calls
         if (loadingRef.current) {
@@ -83,13 +83,27 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
 
             console.log('Loading videos with filters:', filters, 'page:', currentPage);
 
-            const response = await VideoService.getVideos(
-                currentPage,
-                10,
-                'createdAt',
-                'desc',
-                filters
-            );
+            let response;
+
+            // NEW: Nếu có customer name search, sử dụng search API riêng
+            if (filters?.customerName && filters.customerName.trim()) {
+                console.log('Using customer search API for:', filters.customerName);
+                response = await VideoService.searchVideosByCustomerName(filters.customerName.trim());
+                
+                // Reset page về 0 khi search customer name (vì search không hỗ trợ pagination)
+                if (currentPage !== 0) {
+                    setCurrentPage(0);
+                }
+            } else {
+                // Sử dụng API getVideos thông thường với filters khác
+                response = await VideoService.getVideos(
+                    currentPage,
+                    10,
+                    'createdAt',
+                    'desc',
+                    filters
+                );
+            }
 
             if (response.success) {
                 setVideos(response.data);

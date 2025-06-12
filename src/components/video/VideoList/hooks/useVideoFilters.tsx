@@ -27,6 +27,7 @@ interface UseVideoFiltersReturn {
 export const useVideoFilters = (): UseVideoFiltersReturn => {
     // Filter states
     const [filters, setFilters] = useState<FilterState>({
+        customerName: '', // NEW: Thêm customer name search
         status: '',
         assignedStaff: '',
         deliveryStatus: '',
@@ -97,6 +98,9 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         const currentFilters = filtersRef.current;
         const filterParams: VideoFilterParams = {};
 
+        if (currentFilters.customerName && currentFilters.customerName.trim()) {
+            filterParams.customerName = currentFilters.customerName.trim();
+        }
         if (currentFilters.status) {
             filterParams.status = currentFilters.status as any;
         }
@@ -129,25 +133,28 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
     // REMOVED: Auto-apply useEffect để tránh infinite loop
     // Thay vào đó sử dụng manual applyFilters()
 
-    // Xử lý thay đổi filter
+    // Xử lý thay đổi filter với debounce cho customer name search
     const handleFilterChange = useCallback((filterType: keyof FilterState, value: string) => {
         setFilters(prev => ({
             ...prev,
             [filterType]: value
         }));
 
-        // NEW: Auto-apply với debounce nhưng không gây infinite loop
+        // Special handling cho customer name search với debounce dài hơn
+        const debounceTime = filterType === 'customerName' ? 500 : 300;
+        
         setTimeout(() => {
             const filterParams = getFilterParams();
             if (onFiltersChangeCallbackRef.current) {
                 onFiltersChangeCallbackRef.current(filterParams);
             }
-        }, 300);
+        }, debounceTime);
     }, [getFilterParams]);
 
     // Reset tất cả filters
     const resetAllFilters = useCallback(() => {
         setFilters({
+            customerName: '', // NEW: Reset customer name search
             status: '',
             assignedStaff: '',
             deliveryStatus: '',

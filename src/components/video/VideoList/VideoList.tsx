@@ -10,6 +10,7 @@ import { useVideoFilters } from './hooks/useVideoFilters';
 // Import sub-components
 import VideoListHeader from './components/VideoListHeader';
 import AdvancedFilterBar from './components/AdvancedFilterBar';
+import CustomerSearchStatus from './components/CustomerSearchStatus'; // NEW: Customer search status
 import VideoSummary from './components/VideoSummary';
 import VideoTable from './components/VideoTable';
 import VideoForm from '../VideoForm/VideoForm';
@@ -107,6 +108,16 @@ const VideoList: React.FC = () => {
                 onRefreshStaffList={loadFilterOptions}
                 onCreateNew={() => setShowCreateModal(true)}
             />
+
+            {/* NEW: Customer Search Status - chỉ hiển thị cho admin khi đang search */}
+            {isAdmin && filters.customerName && (
+                <CustomerSearchStatus
+                    customerName={filters.customerName}
+                    totalResults={totalElements}
+                    isSearching={loading}
+                    onClearSearch={() => handleFilterChange('customerName', '')}
+                />
+            )}
 
             {/* Summary thông tin */}
             <VideoSummary

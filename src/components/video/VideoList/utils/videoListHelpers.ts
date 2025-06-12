@@ -123,6 +123,7 @@ export const createFilterBadgeStyle = (color: string) => ({
 
 // Colors cho different filter types
 export const filterBadgeColors = {
+    customerName: '#db2777', // NEW: Pink color cho customer name search
     status: '#1e40af',
     assignedStaff: '#7c3aed',
     deliveryStatus: '#ea580c',
@@ -137,6 +138,7 @@ export const validateFilterValue = (value: string): boolean => {
 // Format filter display text
 export const formatFilterDisplayText = (filterType: string, value: string): string => {
     const prefixes = {
+        customerName: 'Khách hàng:', // NEW: Prefix cho customer search
         status: 'Video:',
         assignedStaff: 'Nhân viên:',
         deliveryStatus: 'Giao hàng:',

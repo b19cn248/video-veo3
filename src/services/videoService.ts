@@ -110,6 +110,9 @@ export class VideoService {
 
             // Thêm filters nếu có giá trị
             if (filters) {
+                if (filters.customerName && filters.customerName.trim()) {
+                    params.customerName = filters.customerName.trim();
+                }
                 if (filters.status) {
                     params.status = filters.status;
                 }
@@ -189,15 +192,34 @@ export class VideoService {
         }
     }
 
-    // DEPRECATED: Tìm kiếm video theo tên khách hàng - sẽ được thay thế bằng filter nâng cao
-    static async searchByCustomerName(customerName: string): Promise<ApiResponse<Video[]>> {
+    // NEW: Tìm kiếm video theo tên khách hàng - sử dụng cho customer search filter  
+    static async searchVideosByCustomerName(customerName: string): Promise<VideoListResponse> {
         try {
+            console.log('Searching videos by customer name:', customerName);
             const response = await apiClient.get('/videos/search', {
-                params: {customerName}
+                params: { customerName }
             });
-            return response.data;
+            
+            // Chuyển đổi response từ search API thành format của VideoListResponse
+            const searchData = response.data;
+            return {
+                success: searchData.success,
+                message: searchData.message,
+                data: searchData.data || [],
+                pagination: {
+                    currentPage: 0,
+                    totalPages: 1,
+                    totalElements: searchData.total || searchData.data?.length || 0,
+                    pageSize: searchData.data?.length || 0,
+                    hasNext: false,
+                    hasPrevious: false,
+                    isFirst: true,
+                    isLast: true,
+                },
+                timestamp: searchData.timestamp || Date.now()
+            };
         } catch (error) {
-            console.error('Error searching videos:', error);
+            console.error('Error searching videos by customer name:', error);
             throw error;
         }
     }

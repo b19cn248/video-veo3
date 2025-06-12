@@ -95,13 +95,66 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                 )}
             </div>
 
-            {/* Filter Controls Grid - UPDATED: Aligned layout */}
+            {/* Filter Controls Grid - UPDATED: Thêm Customer Name Search cho admin */}
             <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gridTemplateColumns: isAdmin 
+                    ? 'repeat(auto-fit, minmax(200px, 1fr))' // Admin: 5 columns (thêm customer search)
+                    : 'repeat(auto-fit, minmax(200px, 1fr))', // User: 4 columns như cũ
                 gap: '16px',
                 alignItems: 'end'
             }}>
+                {/* NEW: Customer Name Search - chỉ cho admin */}
+                {isAdmin && (
+                    <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            color: '#374151',
+                            marginBottom: '6px'
+                        }}>
+                            🔍 Tìm theo tên khách hàng
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                            <input
+                                type="text"
+                                value={filters.customerName}
+                                onChange={(e) => onFilterChange('customerName', e.target.value)}
+                                placeholder="Nhập tên khách hàng..."
+                                style={{
+                                    ...createFilterInputStyle(),
+                                    paddingRight: filters.customerName ? '36px' : '12px'
+                                }}
+                                {...createInputFocusHandlers()}
+                            />
+                            {/* Clear button khi có text */}
+                            {filters.customerName && (
+                                <button
+                                    onClick={() => onFilterChange('customerName', '')}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '8px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '16px',
+                                        color: '#6b7280',
+                                        padding: '2px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                    title="Xóa tìm kiếm"
+                                >
+                                    ✖️
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
                 {/* Video Status Filter */}
                 <div>
                     <label style={{
@@ -270,6 +323,12 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                         flexWrap: 'wrap',
                         gap: '6px'
                     }}>
+                        {/* NEW: Customer Name Search Badge - chỉ cho admin */}
+                        {isAdmin && filters.customerName && (
+                            <span style={createFilterBadgeStyle(filterBadgeColors.customerName)}>
+                                {formatFilterDisplayText('customerName', filters.customerName)}
+                            </span>
+                        )}
                         {filters.status && (
                             <span style={createFilterBadgeStyle(filterBadgeColors.status)}>
                                 {formatFilterDisplayText('status', formatVideoStatus(filters.status as VideoStatus))}

@@ -74,6 +74,7 @@ export interface VideoFilterParams {
     assignedStaff?: string;
     deliveryStatus?: DeliveryStatus;
     paymentStatus?: PaymentStatus;
+    customerName?: string; // NEW: Thêm search theo tên khách hàng
 }
 
 // Interface cho response từ API khi lấy danh sách có phân trang
@@ -111,6 +112,7 @@ export interface VideoFilter {
 
 // NEW: Interface cho filter state trong component
 export interface FilterState {
+    customerName: string; // NEW: Thêm search theo tên khách hàng
     status: VideoStatus | '';
     assignedStaff: string;
     deliveryStatus: DeliveryStatus | '';
