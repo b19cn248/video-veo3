@@ -7,6 +7,7 @@ import { Video, VideoFilterParams } from '../../../../types/video.types';
 import { VideoService } from '../../../../services/videoService';
 import { useNavigate } from 'react-router-dom';
 import { showToast } from '../utils/videoListHelpers';
+import { extractErrorMessage } from '../../../../utils/errorUtils';
 
 interface UseVideoListReturn {
     // Data states
@@ -115,10 +116,14 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
                 // Update current filters ref
                 currentFiltersRef.current = filters;
             } else {
-                setError('Không thể tải danh sách video');
+                // Sử dụng error message từ API response
+                const errorMessage = extractErrorMessage(response, 'Không thể tải danh sách video');
+                setError(errorMessage);
             }
         } catch (err) {
-            setError('Lỗi kết nối đến server');
+            // Extract error message từ exception
+            const errorMessage = extractErrorMessage(err, 'Lỗi kết nối đến server');
+            setError(errorMessage);
             console.error('Error loading videos:', err);
         } finally {
             setLoading(false);
@@ -140,10 +145,14 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
                 await loadVideos(currentFiltersRef.current);
                 showToast('Tạo video thành công!', 'success');
             } else {
-                showToast('Lỗi: ' + response.message, 'error');
+                // Sử dụng error message từ API response
+                const errorMessage = extractErrorMessage(response, 'Lỗi khi tạo video');
+                showToast(errorMessage, 'error');
             }
         } catch (err) {
-            showToast('Lỗi khi tạo video', 'error');
+            // Extract error message từ exception  
+            const errorMessage = extractErrorMessage(err, 'Lỗi khi tạo video');
+            showToast(errorMessage, 'error');
             console.error('Error creating video:', err);
         } finally {
             setSubmitting(false);
@@ -172,10 +181,14 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
                 await loadVideos(currentFiltersRef.current);
                 showToast('Cập nhật video thành công!', 'success');
             } else {
-                showToast('Lỗi: ' + response.message, 'error');
+                // Sử dụng error message từ API response
+                const errorMessage = extractErrorMessage(response, 'Lỗi khi cập nhật video');
+                showToast(errorMessage, 'error');
             }
         } catch (err) {
-            showToast('Lỗi khi cập nhật video', 'error');
+            // Extract error message từ exception
+            const errorMessage = extractErrorMessage(err, 'Lỗi khi cập nhật video');
+            showToast(errorMessage, 'error');
             console.error('Error updating video:', err);
         } finally {
             setSubmitting(false);
@@ -194,10 +207,14 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
                 await loadVideos(currentFiltersRef.current);
                 showToast('Xóa video thành công!', 'success');
             } else {
-                showToast('Lỗi: ' + response.message, 'error');
+                // Sử dụng error message từ API response
+                const errorMessage = extractErrorMessage(response, 'Lỗi khi xóa video');
+                showToast(errorMessage, 'error');
             }
         } catch (err) {
-            showToast('Lỗi khi xóa video', 'error');
+            // Extract error message từ exception
+            const errorMessage = extractErrorMessage(err, 'Lỗi khi xóa video');
+            showToast(errorMessage, 'error');
             console.error('Error deleting video:', err);
         }
     }, [isAdmin, loadVideos]);

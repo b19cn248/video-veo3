@@ -14,6 +14,7 @@ import {
     getStatusColor
 } from '../../../utils/formatters';
 import { useAuth } from '../../../contexts/AuthContext';
+import { extractErrorMessage } from '../../../utils/errorUtils';
 
 interface VideoItemProps {
     video: Video;                          // Dữ liệu video
@@ -113,7 +114,8 @@ const VideoItem: React.FC<VideoItemProps> = ({
             }
         } catch (error) {
             console.error('Error assigning video to current user:', error);
-            showToast('Lỗi khi nhận video', 'error');
+            const errorMessage = extractErrorMessage(error, 'Lỗi khi nhận video');
+            showToast(errorMessage, 'error');
         } finally {
             setIsUpdatingStaff(false);
         }
@@ -132,7 +134,8 @@ const VideoItem: React.FC<VideoItemProps> = ({
             }
         } catch (error) {
             console.error('Error updating video status:', error);
-            showToast('Lỗi khi cập nhật trạng thái', 'error');
+            const errorMessage = extractErrorMessage(error, 'Lỗi khi cập nhật trạng thái');
+            showToast(errorMessage, 'error');
         } finally {
             setIsUpdatingStatus(false);
         }
@@ -151,7 +154,8 @@ const VideoItem: React.FC<VideoItemProps> = ({
             }
         } catch (error) {
             console.error('Error updating delivery status:', error);
-            showToast('Lỗi khi cập nhật trạng thái giao hàng', 'error');
+            const errorMessage = extractErrorMessage(error, 'Lỗi khi cập nhật trạng thái giao hàng');
+            showToast(errorMessage, 'error');
         } finally {
             setIsUpdatingDeliveryStatus(false);
         }
@@ -170,7 +174,8 @@ const VideoItem: React.FC<VideoItemProps> = ({
             }
         } catch (error) {
             console.error('Error updating payment status:', error);
-            showToast('Lỗi khi cập nhật trạng thái thanh toán', 'error');
+            const errorMessage = extractErrorMessage(error, 'Lỗi khi cập nhật trạng thái thanh toán');
+            showToast(errorMessage, 'error');
         } finally {
             setIsUpdatingPaymentStatus(false);
         }
@@ -246,7 +251,8 @@ const VideoItem: React.FC<VideoItemProps> = ({
             }
         } catch (error) {
             console.error('Error updating video URL:', error);
-            showToast('Lỗi khi cập nhật link video', 'error');
+            const errorMessage = extractErrorMessage(error, 'Lỗi khi cập nhật link video');
+            showToast(errorMessage, 'error');
         } finally {
             setIsUpdatingVideoUrl(false);
         }

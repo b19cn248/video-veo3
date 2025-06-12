@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { StaffSalary, StaffSalaryFilter, SalarySummary, StaffSalariesResponse } from '../../../../types/staff.types';
 import { VideoService } from '../../../../services/videoService';
 import { getTodayDate } from '../../../../utils/dateUtils';
+import { extractErrorMessage } from '../../../../utils/errorUtils';
 
 interface UseStaffSalariesWithDateReturn {
     // Data states
@@ -71,11 +72,15 @@ export const useStaffSalariesWithDate = (): UseStaffSalariesWithDateReturn => {
 
                 setSummary(newSummary);
             } else {
-                setError('Không thể tải thông tin lương nhân viên');
+                // Sử dụng error message từ API response
+                const errorMessage = extractErrorMessage(response, 'Không thể tải thông tin lương nhân viên');
+                setError(errorMessage);
                 setSummary(null);
             }
         } catch (err) {
-            setError('Lỗi kết nối đến server');
+            // Extract error message từ exception
+            const errorMessage = extractErrorMessage(err, 'Lỗi kết nối đến server');
+            setError(errorMessage);
             console.error('Error loading staff salaries:', err);
             setSummary(null);
         } finally {

@@ -9,6 +9,8 @@ import { useStaffSalariesWithDate } from './hooks/useStaffSalariesWithDate';
 import DateSelector from './components/DateSelector';
 import SalaryDateStatus from './components/SalaryDateStatus';
 import Loading from '../../common/Loading/Loading';
+import ErrorDisplay from '../../common/ErrorDisplay/ErrorDisplay';
+import { extractErrorMessage } from '../../../utils/errorUtils';
 
 const StaffSalaries: React.FC = () => {
     // NEW: Sử dụng custom hook để quản lý logic với date filtering
@@ -69,21 +71,13 @@ const StaffSalaries: React.FC = () => {
             {/* Loading */}
             {loading && <Loading message="Đang tải thông tin lương nhân viên..." />}
 
-            {/* Error */}
+            {/* Error - sử dụng ErrorDisplay component */}
             {error && (
-                <div style={{
-                    background: '#fef2f2',
-                    border: '1px solid #fecaca',
-                    color: '#dc2626',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
-                    marginBottom: '20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                }}>
-                    ⚠️ {error}
-                </div>
+                <ErrorDisplay 
+                    message={error}
+                    type="error"
+                    style={{ marginBottom: '20px' }}
+                />
             )}
 
             {/* Summary Cards */}

@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { FilterState, FilterOptions, VideoFilterParams } from '../../../../types/video.types';
 import { VideoService } from '../../../../services/videoService';
+import { extractErrorMessage } from '../../../../utils/errorUtils';
 
 interface UseVideoFiltersReturn {
     // Filter states
@@ -75,6 +76,10 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
             }
         } catch (error) {
             console.error('Error loading filter options:', error);
+            // Extract error message để có thể log chi tiết hơn nếu cần
+            const errorMessage = extractErrorMessage(error, 'Lỗi khi tải danh sách nhân viên');
+            console.warn('Staff list loading failed:', errorMessage);
+            
             setFilterOptions(prev => ({
                 ...prev,
                 assignedStaffList: []

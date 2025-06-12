@@ -17,6 +17,7 @@ import VideoForm from '../VideoForm/VideoForm';
 import Loading from '../../common/Loading/Loading';
 import Modal from '../../common/Modal/Modal';
 import Pagination from '../../common/Pagination/Pagination';
+import ErrorDisplay from '../../common/ErrorDisplay/ErrorDisplay';
 import { VideoFilterParams } from '../../../types/video.types';
 
 const VideoList: React.FC = () => {
@@ -129,21 +130,13 @@ const VideoList: React.FC = () => {
                 loading={loading}
             />
 
-            {/* Error Display */}
+            {/* Error Display - sử dụng component ErrorDisplay */}
             {error && (
-                <div style={{
-                    background: '#fef2f2',
-                    border: '1px solid #fecaca',
-                    color: '#dc2626',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
-                    marginBottom: '20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                }}>
-                    ⚠️ {error}
-                </div>
+                <ErrorDisplay 
+                    message={error}
+                    type="error"
+                    style={{ marginBottom: '20px' }}
+                />
             )}
 
             {/* Loading Display */}

@@ -4,6 +4,8 @@ import { Video } from '../../../types/video.types';
 import { VideoService } from '../../../services/videoService';
 import { useIsAdmin } from '../../../contexts/AuthContext';
 import { formatVideoStatus, formatDeliveryStatus, formatPaymentStatus, formatDate, formatCurrency } from '../../../utils/formatters';
+import { extractErrorMessage } from '../../../utils/errorUtils';
+import ErrorDisplay from '../../common/ErrorDisplay/ErrorDisplay';
 
 // Hàm format thời lượng video đơn giản - chỉ hiển thị số + "s"
 const formatSimpleDuration = (seconds: number | undefined): string => {
@@ -28,10 +30,14 @@ const VideoDetail: React.FC = () => {
                 if (res.success) {
                     setVideo(res.data);
                 } else {
-                    setError(res.message || 'Không tìm thấy video');
+                    // Sử dụng error message từ API response
+                    const errorMessage = extractErrorMessage(res, 'Không tìm thấy video');
+                    setError(errorMessage);
                 }
             } catch (err) {
-                setError('Lỗi khi tải chi tiết video');
+                // Extract error message từ exception
+                const errorMessage = extractErrorMessage(err, 'Lỗi khi tải chi tiết video');
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
@@ -40,7 +46,11 @@ const VideoDetail: React.FC = () => {
     }, [id]);
 
     if (loading) return <div className="loading">Đang tải chi tiết video...</div>;
-    if (error) return <div className="error">{error}</div>;
+    if (error) return (
+        <div style={{ padding: '20px' }}>
+            <ErrorDisplay message={error} type="error" />
+        </div>
+    );
     if (!video) return null;
 
     return (

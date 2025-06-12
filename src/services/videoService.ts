@@ -10,6 +10,8 @@ import axios from 'axios';
 import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams} from '../types/video.types';
 import {StaffSalariesResponse, AssignedStaffResponse} from '../types/staff.types';
 import {AuthService} from './authService';
+import { extractErrorMessage, createOperationErrorMessage } from '../utils/errorUtils';
+import { GlobalErrorHandler } from '../utils/globalErrorHandler';
 
 // Cấu hình base URL cho API
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://video.openlearnhub.io.vn/api/v1';
@@ -47,13 +49,19 @@ apiClient.interceptors.request.use(
     }
 );
 
-// Response interceptor để handle các lỗi authentication
+// Response interceptor để handle các lỗi authentication và log errors
 apiClient.interceptors.response.use(
     (response) => {
         return response;
     },
     async (error) => {
         const originalRequest = error.config;
+
+        // Log error với global error handler
+        GlobalErrorHandler.logError(error, 'API Response Error', {
+            url: originalRequest?.url,
+            method: originalRequest?.method
+        });
 
         // Nếu gặp lỗi 401 (Unauthorized) và chưa retry
         if (error.response?.status === 401 && !originalRequest._retry) {
@@ -71,11 +79,11 @@ apiClient.interceptors.response.use(
                     return apiClient(originalRequest);
                 } else {
                     // Refresh token thất bại, redirect về login
-                    AuthService.login();
+                    GlobalErrorHandler.handleAuthenticationError();
                 }
             } catch (refreshError) {
                 console.error('Token refresh failed:', refreshError);
-                AuthService.login();
+                GlobalErrorHandler.handleAuthenticationError();
             }
         }
 
@@ -133,7 +141,9 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error('Error fetching videos:', error);
-            throw error;
+            // Sử dụng error utils để extract message từ API response
+            const errorMessage = createOperationErrorMessage('fetch', 'danh sách video', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -144,7 +154,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error('Error fetching all videos:', error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('fetch', 'tất cả video', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -155,7 +166,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error('Error fetching video detail:', error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('fetch', 'chi tiết video', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -166,7 +178,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error('Error creating video:', error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('create', 'video', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -177,7 +190,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error updating video ${id}:`, error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('update', 'video', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -188,7 +202,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error deleting video ${id}:`, error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('delete', 'video', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -220,7 +235,8 @@ export class VideoService {
             };
         } catch (error) {
             console.error('Error searching videos by customer name:', error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('search', 'video theo tên khách hàng', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -231,7 +247,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error fetching videos by status ${status}:`, error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('fetch', `video theo trạng thái ${status}`, error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -274,7 +291,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error('Error fetching staff salaries:', error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('fetch', 'lương nhân viên', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -289,7 +307,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error updating assigned staff for video ${id}:`, error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('update', 'nhân viên được giao', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -302,7 +321,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error updating status for video ${id}:`, error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('update', 'trạng thái video', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -315,7 +335,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error updating video URL for video ${id}:`, error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('update', 'URL video', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -330,7 +351,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error updating delivery status for video ${id}:`, error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('update', 'trạng thái giao hàng', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -343,7 +365,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error(`Error updating payment status for video ${id}:`, error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('update', 'trạng thái thanh toán', error);
+            throw new Error(errorMessage);
         }
     }
 
@@ -367,7 +390,8 @@ export class VideoService {
             return response.data;
         } catch (error) {
             console.error('Error fetching current user:', error);
-            throw error;
+            const errorMessage = createOperationErrorMessage('fetch', 'thông tin người dùng hiện tại', error);
+            throw new Error(errorMessage);
         }
     }
 }
