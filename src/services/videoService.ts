@@ -3,9 +3,12 @@
 // Đã được cập nhật để tự động thêm Bearer token vào headers
 // UPDATED: Tự động thêm header db: video_management
 // UPDATED: Thêm API cập nhật trạng thái giao hàng và thanh toán
+// UPDATED: Cập nhật getVideos API để hỗ trợ filter nâng cao
+// NEW: Thêm Staff Salary APIs và cập nhật Assigned Staff API
 
 import axios from 'axios';
-import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus} from '../types/video.types';
+import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams} from '../types/video.types';
+import {StaffSalariesResponse, AssignedStaffResponse} from '../types/staff.types';
 import {AuthService} from './authService';
 
 // Cấu hình base URL cho API
@@ -88,17 +91,42 @@ apiClient.interceptors.response.use(
 // Class chứa tất cả methods gọi API
 export class VideoService {
 
-    // Lấy danh sách video có phân trang
+    // UPDATED: Lấy danh sách video có phân trang với filter nâng cao
     static async getVideos(
         page: number = 0,
         size: number = 10,
         sortBy: string = 'createdAt',
-        sortDirection: string = 'desc'
+        sortDirection: string = 'desc',
+        filters?: VideoFilterParams
     ): Promise<VideoListResponse> {
         try {
-            const response = await apiClient.get('/videos', {
-                params: {page, size, sortBy, sortDirection}
-            });
+            // Tạo params object, chỉ thêm các filter có giá trị
+            const params: any = {
+                page,
+                size,
+                sortBy,
+                sortDirection
+            };
+
+            // Thêm filters nếu có giá trị
+            if (filters) {
+                if (filters.status) {
+                    params.status = filters.status;
+                }
+                if (filters.assignedStaff && filters.assignedStaff.trim()) {
+                    params.assignedStaff = filters.assignedStaff.trim();
+                }
+                if (filters.deliveryStatus) {
+                    params.deliveryStatus = filters.deliveryStatus;
+                }
+                if (filters.paymentStatus) {
+                    params.paymentStatus = filters.paymentStatus;
+                }
+            }
+
+            console.log('Making API call with params:', params);
+
+            const response = await apiClient.get('/videos', { params });
             return response.data;
         } catch (error) {
             console.error('Error fetching videos:', error);
@@ -161,7 +189,7 @@ export class VideoService {
         }
     }
 
-    // Tìm kiếm video theo tên khách hàng
+    // DEPRECATED: Tìm kiếm video theo tên khách hàng - sẽ được thay thế bằng filter nâng cao
     static async searchByCustomerName(customerName: string): Promise<ApiResponse<Video[]>> {
         try {
             const response = await apiClient.get('/videos/search', {
@@ -174,13 +202,49 @@ export class VideoService {
         }
     }
 
-    // Lọc video theo trạng thái
+    // DEPRECATED: Lọc video theo trạng thái - sẽ được thay thế bằng filter nâng cao
     static async getVideosByStatus(status: VideoStatus): Promise<ApiResponse<Video[]>> {
         try {
             const response = await apiClient.get(`/videos/status/${status}`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching videos by status ${status}:`, error);
+            throw error;
+        }
+    }
+
+    // ===== NEW: STAFF MANAGEMENT APIs =====
+
+    // NEW: Lấy danh sách nhân viên được assigned
+    static async getAssignedStaffList(): Promise<AssignedStaffResponse> {
+        try {
+            console.log('Fetching assigned staff list from API...');
+            const response = await apiClient.get('/videos/assigned-staff');
+            console.log('Assigned staff response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching assigned staff list:', error);
+            // Fallback: return empty list with proper structure
+            return {
+                total: 0,
+                data: [],
+                success: false,
+                tenantId: 'video_management',
+                message: 'Failed to fetch assigned staff list',
+                timestamp: Date.now()
+            };
+        }
+    }
+
+    // NEW: Lấy thông tin lương của tất cả nhân viên
+    static async getStaffSalaries(): Promise<StaffSalariesResponse> {
+        try {
+            console.log('Fetching staff salaries from API...');
+            const response = await apiClient.get('/videos/staff-salaries');
+            console.log('Staff salaries response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching staff salaries:', error);
             throw error;
         }
     }
@@ -226,7 +290,7 @@ export class VideoService {
         }
     }
 
-    // ===== NEW APIs cho việc cập nhật trạng thái giao hàng và thanh toán =====
+    // ===== APIs cho việc cập nhật trạng thái giao hàng và thanh toán =====
 
     // Cập nhật trạng thái giao hàng
     static async updateDeliveryStatus(id: number, status: DeliveryStatus): Promise<ApiResponse<Video>> {

@@ -1,6 +1,7 @@
 // Định nghĩa các kiểu dữ liệu cho Video
 // TypeScript giúp chúng ta kiểm tra lỗi ngay khi viết code
 // UPDATED: Thêm CAN_SUA_GAP cho DeliveryStatus
+// UPDATED: Thêm VideoFilterParams cho filter nâng cao
 
 export enum VideoStatus {
     CHUA_AI_NHAN = 'CHUA_AI_NHAN',
@@ -67,6 +68,14 @@ export interface VideoFormData {
     orderValue?: number;
 }
 
+// NEW: Interface cho filter parameters - khớp với API backend mới
+export interface VideoFilterParams {
+    status?: VideoStatus;
+    assignedStaff?: string;
+    deliveryStatus?: DeliveryStatus;
+    paymentStatus?: PaymentStatus;
+}
+
 // Interface cho response từ API khi lấy danh sách có phân trang
 export interface VideoListResponse {
     success: boolean;
@@ -93,9 +102,22 @@ export interface ApiResponse<T> {
     timestamp: number;
 }
 
-// Interface cho filter/search
+// DEPRECATED: Interface cho filter/search cũ - sẽ được thay thế bằng VideoFilterParams
 export interface VideoFilter {
     customerName?: string;
     status?: VideoStatus;
     assignedStaff?: string;
+}
+
+// NEW: Interface cho filter state trong component
+export interface FilterState {
+    status: VideoStatus | '';
+    assignedStaff: string;
+    deliveryStatus: DeliveryStatus | '';
+    paymentStatus: PaymentStatus | '';
+}
+
+// NEW: Interface cho filter options
+export interface FilterOptions {
+    assignedStaffList: string[];
 }

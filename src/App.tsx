@@ -1,18 +1,21 @@
 // Component gốc của ứng dụng
 // Chứa layout chính và routing
 // Đã được cập nhật để tích hợp Keycloak authentication
+// UPDATED: Cho phép tất cả user xem Staff Salaries, không chỉ admin
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute/ProtectedRoute';
 import VideoList from './components/video/VideoList/VideoList';
 import VideoDetail from './components/video/VideoDetail/VideoDetail';
+import StaffSalaries from './components/staff/StaffSalaries/StaffSalaries';
 import './styles/global.css';
 
-// Component hiển thị header với thông tin user
+// Component hiển thị header với thông tin user và navigation
 const AppHeader: React.FC = () => {
     const { user, logout, isAuthenticated } = useAuth();
+    const location = useLocation();
 
     if (!isAuthenticated) {
         return (
@@ -24,6 +27,10 @@ const AppHeader: React.FC = () => {
         );
     }
 
+    // Kiểm tra trang hiện tại để highlight navigation
+    const isVideosPage = location.pathname.startsWith('/videos');
+    const isSalariesPage = location.pathname === '/staff-salaries';
+
     return (
         <header className="header">
             <div className="container">
@@ -32,8 +39,85 @@ const AppHeader: React.FC = () => {
                     justifyContent: 'space-between',
                     alignItems: 'center'
                 }}>
-                    <h1>Hệ thống quản lý Video</h1>
+                    {/* Logo và Navigation */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '40px'
+                    }}>
+                        <h1 style={{ margin: 0 }}>Hệ thống quản lý Video</h1>
 
+                        {/* Navigation Menu */}
+                        <nav style={{
+                            display: 'flex',
+                            gap: '20px'
+                        }}>
+                            <a
+                                href="/videos"
+                                style={{
+                                    textDecoration: 'none',
+                                    color: isVideosPage ? '#3b82f6' : '#6b7280',
+                                    fontWeight: isVideosPage ? '600' : '500',
+                                    fontSize: '15px',
+                                    padding: '8px 16px',
+                                    borderRadius: '6px',
+                                    background: isVideosPage ? '#eff6ff' : 'transparent',
+                                    transition: 'all 0.2s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isVideosPage) {
+                                        e.currentTarget.style.color = '#374151';
+                                        e.currentTarget.style.background = '#f3f4f6';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isVideosPage) {
+                                        e.currentTarget.style.color = '#6b7280';
+                                        e.currentTarget.style.background = 'transparent';
+                                    }
+                                }}
+                            >
+                                🎥 Quản lý Video
+                            </a>
+
+                            {/* UPDATED: Staff Salaries - hiển thị cho TẤT CẢ user */}
+                            <a
+                                href="/staff-salaries"
+                                style={{
+                                    textDecoration: 'none',
+                                    color: isSalariesPage ? '#3b82f6' : '#6b7280',
+                                    fontWeight: isSalariesPage ? '600' : '500',
+                                    fontSize: '15px',
+                                    padding: '8px 16px',
+                                    borderRadius: '6px',
+                                    background: isSalariesPage ? '#eff6ff' : 'transparent',
+                                    transition: 'all 0.2s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isSalariesPage) {
+                                        e.currentTarget.style.color = '#374151';
+                                        e.currentTarget.style.background = '#f3f4f6';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isSalariesPage) {
+                                        e.currentTarget.style.color = '#6b7280';
+                                        e.currentTarget.style.background = 'transparent';
+                                    }
+                                }}
+                            >
+                                💰 Lương nhân viên
+                            </a>
+                        </nav>
+                    </div>
+
+                    {/* User Info và Logout */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -131,6 +215,16 @@ const AppRoutes: React.FC = () => {
                         element={
                             <ProtectedRoute>
                                 <VideoDetail />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* UPDATED: Route lương nhân viên - cho TẤT CẢ user, không chỉ admin */}
+                    <Route
+                        path="/staff-salaries"
+                        element={
+                            <ProtectedRoute>
+                                <StaffSalaries />
                             </ProtectedRoute>
                         }
                     />
