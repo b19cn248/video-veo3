@@ -258,11 +258,18 @@ export class VideoService {
         }
     }
 
-    // NEW: Lấy thông tin lương của tất cả nhân viên
-    static async getStaffSalaries(): Promise<StaffSalariesResponse> {
+    // NEW: Lấy thông tin lương của tất cả nhân viên với tùy chọn lọc theo ngày
+    static async getStaffSalaries(date?: string): Promise<StaffSalariesResponse> {
         try {
-            console.log('Fetching staff salaries from API...');
-            const response = await apiClient.get('/videos/staff-salaries');
+            console.log('Fetching staff salaries from API for date:', date);
+            
+            // Tạo params object, chỉ thêm date nếu có giá trị
+            const params: any = {};
+            if (date) {
+                params.date = date;
+            }
+            
+            const response = await apiClient.get('/videos/staff-salaries', { params });
             console.log('Staff salaries response:', response.data);
             return response.data;
         } catch (error) {

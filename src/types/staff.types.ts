@@ -14,6 +14,7 @@ export interface StaffSalariesResponse {
     totalSalary: number;
     totalStaff: number;
     totalVideos: number;
+    date?: string; // NEW: Ngày được lọc (yyyy-MM-dd format)
     success: boolean;
     tenantId: string;
     message: string;
@@ -35,6 +36,7 @@ export interface StaffSalaryFilter {
     sortBy: 'staffName' | 'totalSalary' | 'totalVideos';
     sortDirection: 'asc' | 'desc';
     searchTerm?: string;
+    selectedDate?: string; // NEW: Ngày được chọn để lọc (yyyy-MM-dd format)
 }
 
 // Interface cho summary statistics
@@ -44,4 +46,5 @@ export interface SalarySummary {
     totalSalary: number;
     averageSalary: number;
     averageVideosPerStaff: number;
+    selectedDate?: string; // NEW: Ngày được chọn để hiển thị
 }

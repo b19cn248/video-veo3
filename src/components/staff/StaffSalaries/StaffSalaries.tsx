@@ -1,139 +1,35 @@
 // Component hiển thị bảng lương nhân viên
-// UPDATED: Cho phép tất cả user xem lương, không chỉ admin
-// Tính năng chính: Hiển thị tổng quan lương, bảng chi tiết với search/sort
-// UI/UX: Dashboard-style với cards thống kê và bảng responsive
+// UPDATED: Thêm tính năng lọc theo ngày với mặc định là hôm nay
+// REFACTORED: Sử dụng custom hook và sub-components để tăng maintainability
+// UI/UX: Dashboard-style với date selector, cards thống kê và bảng responsive
 
-import React, { useState, useEffect } from 'react';
-import { StaffSalary, StaffSalaryFilter, SalarySummary } from '../../../types/staff.types';
-import { VideoService } from '../../../services/videoService';
+import React from 'react';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
+import { useStaffSalariesWithDate } from './hooks/useStaffSalariesWithDate';
+import DateSelector from './components/DateSelector';
+import SalaryDateStatus from './components/SalaryDateStatus';
 import Loading from '../../common/Loading/Loading';
 
 const StaffSalaries: React.FC = () => {
-    // State management
-    const [staffSalaries, setStaffSalaries] = useState<StaffSalary[]>([]);
-    const [filteredSalaries, setFilteredSalaries] = useState<StaffSalary[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [summary, setSummary] = useState<SalarySummary | null>(null);
-
-    // Filter states
-    const [filter, setFilter] = useState<StaffSalaryFilter>({
-        sortBy: 'totalSalary',
-        sortDirection: 'desc',
-        searchTerm: ''
-    });
-
-    // REMOVED: isAdmin check - tất cả user đều có thể xem
-
-    // useEffect để load data khi component mount
-    useEffect(() => {
-        loadStaffSalaries();
-    }, []);
-
-    // useEffect để apply filter/sort khi data hoặc filter thay đổi
-    useEffect(() => {
-        applyFiltersAndSort();
-    }, [staffSalaries, filter]);
-
-    // Hàm load dữ liệu lương nhân viên
-    const loadStaffSalaries = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const response = await VideoService.getStaffSalaries();
-
-            if (response.success) {
-                setStaffSalaries(response.data);
-
-                // Tính toán summary statistics
-                const totalStaff = response.totalStaff;
-                const totalVideos = response.totalVideos;
-                const totalSalary = response.totalSalary;
-
-                const summary: SalarySummary = {
-                    totalStaff,
-                    totalVideos,
-                    totalSalary,
-                    averageSalary: totalStaff > 0 ? totalSalary / totalStaff : 0,
-                    averageVideosPerStaff: totalStaff > 0 ? totalVideos / totalStaff : 0
-                };
-
-                setSummary(summary);
-            } else {
-                setError('Không thể tải thông tin lương nhân viên');
-            }
-        } catch (err) {
-            setError('Lỗi kết nối đến server');
-            console.error('Error loading staff salaries:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Hàm apply filter và sort
-    const applyFiltersAndSort = () => {
-        let filtered = [...staffSalaries];
-
-        // Apply search filter
-        if (filter.searchTerm && filter.searchTerm.trim()) {
-            const searchTerm = filter.searchTerm.toLowerCase().trim();
-            filtered = filtered.filter(staff =>
-                staff.staffName.toLowerCase().includes(searchTerm)
-            );
-        }
-
-        // Apply sorting
-        filtered.sort((a, b) => {
-            let aValue: any = a[filter.sortBy];
-            let bValue: any = b[filter.sortBy];
-
-            // Handle string sorting
-            if (typeof aValue === 'string') {
-                aValue = aValue.toLowerCase();
-                bValue = bValue.toLowerCase();
-            }
-
-            if (filter.sortDirection === 'asc') {
-                return aValue > bValue ? 1 : -1;
-            } else {
-                return aValue < bValue ? 1 : -1;
-            }
-        });
-
-        setFilteredSalaries(filtered);
-    };
-
-    // Hàm xử lý thay đổi search
-    const handleSearchChange = (searchTerm: string) => {
-        setFilter(prev => ({
-            ...prev,
-            searchTerm
-        }));
-    };
-
-    // Hàm xử lý thay đổi sort
-    const handleSortChange = (sortBy: StaffSalaryFilter['sortBy']) => {
-        setFilter(prev => ({
-            ...prev,
-            sortBy,
-            sortDirection: prev.sortBy === sortBy && prev.sortDirection === 'desc' ? 'asc' : 'desc'
-        }));
-    };
+    // NEW: Sử dụng custom hook để quản lý logic với date filtering
+    const {
+        staffSalaries,
+        filteredSalaries,
+        loading,
+        error,
+        summary,
+        filter,
+        loadStaffSalaries,
+        handleSearchChange,
+        handleSortChange,
+        handleDateChange,
+        getSortIcon
+    } = useStaffSalariesWithDate();
 
     // Hàm format staff name (xử lý trường hợp empty)
     const formatStaffName = (name: string): string => {
         return name.trim() === '' ? 'Chưa có nhân viên' : name;
     };
-
-    // Hàm get icon cho sort direction
-    const getSortIcon = (column: StaffSalaryFilter['sortBy']): string => {
-        if (filter.sortBy !== column) return '↕️';
-        return filter.sortDirection === 'desc' ? '⬇️' : '⬆️';
-    };
-
-    // REMOVED: Admin check - tất cả user đều có thể xem
 
     return (
         <div style={{ padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
@@ -155,9 +51,20 @@ const StaffSalaries: React.FC = () => {
                     color: '#6b7280',
                     margin: 0
                 }}>
-                    Tổng quan về lương và hiệu suất làm việc của nhân viên
+                    Tổng quan về lương và hiệu suất làm việc của nhân viên theo ngày
                 </p>
             </div>
+
+            {/* NEW: Date Status - hiển thị thông tin ngày được chọn */}
+            {!loading && !error && summary && filter.selectedDate && (
+                <SalaryDateStatus
+                    selectedDate={filter.selectedDate}
+                    totalStaff={summary.totalStaff}
+                    totalSalary={summary.totalSalary}
+                    totalVideos={summary.totalVideos}
+                    loading={loading}
+                />
+            )}
 
             {/* Loading */}
             {loading && <Loading message="Đang tải thông tin lương nhân viên..." />}
@@ -292,8 +199,7 @@ const StaffSalaries: React.FC = () => {
                     </div>
                 </div>
             )}
-
-            {/* Search and Controls */}
+            {/* UPDATED: Search and Controls với Date Selector */}
             {!loading && !error && (
                 <div style={{
                     background: 'white',
@@ -310,12 +216,19 @@ const StaffSalaries: React.FC = () => {
                         flexWrap: 'wrap',
                         gap: '16px'
                     }}>
+                        {/* NEW: Date Selector */}
+                        <DateSelector
+                            selectedDate={filter.selectedDate || ''}
+                            onDateChange={handleDateChange}
+                            loading={loading}
+                        />
+
                         {/* Search */}
                         <div style={{ flex: 1, minWidth: '200px' }}>
                             <input
                                 type="text"
                                 placeholder="🔍 Tìm kiếm theo tên nhân viên..."
-                                value={filter.searchTerm}
+                                value={filter.searchTerm || ''}
                                 onChange={(e) => handleSearchChange(e.target.value)}
                                 style={{
                                     width: '100%',
@@ -333,7 +246,7 @@ const StaffSalaries: React.FC = () => {
 
                         {/* Refresh Button */}
                         <button
-                            onClick={loadStaffSalaries}
+                            onClick={() => loadStaffSalaries(filter.selectedDate)}
                             style={{
                                 background: '#3b82f6',
                                 color: 'white',
@@ -496,7 +409,7 @@ const StaffSalaries: React.FC = () => {
                                             </div>
                                         ) : (
                                             <div>
-                                                Chưa có dữ liệu lương nhân viên
+                                                Chưa có dữ liệu lương nhân viên cho ngày này
                                                 <div style={{ fontSize: '12px', marginTop: '8px' }}>
                                                     Dữ liệu sẽ được cập nhật khi có video hoàn thành
                                                 </div>
