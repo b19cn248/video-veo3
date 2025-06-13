@@ -9,6 +9,7 @@
 import axios from 'axios';
 import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams} from '../types/video.types';
 import {StaffSalariesResponse, AssignedStaffResponse} from '../types/staff.types';
+import {SalesSalariesResponse} from '../types/sales.types';
 import {AuthService} from './authService';
 import { extractErrorMessage, createOperationErrorMessage } from '../utils/errorUtils';
 import { GlobalErrorHandler } from '../utils/globalErrorHandler';
@@ -252,9 +253,9 @@ export class VideoService {
         }
     }
 
-    // ===== NEW: STAFF MANAGEMENT APIs =====
+    // ===== STAFF MANAGEMENT APIs =====
 
-    // NEW: Lấy danh sách nhân viên được assigned
+    // Lấy danh sách nhân viên được assigned
     static async getAssignedStaffList(): Promise<AssignedStaffResponse> {
         try {
             console.log('Fetching assigned staff list from API...');
@@ -275,7 +276,7 @@ export class VideoService {
         }
     }
 
-    // NEW: Lấy thông tin lương của tất cả nhân viên với tùy chọn lọc theo ngày
+    // EXISTING: Lấy thông tin lương nhân viên (staff) - dành cho tất cả user
     static async getStaffSalaries(date?: string): Promise<StaffSalariesResponse> {
         try {
             console.log('Fetching staff salaries from API for date:', date);
@@ -292,6 +293,25 @@ export class VideoService {
         } catch (error) {
             console.error('Error fetching staff salaries:', error);
             const errorMessage = createOperationErrorMessage('fetch', 'lương nhân viên', error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    // ===== SALES MANAGEMENT APIs =====
+
+    // NEW: Lấy thông tin lương sales - ADMIN ONLY  
+    static async getSalesSalaries(currentDate: string): Promise<SalesSalariesResponse> {
+        try {
+            console.log('Fetching sales salaries from API for date:', currentDate);
+            
+            const response = await apiClient.get('/videos/sales-salaries', {
+                params: { currentDate }
+            });
+            console.log('Sales salaries response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching sales salaries:', error);
+            const errorMessage = createOperationErrorMessage('fetch', 'lương sales', error);
             throw new Error(errorMessage);
         }
     }

@@ -455,6 +455,12 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* NEW: Animation for Sales Date Status loading spinner */
+@keyframes salesSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Toast Animation */
 @keyframes slideInRight {
     from {

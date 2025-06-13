@@ -10,6 +10,7 @@ import ProtectedRoute from './components/common/ProtectedRoute/ProtectedRoute';
 import VideoList from './components/video/VideoList/VideoList';
 import VideoDetail from './components/video/VideoDetail/VideoDetail';
 import StaffSalaries from './components/staff/StaffSalaries/StaffSalaries';
+import SalesSalaries from './components/sales/SalesSalaries/SalesSalaries';
 import './styles/global.css';
 
 // Component hiển thị header với thông tin user và navigation
@@ -29,7 +30,8 @@ const AppHeader: React.FC = () => {
 
     // Kiểm tra trang hiện tại để highlight navigation
     const isVideosPage = location.pathname.startsWith('/videos');
-    const isSalariesPage = location.pathname === '/staff-salaries';
+    const isStaffSalariesPage = location.pathname === '/staff-salaries';
+    const isSalesSalariesPage = location.pathname === '/sales-salaries';
 
     return (
         <header className="header">
@@ -88,25 +90,25 @@ const AppHeader: React.FC = () => {
                                 href="/staff-salaries"
                                 style={{
                                     textDecoration: 'none',
-                                    color: isSalariesPage ? '#3b82f6' : '#6b7280',
-                                    fontWeight: isSalariesPage ? '600' : '500',
+                                    color: isStaffSalariesPage ? '#3b82f6' : '#6b7280',
+                                    fontWeight: isStaffSalariesPage ? '600' : '500',
                                     fontSize: '15px',
                                     padding: '8px 16px',
                                     borderRadius: '6px',
-                                    background: isSalariesPage ? '#eff6ff' : 'transparent',
+                                    background: isStaffSalariesPage ? '#eff6ff' : 'transparent',
                                     transition: 'all 0.2s ease',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '6px'
                                 }}
                                 onMouseEnter={(e) => {
-                                    if (!isSalariesPage) {
+                                    if (!isStaffSalariesPage) {
                                         e.currentTarget.style.color = '#374151';
                                         e.currentTarget.style.background = '#f3f4f6';
                                     }
                                 }}
                                 onMouseLeave={(e) => {
-                                    if (!isSalariesPage) {
+                                    if (!isStaffSalariesPage) {
                                         e.currentTarget.style.color = '#6b7280';
                                         e.currentTarget.style.background = 'transparent';
                                     }
@@ -114,6 +116,40 @@ const AppHeader: React.FC = () => {
                             >
                                 💰 Lương nhân viên
                             </a>
+
+                            {/* NEW: Sales Salaries - chỉ hiển thị cho ADMIN */}
+                            {user?.roles && user.roles.some((role: string) => role.toLowerCase().includes('admin')) && (
+                                <a
+                                    href="/sales-salaries"
+                                    style={{
+                                        textDecoration: 'none',
+                                        color: isSalesSalariesPage ? '#3b82f6' : '#6b7280',
+                                        fontWeight: isSalesSalariesPage ? '600' : '500',
+                                        fontSize: '15px',
+                                        padding: '8px 16px',
+                                        borderRadius: '6px',
+                                        background: isSalesSalariesPage ? '#eff6ff' : 'transparent',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (!isSalesSalariesPage) {
+                                            e.currentTarget.style.color = '#374151';
+                                            e.currentTarget.style.background = '#f3f4f6';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!isSalesSalariesPage) {
+                                            e.currentTarget.style.color = '#6b7280';
+                                            e.currentTarget.style.background = 'transparent';
+                                        }
+                                    }}
+                                >
+                                    💼 Lương Sales
+                                </a>
+                            )}
                         </nav>
                     </div>
 
@@ -225,6 +261,16 @@ const AppRoutes: React.FC = () => {
                         element={
                             <ProtectedRoute>
                                 <StaffSalaries />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* NEW: Route lương sales - chỉ cho ADMIN */}
+                    <Route
+                        path="/sales-salaries"
+                        element={
+                            <ProtectedRoute requiredRoles={['admin']}>
+                                <SalesSalaries />
                             </ProtectedRoute>
                         }
                     />
