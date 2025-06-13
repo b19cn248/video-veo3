@@ -370,6 +370,20 @@ export class VideoService {
         }
     }
 
+    // ===== ADMIN-ONLY APIs =====
+
+    // Cancel video - reset về trạng thái chưa ai nhận (chỉ admin)
+    static async cancelVideo(id: number): Promise<ApiResponse<Video>> {
+        try {
+            const response = await apiClient.post(`/videos/${id}/cancel`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error canceling video ${id}:`, error);
+            const errorMessage = createOperationErrorMessage('cancel', 'video', error);
+            throw new Error(errorMessage);
+        }
+    }
+
     // ===== UTILITY METHODS =====
 
     // Kiểm tra kết nối API

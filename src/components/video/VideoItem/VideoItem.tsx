@@ -15,6 +15,7 @@ import {
 } from '../../../utils/formatters';
 import { useAuth } from '../../../contexts/AuthContext';
 import { extractErrorMessage } from '../../../utils/errorUtils';
+import CancelVideoButton from '../CancelVideoButton';
 
 interface VideoItemProps {
     video: Video;                          // Dữ liệu video
@@ -681,7 +682,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
             </td>
 
             <td>
-                <div style={{display: 'flex', gap: '6px'}}>
+                <div style={{display: 'flex', gap: '6px', alignItems: 'center'}}>
                     <button
                         className="btn btn-primary"
                         style={{
@@ -695,6 +696,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
                     >
                         👁️
                     </button>
+                    
                     {/* Edit và Delete button - chỉ hiển thị cho admin */}
                     {isAdmin && (
                         <>
@@ -711,6 +713,14 @@ const VideoItem: React.FC<VideoItemProps> = ({
                             >
                                 ✏️
                             </button>
+                            
+                            {/* Cancel Video Button - chỉ cho admin */}
+                            <CancelVideoButton
+                                video={video}
+                                onVideoUpdate={onVideoUpdate}
+                                size="small"
+                            />
+                            
                             <button
                                 className="btn btn-danger"
                                 style={{
