@@ -252,8 +252,10 @@ export const useIsAuthenticated = (): boolean => {
 // Custom hook để kiểm tra quyền admin
 export const useIsAdmin = (): boolean => {
     const { user } = useAuth();
-    return user?.username === 'admin' || user?.username === 'thuong';
+    const adminUsers = ['admin', 'thuong', 'kimanh', 'hanh'];
+    return adminUsers.includes(user?.username ?? '');
 };
+
 
 // NEW: Custom hook để lấy display name của user hiện tại
 export const useUserDisplayName = (): string => {
