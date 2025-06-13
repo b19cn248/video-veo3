@@ -33,6 +33,7 @@ export interface Video {
     videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
     deliveryTime?: string;
     assignedStaff?: string;
+    assignedAt?: string; // NEW: Thời gian assign staff
     status: VideoStatus;
     videoUrl?: string;
     completedTime?: string;
@@ -46,6 +47,7 @@ export interface Video {
     paymentStatus: PaymentStatus;
     paymentDate?: string;
     orderValue?: number;
+    price?: number; // NEW: Giá video
 }
 
 // Interface cho form tạo/sửa video
@@ -56,6 +58,7 @@ export interface VideoFormData {
     videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
     deliveryTime?: string;
     assignedStaff?: string;
+    assignedAt?: string; // NEW: Thời gian assign staff
     status: VideoStatus;
     videoUrl?: string;
     completedTime?: string;
@@ -66,6 +69,7 @@ export interface VideoFormData {
     paymentStatus: PaymentStatus;
     paymentDate?: string;
     orderValue?: number;
+    price?: number; // NEW: Giá video
 }
 
 // NEW: Interface cho filter parameters - khớp với API backend mới
@@ -122,4 +126,17 @@ export interface FilterState {
 // NEW: Interface cho filter options
 export interface FilterOptions {
     assignedStaffList: string[];
+}
+
+// Interface cho response API check customer exists
+export interface CustomerExistsResponse {
+    success: boolean;
+    message: string;
+    data: {
+        customerName: string;
+        exists: boolean;
+        warning?: string; // Message cảnh báo nếu khách hàng đã tồn tại
+    };
+    tenantId: string;
+    timestamp: number;
 }

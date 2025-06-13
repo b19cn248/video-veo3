@@ -461,6 +461,18 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* NEW: Animation for Customer Warning component */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Toast Animation */
 @keyframes slideInRight {
     from {

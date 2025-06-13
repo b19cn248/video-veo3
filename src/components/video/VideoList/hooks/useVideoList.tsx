@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Video, VideoFilterParams } from '../../../../types/video.types';
 import { VideoService } from '../../../../services/videoService';
-import { useNavigate } from 'react-router-dom';
+// Removed useNavigate import since we're using modal instead of navigation
 import { showToast } from '../utils/videoListHelpers';
 import { extractErrorMessage } from '../../../../utils/errorUtils';
 
@@ -25,6 +25,8 @@ interface UseVideoListReturn {
     // Modal states
     showCreateModal: boolean;
     showEditModal: boolean;
+    showDetailModal: boolean; // NEW: Modal chi tiết
+    detailVideoId: number | null; // NEW: ID video đang xem chi tiết
     editingVideo: Video | null;
     submitting: boolean;
 
@@ -41,6 +43,8 @@ interface UseVideoListReturn {
     // Modal actions
     setShowCreateModal: (show: boolean) => void;
     setShowEditModal: (show: boolean) => void;
+    setShowDetailModal: (show: boolean) => void; // NEW: Set modal chi tiết
+    setDetailVideoId: (id: number | null) => void; // NEW: Set ID video chi tiết
     setEditingVideo: (video: Video | null) => void;
 }
 
@@ -60,10 +64,13 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
     // Modal states
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showDetailModal, setShowDetailModal] = useState(false); // NEW: Modal chi tiết
+    const [detailVideoId, setDetailVideoId] = useState<number | null>(null); // NEW: ID video đang xem chi tiết
     const [editingVideo, setEditingVideo] = useState<Video | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
-    const navigate = useNavigate();
+    // Removed navigate since we're using modal instead
+    // const navigate = useNavigate();
 
     // NEW: Ref để track current filters và tránh duplicate calls
     const currentFiltersRef = useRef<VideoFilterParams | undefined>(undefined);
@@ -219,10 +226,11 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
         }
     }, [isAdmin, loadVideos]);
 
-    // Xem chi tiết video
+    // Xem chi tiết video - UPDATED: Hiển thị modal thay vì navigate
     const handleViewDetail = useCallback((id: number) => {
-        navigate(`/videos/${id}`);
-    }, [navigate]);
+        setDetailVideoId(id);
+        setShowDetailModal(true);
+    }, []);
 
     // Cập nhật video từ inline editing
     const handleVideoUpdate = useCallback((updatedVideo: Video) => {
@@ -254,6 +262,8 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
         // Modal states
         showCreateModal,
         showEditModal,
+        showDetailModal, // NEW: Modal chi tiết
+        detailVideoId, // NEW: ID video đang xem chi tiết
         editingVideo,
         submitting,
 
@@ -270,6 +280,8 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
         // Modal actions
         setShowCreateModal,
         setShowEditModal,
+        setShowDetailModal, // NEW: Set modal chi tiết
+        setDetailVideoId, // NEW: Set ID video chi tiết
         setEditingVideo
     };
 };

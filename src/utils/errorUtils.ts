@@ -97,13 +97,13 @@ export const extractErrorMessage = (error: any, fallbackMessage: string = 'Đã 
 /**
  * Tạo error message cho các thao tác CRUD và các operations khác
  * 
- * @param operation - Loại thao tác (create, update, delete, fetch, search, cancel)
+ * @param operation - Loại thao tác (create, update, delete, fetch, search, cancel, check)
  * @param resource - Tên tài nguyên (video, staff, etc.)
  * @param error - Error object
  * @returns Message lỗi cụ thể cho thao tác
  */
 export const createOperationErrorMessage = (
-    operation: 'create' | 'update' | 'delete' | 'fetch' | 'search' | 'cancel',
+    operation: 'create' | 'update' | 'delete' | 'fetch' | 'search' | 'cancel' | 'check',
     resource: string,
     error: any
 ): string => {
@@ -121,7 +121,8 @@ export const createOperationErrorMessage = (
         delete: `Lỗi khi xóa ${resource}`,
         fetch: `Lỗi khi tải ${resource}`,
         search: `Lỗi khi tìm kiếm ${resource}`,
-        cancel: `Lỗi khi hủy ${resource}`  // NEW: Thêm cancel operation
+        cancel: `Lỗi khi hủy ${resource}`,  // NEW: Thêm cancel operation
+        check: `Lỗi khi kiểm tra ${resource}`   // NEW: Thêm check operation
     };
     
     return operationMap[operation];

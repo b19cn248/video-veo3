@@ -7,7 +7,7 @@
 // NEW: Thêm Staff Salary APIs và cập nhật Assigned Staff API
 
 import axios from 'axios';
-import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams} from '../types/video.types';
+import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse} from '../types/video.types';
 import {StaffSalariesResponse, AssignedStaffResponse} from '../types/staff.types';
 import {SalesSalariesResponse} from '../types/sales.types';
 import {AuthService} from './authService';
@@ -312,6 +312,25 @@ export class VideoService {
         } catch (error) {
             console.error('Error fetching sales salaries:', error);
             const errorMessage = createOperationErrorMessage('fetch', 'lương sales', error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    // ===== CUSTOMER VALIDATION APIs =====
+
+    // NEW: Kiểm tra khách hàng đã tồn tại trong hệ thống
+    static async checkCustomerExists(customerName: string): Promise<CustomerExistsResponse> {
+        try {
+            console.log('Checking if customer exists:', customerName);
+            
+            const response = await apiClient.get('/videos/check-customer', {
+                params: { customerName: customerName.trim() }
+            });
+            console.log('Customer exists check response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error checking customer existence:', error);
+            const errorMessage = createOperationErrorMessage('check', 'tồn tại khách hàng', error);
             throw new Error(errorMessage);
         }
     }

@@ -1,11 +1,12 @@
 // Component form để tạo mới hoặc sửa video
-// Sử dụng useState để quản lý state của form
-// UPDATED: Đã bỏ các trường không cần thiết theo yêu cầu
-// UPDATED: Thay đổi logic assign staff từ dropdown thành nút "Assign to me"
+// UPDATED: Thêm tính năng kiểm tra khách hàng trùng lặp khi tạo mới
+// Sử dụng debounced API call để cảnh báo khi customer name đã tồn tại
 
 import React, { useState, useEffect } from 'react';
 import { VideoFormData, Video, VideoStatus, DeliveryStatus, PaymentStatus } from '../../../types/video.types';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useCustomerCheck } from '../hooks/useCustomerCheck';
+import CustomerWarning from '../components/CustomerWarning';
 
 interface VideoFormProps {
     video?: Video;                              // Video để edit (undefined nếu tạo mới)
@@ -27,8 +28,16 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
     // Get current user info từ AuthContext
     const { user } = useAuth();
 
+    // NEW: Customer check hook để kiểm tra khách hàng trùng lặp
+    const {
+        checkingCustomer,
+        customerExists,
+        customerWarning,
+        checkCustomer,
+        clearCheck
+    } = useCustomerCheck();
+
     // useState hook để quản lý state của form
-    // FormData chứa tất cả dữ liệu form
     const [formData, setFormData] = useState<VideoFormData>({
         customerName: '',
         videoContent: '',
@@ -49,14 +58,13 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
     });
 
     // useEffect hook chạy khi component mount hoặc video prop thay đổi
-    // Nếu có video (edit mode), fill dữ liệu vào form
     useEffect(() => {
         if (video) {
             setFormData({
                 customerName: video.customerName,
                 videoContent: video.videoContent || '',
                 imageUrl: video.imageUrl || '',
-                videoDuration: video.videoDuration || 8, // Đảm bảo có giá trị mặc định
+                videoDuration: video.videoDuration || 8,
                 deliveryTime: video.deliveryTime || '',
                 assignedStaff: video.assignedStaff || '',
                 status: video.status,
@@ -73,7 +81,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         }
     }, [video]);
 
-    // Hàm xử lý khi input thay đổi
+    // NEW: Enhanced handleInputChange với customer check
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
 
@@ -95,14 +103,57 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 ...prev,
                 [name]: value
             }));
+
+            // NEW: Trigger customer check khi customer name thay đổi và đang tạo mới
+            if (name === 'customerName' && !video && isAdmin) {
+                if (value.trim().length >= 2) {
+                    checkCustomer(value);
+                } else {
+                    clearCheck();
+                }
+            }
         }
     };
 
     // Hàm xử lý submit form
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault(); // Ngăn form reload trang
+        e.preventDefault();
         onSubmit(formData);
     };
+
+    // Helper function để hiển thị customer input với loading indicator
+    const renderCustomerInput = () => (
+        <div style={{ position: 'relative' }}>
+            <input
+                type="text"
+                name="customerName"
+                value={formData.customerName}
+                onChange={handleInputChange}
+                className="form-input"
+                required
+                disabled={isLoading}
+                style={{
+                    paddingRight: checkingCustomer ? '40px' : '12px'
+                }}
+            />
+            
+            {/* Loading indicator for customer check */}
+            {checkingCustomer && (
+                <div style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid #e5e7eb',
+                    borderTop: '2px solid #3b82f6',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                }} />
+            )}
+        </div>
+    );
 
     return (
         <form onSubmit={handleSubmit}>
@@ -110,14 +161,13 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
             {isAdmin && (
                 <div className="form-group">
                     <label className="form-label">Tên khách hàng *</label>
-                    <input
-                        type="text"
-                        name="customerName"
-                        value={formData.customerName}
-                        onChange={handleInputChange}
-                        className="form-input"
-                        required
-                        disabled={isLoading}
+                    {renderCustomerInput()}
+                    
+                    {/* NEW: Customer warning component */}
+                    <CustomerWarning
+                        customerWarning={customerWarning}
+                        isVisible={!video && customerExists === true} // Chỉ hiển thị khi tạo mới và customer tồn tại
+                        onDismiss={clearCheck}
                     />
                 </div>
             )}
@@ -163,8 +213,6 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                     ))}
                 </select>
             </div>
-
-
 
             {/* Ghi chú khách hàng - chỉ hiển thị cho admin */}
             {isAdmin && (

@@ -14,6 +14,7 @@ import CustomerSearchStatus from './components/CustomerSearchStatus'; // NEW: Cu
 import VideoSummary from './components/VideoSummary';
 import VideoTable from './components/VideoTable';
 import VideoForm from '../VideoForm/VideoForm';
+import VideoDetailModal from '../VideoDetail/VideoDetailModal'; // NEW: Import modal chi tiết
 import Loading from '../../common/Loading/Loading';
 import Modal from '../../common/Modal/Modal';
 import Pagination from '../../common/Pagination/Pagination';
@@ -35,6 +36,8 @@ const VideoList: React.FC = () => {
         hasPrevious,
         showCreateModal,
         showEditModal,
+        showDetailModal, // NEW: Modal chi tiết
+        detailVideoId, // NEW: ID video đang xem chi tiết
         editingVideo,
         submitting,
         loadVideos,
@@ -47,6 +50,8 @@ const VideoList: React.FC = () => {
         handlePageChange,
         setShowCreateModal,
         setShowEditModal,
+        setShowDetailModal, // NEW: Set modal chi tiết
+        setDetailVideoId, // NEW: Set ID video chi tiết
         setEditingVideo
     } = useVideoList(isAdmin);
 
@@ -208,6 +213,16 @@ const VideoList: React.FC = () => {
                     />
                 </Modal>
             )}
+
+            {/* NEW: Video Detail Modal - cho tất cả user */}
+            <VideoDetailModal
+                isOpen={showDetailModal}
+                videoId={detailVideoId}
+                onClose={() => {
+                    setShowDetailModal(false);
+                    setDetailVideoId(null);
+                }}
+            />
         </div>
     );
 };
