@@ -222,6 +222,123 @@ const VideoDetailModal: React.FC<VideoDetailModalProps> = ({ isOpen, videoId, on
                                 <div style={{ marginBottom: 16 }}>
                                     <strong>Nội dung:</strong> {video.videoContent || '--'}
                                 </div>
+
+                                {/* URL hình ảnh */}
+                                <div style={{ marginBottom: 16 }}>
+                                    <strong>URL hình ảnh:</strong> 
+                                    {video.imageUrl ? (
+                                        <div style={{ 
+                                            marginTop: 4,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 8
+                                        }}>
+                                            <a 
+                                                href={video.imageUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    color: '#3b82f6',
+                                                    textDecoration: 'none',
+                                                    wordWrap: 'break-word',
+                                                    display: 'inline-block',
+                                                    padding: '4px 8px',
+                                                    backgroundColor: '#eff6ff',
+                                                    borderRadius: 4,
+                                                    fontSize: 13,
+                                                    flex: 1,
+                                                    minWidth: 0,
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#dbeafe';
+                                                    e.currentTarget.style.textDecoration = 'underline';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#eff6ff';
+                                                    e.currentTarget.style.textDecoration = 'none';
+                                                }}
+                                                title={video.imageUrl}
+                                            >
+                                                🖼️ {video.imageUrl.length > 40 
+                                                    ? `${video.imageUrl.substring(0, 40)}...` 
+                                                    : video.imageUrl}
+                                            </a>
+                                            
+                                            {/* Copy button cho image URL */}
+                                            <button
+                                                onClick={async () => {
+                                                    try {
+                                                        if (navigator.clipboard && window.isSecureContext) {
+                                                            await navigator.clipboard.writeText(video.imageUrl || '');
+                                                        } else {
+                                                            // Fallback method
+                                                            const textArea = document.createElement('textarea');
+                                                            textArea.value = video.imageUrl || '';
+                                                            document.body.appendChild(textArea);
+                                                            textArea.select();
+                                                            document.execCommand('copy');
+                                                            document.body.removeChild(textArea);
+                                                        }
+                                                        
+                                                        // Simple toast notification
+                                                        const toast = document.createElement('div');
+                                                        toast.textContent = 'Đã copy URL hình ảnh!';
+                                                        toast.style.cssText = `
+                                                            position: fixed; top: 20px; right: 20px; padding: 12px 20px;
+                                                            border-radius: 6px; color: white; font-size: 14px;
+                                                            background-color: #10B981; z-index: 10001;
+                                                            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                                                        `;
+                                                        document.body.appendChild(toast);
+                                                        setTimeout(() => {
+                                                            if (document.body.contains(toast)) {
+                                                                document.body.removeChild(toast);
+                                                            }
+                                                        }, 2000);
+                                                    } catch (error) {
+                                                        console.error('Failed to copy image URL:', error);
+                                                    }
+                                                }}
+                                                style={{
+                                                    background: '#3b82f6',
+                                                    border: 'none',
+                                                    borderRadius: 4,
+                                                    color: 'white',
+                                                    padding: '4px 8px',
+                                                    fontSize: 11,
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    minWidth: 24,
+                                                    height: 24,
+                                                    transition: 'all 0.2s'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#2563eb';
+                                                    e.currentTarget.style.transform = 'scale(1.05)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#3b82f6';
+                                                    e.currentTarget.style.transform = 'scale(1)';
+                                                }}
+                                                title="Copy URL hình ảnh"
+                                            >
+                                                📋
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <span style={{ 
+                                            color: '#6b7280', 
+                                            fontStyle: 'italic',
+                                            marginLeft: 8 
+                                        }}>
+                                            Không có hình ảnh
+                                        </span>
+                                    )}
+                                </div>
                                 
                                 <div style={{ marginBottom: 16 }}>
                                     <strong>Nhân viên:</strong> {video.assignedStaff || '--'}
