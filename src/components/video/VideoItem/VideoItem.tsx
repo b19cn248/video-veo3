@@ -8,6 +8,7 @@ import {Video, VideoStatus, DeliveryStatus, PaymentStatus} from '../../../types/
 import {VideoService} from '../../../services/videoService';
 import {
     formatDate,
+    formatPaymentDate,
     formatDeliveryStatus,
     formatPaymentStatus,
     formatVideoStatus,
@@ -532,6 +533,32 @@ const VideoItem: React.FC<VideoItemProps> = ({
                         }}>
                             ⏳
                         </div>
+                    )}
+                </div>
+            </td>
+
+            {/* Payment Date Column - NEW: Hiển thị ngày thanh toán */}
+            <td style={{ 
+                fontSize: '12px', 
+                color: video.paymentDate ? '#059669' : '#6b7280',
+                backgroundColor: video.paymentDate ? '#f0fdf4' : 'transparent',
+                padding: '8px',
+                textAlign: 'center',
+                minWidth: '100px'
+            }}>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px'
+                }}>
+                    {video.paymentDate ? (
+                        <>
+                            <span>📅</span>
+                            <span>{formatPaymentDate(video.paymentDate)}</span>
+                        </>
+                    ) : (
+                        <span style={{ fontStyle: 'italic' }}>Chưa có</span>
                     )}
                 </div>
             </td>

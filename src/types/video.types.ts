@@ -79,6 +79,7 @@ export interface VideoFilterParams {
     deliveryStatus?: DeliveryStatus;
     paymentStatus?: PaymentStatus;
     customerName?: string; // NEW: Thêm search theo tên khách hàng
+    paymentDate?: string; // NEW: Thêm filter theo ngày thanh toán
 }
 
 // Interface cho response từ API khi lấy danh sách có phân trang
@@ -121,6 +122,7 @@ export interface FilterState {
     assignedStaff: string;
     deliveryStatus: DeliveryStatus | '';
     paymentStatus: PaymentStatus | '';
+    paymentDate: string; // NEW: Thêm filter theo ngày thanh toán
 }
 
 // NEW: Interface cho filter options

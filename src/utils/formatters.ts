@@ -49,6 +49,22 @@ export const formatDate = (dateString: string): string => {
     }
 };
 
+// Format ngày thanh toán - chỉ hiển thị ngày/tháng/năm (không có giờ)
+export const formatPaymentDate = (dateString: string | undefined): string => {
+    if (!dateString) return '--';
+
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    } catch (error) {
+        return '--';
+    }
+};
+
 // Format thời lượng video từ số giây sang HH:mm:ss
 export const formatVideoDuration = (seconds: number | undefined): string => {
     if (!seconds || seconds === 0) return '--';

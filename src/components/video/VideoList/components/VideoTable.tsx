@@ -27,7 +27,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                                                    onViewDetail,
                                                    onVideoUpdate
                                                }) => {
-    const colSpan = isAdmin ? 12 : 10;
+    const colSpan = isAdmin ? 13 : 11; // Tăng thêm 1 cột cho ngày thanh toán
 
     return (
         <div style={tableStyles.container}>
@@ -93,6 +93,17 @@ const VideoTable: React.FC<VideoTableProps> = ({
                             color: '#6b7280'
                         }}>
                             Click để sửa
+                        </div>
+                    </th>
+
+                    <th style={tableStyles.headerCell}>
+                        📅 Ngày thanh toán
+                        <div style={{
+                            fontSize: '10px',
+                            fontWeight: '400',
+                            color: '#6b7280'
+                        }}>
+                            Ngày đã thanh toán
                         </div>
                     </th>
 

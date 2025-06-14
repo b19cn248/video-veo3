@@ -32,7 +32,8 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         status: '',
         assignedStaff: '',
         deliveryStatus: '',
-        paymentStatus: ''
+        paymentStatus: '',
+        paymentDate: '' // NEW: Thêm filter ngày thanh toán
     });
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -118,6 +119,9 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         if (currentFilters.paymentStatus) {
             filterParams.paymentStatus = currentFilters.paymentStatus as any;
         }
+        if (currentFilters.paymentDate) {
+            filterParams.paymentDate = currentFilters.paymentDate;
+        }
 
         return Object.keys(filterParams).length > 0 ? filterParams : undefined;
     }, []); // Empty dependency - function chỉ đọc từ ref
@@ -163,7 +167,8 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
             status: '',
             assignedStaff: '',
             deliveryStatus: '',
-            paymentStatus: ''
+            paymentStatus: '',
+            paymentDate: '' // NEW: Reset payment date filter
         });
 
         // Apply empty filters immediately

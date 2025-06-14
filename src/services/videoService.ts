@@ -134,6 +134,9 @@ export class VideoService {
                 if (filters.paymentStatus) {
                     params.paymentStatus = filters.paymentStatus;
                 }
+                if (filters.paymentDate) {
+                    params.paymentDate = filters.paymentDate;
+                }
             }
 
             console.log('Making API call with params:', params);

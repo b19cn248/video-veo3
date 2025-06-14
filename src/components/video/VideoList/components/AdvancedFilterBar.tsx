@@ -95,11 +95,11 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                 )}
             </div>
 
-            {/* Filter Controls Grid - UPDATED: Thêm Customer Name Search cho admin */}
+            {/* Filter Controls Grid - UPDATED: Thêm Customer Name Search và Payment Date cho admin */}
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: isAdmin 
-                    ? 'repeat(auto-fit, minmax(200px, 1fr))' // Admin: 5 columns (thêm customer search)
+                    ? 'repeat(auto-fit, minmax(200px, 1fr))' // Admin: 6 columns (thêm customer search và payment date)
                     : 'repeat(auto-fit, minmax(200px, 1fr))', // User: 4 columns như cũ
                 gap: '16px',
                 alignItems: 'end'
@@ -270,6 +270,57 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                     </select>
                 </div>
 
+                {/* NEW: Payment Date Filter - chỉ cho admin */}
+                {isAdmin && (
+                    <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            color: '#374151',
+                            marginBottom: '6px'
+                        }}>
+                            📅 Ngày thanh toán
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                            <input
+                                type="date"
+                                value={filters.paymentDate}
+                                onChange={(e) => onFilterChange('paymentDate', e.target.value)}
+                                style={{
+                                    ...createFilterInputStyle(),
+                                    paddingRight: filters.paymentDate ? '36px' : '12px'
+                                }}
+                                {...createInputFocusHandlers()}
+                            />
+                            {/* Clear button khi có date */}
+                            {filters.paymentDate && (
+                                <button
+                                    onClick={() => onFilterChange('paymentDate', '')}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '8px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '16px',
+                                        color: '#6b7280',
+                                        padding: '2px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                    title="Xóa ngày thanh toán"
+                                >
+                                    ✖️
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
                 {/* Create Button - chỉ hiển thị cho admin */}
                 {isAdmin && (
                     <div>
@@ -347,6 +398,11 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                         {filters.paymentStatus && (
                             <span style={createFilterBadgeStyle(filterBadgeColors.paymentStatus)}>
                                 {formatFilterDisplayText('paymentStatus', formatPaymentStatus(filters.paymentStatus as PaymentStatus))}
+                            </span>
+                        )}
+                        {isAdmin && filters.paymentDate && (
+                            <span style={createFilterBadgeStyle(filterBadgeColors.paymentDate || filterBadgeColors.status)}>
+                                {formatFilterDisplayText('paymentDate', filters.paymentDate)}
                             </span>
                         )}
                     </div>

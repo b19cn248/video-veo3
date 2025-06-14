@@ -127,7 +127,8 @@ export const filterBadgeColors = {
     status: '#1e40af',
     assignedStaff: '#7c3aed',
     deliveryStatus: '#ea580c',
-    paymentStatus: '#059669'
+    paymentStatus: '#059669',
+    paymentDate: '#0891b2' // NEW: Cyan color cho payment date filter
 };
 
 // Validate filter values
@@ -142,7 +143,8 @@ export const formatFilterDisplayText = (filterType: string, value: string): stri
         status: 'Video:',
         assignedStaff: 'Nhân viên:',
         deliveryStatus: 'Giao hàng:',
-        paymentStatus: 'Thanh toán:'
+        paymentStatus: 'Thanh toán:',
+        paymentDate: 'Ngày thanh toán:' // NEW: Prefix cho payment date
     };
 
     return `${prefixes[filterType as keyof typeof prefixes] || ''} ${value}`;
