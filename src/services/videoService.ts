@@ -7,7 +7,7 @@
 // NEW: Thêm Staff Salary APIs và cập nhật Assigned Staff API
 
 import axios from 'axios';
-import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse} from '../types/video.types';
+import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse, CreatorsResponse} from '../types/video.types';
 import {StaffSalariesResponse, AssignedStaffResponse} from '../types/staff.types';
 import {SalesSalariesResponse} from '../types/sales.types';
 import {AuthService} from './authService';
@@ -136,6 +136,9 @@ export class VideoService {
                 }
                 if (filters.paymentDate) {
                     params.paymentDate = filters.paymentDate;
+                }
+                if (filters.createdBy && filters.createdBy.trim()) {
+                    params.createdBy = filters.createdBy.trim();
                 }
             }
 
@@ -274,6 +277,26 @@ export class VideoService {
                 success: false,
                 tenantId: 'video_management',
                 message: 'Failed to fetch assigned staff list',
+                timestamp: Date.now()
+            };
+        }
+    }
+
+    // NEW: Lấy danh sách người tạo video (creators)
+    static async getCreatorsList(): Promise<CreatorsResponse> {
+        try {
+            console.log('Fetching creators list from API...');
+            const response = await apiClient.get('/videos/creators');
+            console.log('Creators response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching creators list:', error);
+            // Fallback: return empty list with proper structure
+            return {
+                data: [],
+                success: false,
+                tenantId: 'video_management',
+                message: 'Failed to fetch creators list',
                 timestamp: Date.now()
             };
         }

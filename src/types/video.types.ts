@@ -80,6 +80,7 @@ export interface VideoFilterParams {
     paymentStatus?: PaymentStatus;
     customerName?: string; // NEW: Thêm search theo tên khách hàng
     paymentDate?: string; // NEW: Thêm filter theo ngày thanh toán
+    createdBy?: string; // NEW: Thêm filter theo người tạo
 }
 
 // Interface cho response từ API khi lấy danh sách có phân trang
@@ -123,11 +124,13 @@ export interface FilterState {
     deliveryStatus: DeliveryStatus | '';
     paymentStatus: PaymentStatus | '';
     paymentDate: string; // NEW: Thêm filter theo ngày thanh toán
+    createdBy: string; // NEW: Thêm filter theo người tạo
 }
 
 // NEW: Interface cho filter options
 export interface FilterOptions {
     assignedStaffList: string[];
+    creatorsList: string[]; // NEW: Thêm danh sách người tạo
 }
 
 // Interface cho response API check customer exists
@@ -139,6 +142,15 @@ export interface CustomerExistsResponse {
         exists: boolean;
         warning?: string; // Message cảnh báo nếu khách hàng đã tồn tại
     };
+    tenantId: string;
+    timestamp: number;
+}
+
+// NEW: Interface cho response API lấy danh sách creators
+export interface CreatorsResponse {
+    success: boolean;
+    message: string;
+    data: string[];
     tenantId: string;
     timestamp: number;
 }

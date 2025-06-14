@@ -14,6 +14,7 @@ interface UseVideoFiltersReturn {
     isFiltering: boolean;
     activeFiltersCount: number;
     loadingStaffList: boolean;
+    loadingCreatorsList: boolean; // NEW: Loading state cho creators
 
     // Actions
     handleFilterChange: (filterType: keyof FilterState, value: string) => void;
@@ -33,16 +34,19 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         assignedStaff: '',
         deliveryStatus: '',
         paymentStatus: '',
-        paymentDate: '' // NEW: Thêm filter ngày thanh toán
+        paymentDate: '', // NEW: Thêm filter ngày thanh toán
+        createdBy: '' // NEW: Thêm filter người tạo
     });
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
-        assignedStaffList: []
+        assignedStaffList: [],
+        creatorsList: [] // NEW: Thêm danh sách người tạo
     });
 
     const [isFiltering, setIsFiltering] = useState(false);
     const [activeFiltersCount, setActiveFiltersCount] = useState(0);
     const [loadingStaffList, setLoadingStaffList] = useState(false);
+    const [loadingCreatorsList, setLoadingCreatorsList] = useState(false); // NEW: Loading state cho creators
 
     // NEW: Ref để track filters cho external callback
     const filtersRef = useRef(filters);
@@ -53,40 +57,84 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         filtersRef.current = filters;
     }, [filters]);
 
-    // Load filter options (assigned staff list từ API)
+    // Load filter options (assigned staff list và creators list từ API)
     const loadFilterOptions = useCallback(async () => {
         try {
             setLoadingStaffList(true);
+            setLoadingCreatorsList(true);
             console.log('Loading filter options...');
 
-            const response = await VideoService.getAssignedStaffList();
-            console.log('Staff list response:', response);
+            // Load both staff list and creators list in parallel
+            const [staffResponse, creatorsResponse] = await Promise.allSettled([
+                VideoService.getAssignedStaffList(),
+                VideoService.getCreatorsList()
+            ]);
 
-            if (response.success && response.data) {
-                setFilterOptions(prev => ({
-                    ...prev,
-                    assignedStaffList: response.data
-                }));
-                console.log('Loaded staff list:', response.data);
+            // Handle staff list response
+            if (staffResponse.status === 'fulfilled') {
+                const response = staffResponse.value;
+                console.log('Staff list response:', response);
+
+                if (response.success && response.data) {
+                    setFilterOptions(prev => ({
+                        ...prev,
+                        assignedStaffList: response.data
+                    }));
+                    console.log('Loaded staff list:', response.data);
+                } else {
+                    console.warn('Failed to load staff list:', response.message);
+                    setFilterOptions(prev => ({
+                        ...prev,
+                        assignedStaffList: []
+                    }));
+                }
             } else {
-                console.warn('Failed to load staff list:', response.message);
+                console.error('Error loading staff list:', staffResponse.reason);
                 setFilterOptions(prev => ({
                     ...prev,
                     assignedStaffList: []
                 }));
             }
+
+            // Handle creators list response
+            if (creatorsResponse.status === 'fulfilled') {
+                const response = creatorsResponse.value;
+                console.log('Creators list response:', response);
+
+                if (response.success && response.data) {
+                    setFilterOptions(prev => ({
+                        ...prev,
+                        creatorsList: response.data
+                    }));
+                    console.log('Loaded creators list:', response.data);
+                } else {
+                    console.warn('Failed to load creators list:', response.message);
+                    setFilterOptions(prev => ({
+                        ...prev,
+                        creatorsList: []
+                    }));
+                }
+            } else {
+                console.error('Error loading creators list:', creatorsResponse.reason);
+                setFilterOptions(prev => ({
+                    ...prev,
+                    creatorsList: []
+                }));
+            }
         } catch (error) {
             console.error('Error loading filter options:', error);
             // Extract error message để có thể log chi tiết hơn nếu cần
-            const errorMessage = extractErrorMessage(error, 'Lỗi khi tải danh sách nhân viên');
-            console.warn('Staff list loading failed:', errorMessage);
+            const errorMessage = extractErrorMessage(error, 'Lỗi khi tải danh sách filter options');
+            console.warn('Filter options loading failed:', errorMessage);
             
             setFilterOptions(prev => ({
                 ...prev,
-                assignedStaffList: []
+                assignedStaffList: [],
+                creatorsList: []
             }));
         } finally {
             setLoadingStaffList(false);
+            setLoadingCreatorsList(false);
         }
     }, []);
 
@@ -121,6 +169,9 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         }
         if (currentFilters.paymentDate) {
             filterParams.paymentDate = currentFilters.paymentDate;
+        }
+        if (currentFilters.createdBy && currentFilters.createdBy.trim()) {
+            filterParams.createdBy = currentFilters.createdBy.trim();
         }
 
         return Object.keys(filterParams).length > 0 ? filterParams : undefined;
@@ -168,7 +219,8 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
             assignedStaff: '',
             deliveryStatus: '',
             paymentStatus: '',
-            paymentDate: '' // NEW: Reset payment date filter
+            paymentDate: '', // NEW: Reset payment date filter
+            createdBy: '' // NEW: Reset created by filter
         });
 
         // Apply empty filters immediately
@@ -191,6 +243,7 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         isFiltering,
         activeFiltersCount,
         loadingStaffList,
+        loadingCreatorsList, // NEW: Loading state cho creators
 
         // Actions
         handleFilterChange,

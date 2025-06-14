@@ -61,6 +61,7 @@ const VideoList: React.FC = () => {
         isFiltering,
         activeFiltersCount,
         loadingStaffList,
+        loadingCreatorsList,
         handleFilterChange,
         resetAllFilters,
         loadFilterOptions,
@@ -108,6 +109,7 @@ const VideoList: React.FC = () => {
                 filterOptions={filterOptions}
                 activeFiltersCount={activeFiltersCount}
                 loadingStaffList={loadingStaffList}
+                loadingCreatorsList={loadingCreatorsList}
                 isAdmin={isAdmin}
                 onFilterChange={handleFilterChange}
                 onResetAllFilters={resetAllFilters}

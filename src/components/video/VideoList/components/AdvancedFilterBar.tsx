@@ -20,6 +20,7 @@ interface AdvancedFilterBarProps {
     filterOptions: FilterOptions;
     activeFiltersCount: number;
     loadingStaffList: boolean;
+    loadingCreatorsList: boolean; // NEW: Loading state cho creators
     isAdmin: boolean;
     onFilterChange: (filterType: keyof FilterState, value: string) => void;
     onResetAllFilters: () => void;
@@ -32,6 +33,7 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                                                                  filterOptions,
                                                                  activeFiltersCount,
                                                                  loadingStaffList,
+                                                                 loadingCreatorsList,
                                                                  isAdmin,
                                                                  onFilterChange,
                                                                  onResetAllFilters,
@@ -95,11 +97,11 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                 )}
             </div>
 
-            {/* Filter Controls Grid - UPDATED: Thêm Customer Name Search và Payment Date cho admin */}
+            {/* Filter Controls Grid - UPDATED: Thêm Customer Name Search, Payment Date và Created By cho admin */}
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: isAdmin 
-                    ? 'repeat(auto-fit, minmax(200px, 1fr))' // Admin: 6 columns (thêm customer search và payment date)
+                    ? 'repeat(auto-fit, minmax(180px, 1fr))' // Admin: 7 columns (thêm customer search, payment date và created by)
                     : 'repeat(auto-fit, minmax(200px, 1fr))', // User: 4 columns như cũ
                 gap: '16px',
                 alignItems: 'end'
@@ -217,6 +219,44 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                     </select>
                     {/* REMOVED: Refresh Staff List Button để alignment đồng đều */}
                 </div>
+
+                {/* NEW: Created By Filter - chỉ cho admin */}
+                {isAdmin && (
+                    <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            color: '#374151',
+                            marginBottom: '6px'
+                        }}>
+                            👨‍💼 Người tạo
+                            {loadingCreatorsList && (
+                                <span style={{
+                                    marginLeft: '8px',
+                                    fontSize: '11px',
+                                    color: '#6b7280'
+                                }}>
+                                    ⏳ Đang tải...
+                                </span>
+                            )}
+                        </label>
+                        <select
+                            value={filters.createdBy}
+                            onChange={(e) => onFilterChange('createdBy', e.target.value)}
+                            disabled={loadingCreatorsList}
+                            style={createFilterInputStyle(loadingCreatorsList)}
+                            {...createInputFocusHandlers(loadingCreatorsList)}
+                        >
+                            <option value="">Tất cả người tạo</option>
+                            {filterOptions.creatorsList.map(creator => (
+                                <option key={creator} value={creator}>
+                                    {creator || 'Không rõ'}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
                 {/* Delivery Status Filter */}
                 <div>
@@ -403,6 +443,11 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                         {isAdmin && filters.paymentDate && (
                             <span style={createFilterBadgeStyle(filterBadgeColors.paymentDate || filterBadgeColors.status)}>
                                 {formatFilterDisplayText('paymentDate', filters.paymentDate)}
+                            </span>
+                        )}
+                        {isAdmin && filters.createdBy && (
+                            <span style={createFilterBadgeStyle(filterBadgeColors.createdBy || filterBadgeColors.assignedStaff)}>
+                                {formatFilterDisplayText('createdBy', filters.createdBy)}
                             </span>
                         )}
                     </div>
