@@ -21,7 +21,8 @@ const VIDEO_DURATION_OPTIONS = [
     { value: 8, label: '8 giây' },
     { value: 16, label: '16 giây' },
     { value: 24, label: '24 giây' },
-    { value: 32, label: '32 giây' }
+    { value: 32, label: '32 giây' },
+    { value: 40, label: '40 giây' }
 ];
 
 const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoading = false, isAdmin }) => {
