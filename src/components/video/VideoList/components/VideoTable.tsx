@@ -29,7 +29,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                                                    onViewHistory,
                                                    onVideoUpdate
                                                }) => {
-    const colSpan = isAdmin ? 13 : 11; // Tăng thêm 1 cột cho ngày thanh toán
+    const colSpan = isAdmin ? 13 : 12; // Tăng thêm 1 cột cho người tạo với non-admin
 
     return (
         <div style={tableStyles.container}>
@@ -43,12 +43,10 @@ const VideoTable: React.FC<VideoTableProps> = ({
                         <th style={tableStyles.headerCell}>Khách hàng</th>
                     )}
 
-                    {/* Cột người tạo - chỉ hiển thị cho admin */}
-                    {isAdmin && (
-                        <th style={tableStyles.headerCell}>
-                            👤 Người tạo
-                        </th>
-                    )}
+                    {/* Cột người tạo - hiển thị cho tất cả người dùng */}
+                    <th style={tableStyles.headerCell}>
+                        👤 Người tạo
+                    </th>
 
                     <th style={tableStyles.headerCell}>
                         🔄 Trạng thái
