@@ -6,7 +6,7 @@ import React from 'react';
 import { Video } from '../../../../types/video.types';
 import VideoItem from '../../VideoItem/VideoItem';
 import VideoTableEmpty from './VideoTableEmpty';
-import { tableStyles } from '../utils/videoListHelpers';
+import { tableStyles, columnWidths, createRowHoverEffect } from '../utils/videoListHelpers';
 
 interface VideoTableProps {
     videos: Video[];
@@ -29,96 +29,105 @@ const VideoTable: React.FC<VideoTableProps> = ({
                                                    onViewHistory,
                                                    onVideoUpdate
                                                }) => {
-    const colSpan = isAdmin ? 13 : 12; // Tăng thêm 1 cột cho người tạo với non-admin
+    const colSpan = isAdmin ? 10 : 9; // Tối ưu hóa: bỏ Time, Tiền, Ngày tạo
 
     return (
         <div style={tableStyles.container}>
             <table style={tableStyles.table}>
                 <thead>
                 <tr style={tableStyles.headerRow}>
-                    <th style={tableStyles.headerCell}>ID</th>
+                    <th style={{...tableStyles.headerCell, width: columnWidths.id}}>
+                        ID
+                    </th>
 
                     {/* Cột khách hàng - chỉ hiển thị cho admin */}
                     {isAdmin && (
-                        <th style={tableStyles.headerCell}>Khách hàng</th>
+                        <th style={{...tableStyles.headerCell, width: columnWidths.customer}}>
+                            👤 Khách hàng
+                        </th>
                     )}
 
                     {/* Cột người tạo - hiển thị cho tất cả người dùng */}
-                    <th style={tableStyles.headerCell}>
-                        👤 Người tạo
+                    <th style={{...tableStyles.headerCell, width: columnWidths.creator}}>
+                        ✍️ Người tạo
                     </th>
 
-                    <th style={tableStyles.headerCell}>
+                    <th style={{...tableStyles.headerCell, width: columnWidths.status}}>
                         🔄 Trạng thái
                         <div style={{
-                            fontSize: '10px',
+                            fontSize: '11px',
                             fontWeight: '400',
-                            color: '#6b7280'
+                            color: '#64748b',
+                            marginTop: '2px'
                         }}>
                             Click để sửa
                         </div>
                     </th>
 
-                    <th style={tableStyles.headerCell}>
+                    <th style={{...tableStyles.headerCell, width: columnWidths.staff}}>
                         🎯 Nhân viên
                         <div style={{
-                            fontSize: '10px',
+                            fontSize: '11px',
                             fontWeight: '400',
-                            color: '#6b7280'
+                            color: '#64748b',
+                            marginTop: '2px'
                         }}>
                             Nhận việc | Đã giao
                         </div>
                     </th>
 
-                    <th style={tableStyles.headerCell}>Time</th>
-                    <th style={tableStyles.headerCell}>Tiền</th>
-                    <th style={tableStyles.headerCell}>Ngày tạo</th>
 
-                    <th style={tableStyles.headerCell}>
+                    <th style={{...tableStyles.headerCell, width: columnWidths.delivery}}>
                         🚚 Giao hàng
                         <div style={{
-                            fontSize: '10px',
+                            fontSize: '11px',
                             fontWeight: '400',
-                            color: '#6b7280'
+                            color: '#64748b',
+                            marginTop: '2px'
                         }}>
                             Click để sửa
                         </div>
                     </th>
 
-                    <th style={tableStyles.headerCell}>
+                    <th style={{...tableStyles.headerCell, width: columnWidths.payment}}>
                         💰 Thanh toán
                         <div style={{
-                            fontSize: '10px',
+                            fontSize: '11px',
                             fontWeight: '400',
-                            color: '#6b7280'
+                            color: '#64748b',
+                            marginTop: '2px'
                         }}>
                             Click để sửa
                         </div>
                     </th>
 
-                    <th style={tableStyles.headerCell}>
-                        📅 Ngày thanh toán
+                    <th style={{...tableStyles.headerCell, width: columnWidths.paymentDate}}>
+                        📅 Ngày TT
                         <div style={{
-                            fontSize: '10px',
+                            fontSize: '11px',
                             fontWeight: '400',
-                            color: '#6b7280'
+                            color: '#64748b',
+                            marginTop: '2px'
                         }}>
-                            Ngày đã thanh toán
+                            Ngày thanh toán
                         </div>
                     </th>
 
-                    <th style={tableStyles.headerCell}>
+                    <th style={{...tableStyles.headerCell, width: columnWidths.videoUrl}}>
                         🎥 Link video
                         <div style={{
-                            fontSize: '10px',
+                            fontSize: '11px',
                             fontWeight: '400',
-                            color: '#6b7280'
+                            color: '#64748b',
+                            marginTop: '2px'
                         }}>
-                            Click để sửa | 📋 Copy
+                            Sửa | 📋 Copy
                         </div>
                     </th>
 
-                    <th style={tableStyles.headerCell}>Thao tác</th>
+                    <th style={{...tableStyles.headerCell, width: columnWidths.actions}}>
+                        ⚙️ Thao tác
+                    </th>
                 </tr>
                 </thead>
 

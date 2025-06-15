@@ -22,14 +22,25 @@ const VideoActionButtons: React.FC<VideoActionButtonsProps> = ({
     onVideoUpdate
 }) => {
     return (
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <div style={{ 
+            display: 'flex', 
+            gap: '4px', 
+            alignItems: 'center',
+            flexWrap: 'nowrap',
+            overflow: 'visible',
+            minWidth: '200px'
+        }}>
             <button
                 className="btn btn-primary"
                 style={{
-                    padding: '4px 8px',
+                    padding: '3px 6px',
                     fontSize: '11px',
-                    minWidth: '40px',
-                    borderRadius: '4px'
+                    minWidth: '32px',
+                    borderRadius: '4px',
+                    height: '28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
                 onClick={() => onViewDetail(video.id)}
                 title="Xem chi tiết"
@@ -40,10 +51,14 @@ const VideoActionButtons: React.FC<VideoActionButtonsProps> = ({
             <button
                 className="btn btn-outline-info"
                 style={{
-                    padding: '4px 8px',
+                    padding: '3px 6px',
                     fontSize: '11px',
-                    minWidth: '40px',
-                    borderRadius: '4px'
+                    minWidth: '32px',
+                    borderRadius: '4px',
+                    height: '28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
                 onClick={() => onViewHistory(video.id)}
                 title="Xem lịch sử thay đổi"
@@ -57,10 +72,14 @@ const VideoActionButtons: React.FC<VideoActionButtonsProps> = ({
                     <button
                         className="btn btn-secondary"
                         style={{
-                            padding: '4px 8px',
+                            padding: '3px 6px',
                             fontSize: '11px',
-                            minWidth: '40px',
-                            borderRadius: '4px'
+                            minWidth: '32px',
+                            borderRadius: '4px',
+                            height: '28px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
                         }}
                         onClick={() => onEdit(video)}
                         title="Sửa đầy đủ"
@@ -73,15 +92,24 @@ const VideoActionButtons: React.FC<VideoActionButtonsProps> = ({
                         video={video}
                         onVideoUpdate={onVideoUpdate}
                         size="small"
+                        style={{
+                            height: '28px',
+                            minWidth: '32px',
+                            padding: '3px 6px'
+                        }}
                     />
                     
                     <button
                         className="btn btn-danger"
                         style={{
-                            padding: '4px 8px',
+                            padding: '3px 6px',
                             fontSize: '11px',
-                            minWidth: '40px',
-                            borderRadius: '4px'
+                            minWidth: '32px',
+                            borderRadius: '4px',
+                            height: '28px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
                         }}
                         onClick={() => onDelete(video.id)}
                         title="Xóa video"

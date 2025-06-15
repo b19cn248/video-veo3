@@ -2,9 +2,9 @@ import React, {useState, useCallback} from 'react';
 import {Video, VideoStatus, DeliveryStatus, PaymentStatus} from '../../../types/video.types';
 import {VideoService} from '../../../services/videoService';
 import {
-    formatDate,
     formatPaymentDate
 } from '../../../utils/formatters';
+import { tableStyles, createRowHoverEffect, formatDisplayName } from '../../video/VideoList/utils/videoListHelpers';
 import { useAuth } from '../../../contexts/AuthContext';
 import { extractErrorMessage } from '../../../utils/errorUtils';
 
@@ -240,26 +240,42 @@ const VideoItem: React.FC<VideoItemProps> = ({
     };
 
     return (
-        <tr>
-            <td>{video.id}</td>
+        <tr style={tableStyles.bodyRow} {...createRowHoverEffect()}>
+            <td style={{
+                ...tableStyles.bodyCell,
+                fontWeight: '600',
+                color: '#374151'
+            }}>
+                #{video.id}
+            </td>
 
             {/* Cột khách hàng - chỉ hiển thị cho admin */}
-            {isAdmin && <td>{video.customerName}</td>}
+            {isAdmin && (
+                <td style={{
+                    ...tableStyles.bodyCell,
+                    fontWeight: '500',
+                    color: '#1f2937'
+                }}>
+                    {formatDisplayName(video.customerName)}
+                </td>
+            )}
 
             {/* Cột người tạo - hiển thị cho tất cả người dùng */}
             <td style={{
+                ...tableStyles.bodyCell,
                 fontSize: '12px',
-                color: '#6b7280',
+                color: '#64748b',
                 maxWidth: '120px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                fontStyle: video.createdBy ? 'normal' : 'italic'
             }}>
-                {video.createdBy || '--'}
+                {formatDisplayName(video.createdBy)}
             </td>
 
             {/* Status Selector */}
-            <td>
+            <td style={tableStyles.bodyCell}>
                 <VideoStatusSelector
                     status={video.status}
                     isUpdating={isUpdatingStatus}
@@ -268,7 +284,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
             </td>
 
             {/* Staff Assignment */}
-            <td>
+            <td style={tableStyles.bodyCell}>
                 <VideoStaffAssignment
                     video={video}
                     currentUserName={userDisplayName}
@@ -277,12 +293,9 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 />
             </td>
 
-            <td>{formatSimpleDuration(video.videoDuration)}</td>
-            <td>{video.orderValue}</td>
-            <td>{formatDate(video.createdAt || '')}</td>
 
             {/* Delivery Status Selector */}
-            <td>
+            <td style={tableStyles.bodyCell}>
                 <VideoDeliveryStatusSelector
                     status={video.deliveryStatus}
                     isUpdating={isUpdatingDeliveryStatus}
@@ -291,7 +304,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
             </td>
 
             {/* Payment Status Selector */}
-            <td>
+            <td style={tableStyles.bodyCell}>
                 <VideoPaymentStatusSelector
                     status={video.paymentStatus}
                     isUpdating={isUpdatingPaymentStatus}
@@ -300,13 +313,13 @@ const VideoItem: React.FC<VideoItemProps> = ({
             </td>
 
             {/* Payment Date Column */}
-            <td style={{ 
-                fontSize: '12px', 
-                color: video.paymentDate ? '#059669' : '#6b7280',
+            <td style={{
+                ...tableStyles.bodyCell,
+                fontSize: '12px',
+                color: video.paymentDate ? '#059669' : '#64748b',
                 backgroundColor: video.paymentDate ? '#f0fdf4' : 'transparent',
-                padding: '8px',
                 textAlign: 'center',
-                minWidth: '100px'
+                fontWeight: video.paymentDate ? '500' : '400'
             }}>
                 <div style={{
                     display: 'flex',
@@ -320,13 +333,13 @@ const VideoItem: React.FC<VideoItemProps> = ({
                             <span>{formatPaymentDate(video.paymentDate)}</span>
                         </>
                     ) : (
-                        <span style={{ fontStyle: 'italic' }}>Chưa có</span>
+                        <span style={{ fontStyle: 'italic', opacity: 0.7 }}>Chưa có</span>
                     )}
                 </div>
             </td>
 
             {/* Video URL Editor */}
-            <td>
+            <td style={tableStyles.bodyCell}>
                 <VideoUrlEditor
                     videoUrl={video.videoUrl}
                     isUpdating={isUpdatingVideoUrl}
@@ -336,7 +349,11 @@ const VideoItem: React.FC<VideoItemProps> = ({
             </td>
 
             {/* Action Buttons */}
-            <td>
+            <td style={{
+                ...tableStyles.bodyCell,
+                overflow: 'visible',
+                position: 'relative'
+            }}>
                 <VideoActionButtons
                     video={video}
                     isAdmin={isAdmin}
