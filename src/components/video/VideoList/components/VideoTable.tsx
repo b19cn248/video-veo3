@@ -29,7 +29,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                                                    onViewHistory,
                                                    onVideoUpdate
                                                }) => {
-    const colSpan = isAdmin ? 10 : 9; // Tối ưu hóa: bỏ Time, Tiền, Ngày tạo
+    const colSpan = isAdmin ? 11 : 10; // Updated to include duration column
 
     return (
         <div style={tableStyles.container}>
@@ -50,6 +50,19 @@ const VideoTable: React.FC<VideoTableProps> = ({
                     {/* Cột người tạo - hiển thị cho tất cả người dùng */}
                     <th style={{...tableStyles.headerCell, width: columnWidths.creator}}>
                         ✍️ Người tạo
+                    </th>
+
+                    {/* Cột thời lượng - hiển thị cho tất cả người dùng */}
+                    <th style={{...tableStyles.headerCell, width: columnWidths.duration}}>
+                        ⏱️ Thời lượng
+                        <div style={{
+                            fontSize: '11px',
+                            fontWeight: '400',
+                            color: '#64748b',
+                            marginTop: '2px'
+                        }}>
+                            Giây
+                        </div>
                     </th>
 
                     <th style={{...tableStyles.headerCell, width: columnWidths.status}}>

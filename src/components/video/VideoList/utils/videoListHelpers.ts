@@ -273,6 +273,7 @@ export const columnWidths = {
     id: '48px', // Reduced to 60% of original 80px
     customer: '160px',
     creator: '120px',
+    duration: '80px', // New column for video duration
     status: '140px',
     staff: '160px',
     delivery: '120px',

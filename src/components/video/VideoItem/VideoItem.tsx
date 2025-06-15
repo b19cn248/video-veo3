@@ -274,6 +274,17 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 {formatDisplayName(video.createdBy)}
             </td>
 
+            {/* Cột thời lượng - hiển thị cho tất cả người dùng */}
+            <td style={{
+                ...tableStyles.bodyCell,
+                fontSize: '13px',
+                fontWeight: '500',
+                color: video.videoDuration ? '#374151' : '#9ca3af',
+                textAlign: 'center'
+            }}>
+                {formatSimpleDuration(video.videoDuration)}
+            </td>
+
             {/* Status Selector */}
             <td style={tableStyles.bodyCell}>
                 <VideoStatusSelector
