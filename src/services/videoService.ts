@@ -7,7 +7,7 @@
 // NEW: Thêm Staff Salary APIs và cập nhật Assigned Staff API
 
 import axios from 'axios';
-import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse, CreatorsResponse} from '../types/video.types';
+import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse, CreatorsResponse, VideoAuditHistoryResponse} from '../types/video.types';
 import {StaffSalariesResponse, AssignedStaffResponse} from '../types/staff.types';
 import {SalesSalariesResponse} from '../types/sales.types';
 import {AuthService} from './authService';
@@ -445,6 +445,21 @@ export class VideoService {
         } catch (error) {
             console.error(`Error canceling video ${id}:`, error);
             const errorMessage = createOperationErrorMessage('cancel', 'video', error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    // ===== AUDIT HISTORY APIs =====
+
+    // Lấy lịch sử thay đổi của video
+    static async getVideoAuditHistory(videoId: number): Promise<VideoAuditHistoryResponse> {
+        try {
+            console.log('Fetching audit history for video:', videoId);
+            const response = await apiClient.get(`/audit/video/${videoId}/history/all`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching audit history for video ${videoId}:`, error);
+            const errorMessage = createOperationErrorMessage('fetch', 'lịch sử thay đổi video', error);
             throw new Error(errorMessage);
         }
     }

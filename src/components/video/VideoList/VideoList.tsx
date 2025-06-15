@@ -2,7 +2,7 @@
 // Sử dụng custom hooks và sub-components với proper lifecycle management
 // Clean, focused, và tránh duplicate API calls
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useIsAdmin } from '../../../contexts/AuthContext';
 import { useVideoList } from './hooks/useVideoList';
 import { useVideoFilters } from './hooks/useVideoFilters';
@@ -15,6 +15,7 @@ import VideoSummary from './components/VideoSummary';
 import VideoTable from './components/VideoTable';
 import VideoForm from '../VideoForm/VideoForm';
 import VideoDetailModal from '../VideoDetail/VideoDetailModal'; // NEW: Import modal chi tiết
+import VideoHistory from '../VideoHistory/VideoHistory'; // NEW: Import shared VideoHistory
 import Loading from '../../common/Loading/Loading';
 import Modal from '../../common/Modal/Modal';
 import Pagination from '../../common/Pagination/Pagination';
@@ -23,6 +24,10 @@ import { VideoFilterParams } from '../../../types/video.types';
 
 const VideoList: React.FC = () => {
     const isAdmin = useIsAdmin();
+    
+    // State for shared VideoHistory modal
+    const [showHistoryModal, setShowHistoryModal] = useState(false);
+    const [historyVideoId, setHistoryVideoId] = useState<number | null>(null);
 
     // Custom hooks để tách logic
     const {
@@ -79,6 +84,12 @@ const VideoList: React.FC = () => {
     useEffect(() => {
         setOnFiltersChangeCallback(handleFiltersChange);
     }, [setOnFiltersChangeCallback, handleFiltersChange]);
+
+    // Handle view history action
+    const handleViewHistory = useCallback((videoId: number) => {
+        setHistoryVideoId(videoId);
+        setShowHistoryModal(true);
+    }, []);
 
     // FIXED: Load data lần đầu chỉ khi mount, không phụ thuộc vào currentPage
     useEffect(() => {
@@ -159,6 +170,7 @@ const VideoList: React.FC = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onViewDetail={handleViewDetail}
+                        onViewHistory={handleViewHistory}
                         onVideoUpdate={handleVideoUpdate}
                     />
 
@@ -225,6 +237,18 @@ const VideoList: React.FC = () => {
                     setDetailVideoId(null);
                 }}
             />
+
+            {/* NEW: Shared VideoHistory Modal */}
+            {historyVideoId && (
+                <VideoHistory 
+                    videoId={historyVideoId}
+                    isOpen={showHistoryModal}
+                    onClose={() => {
+                        setShowHistoryModal(false);
+                        setHistoryVideoId(null);
+                    }}
+                />
+            )}
         </div>
     );
 };

@@ -6,6 +6,7 @@ import { useIsAdmin } from '../../../contexts/AuthContext';
 import { formatVideoStatus, formatDeliveryStatus, formatPaymentStatus, formatDate, formatCurrency } from '../../../utils/formatters';
 import { extractErrorMessage } from '../../../utils/errorUtils';
 import ErrorDisplay from '../../common/ErrorDisplay/ErrorDisplay';
+import VideoHistory from '../VideoHistory/VideoHistory';
 
 // Hàm format thời lượng video đơn giản - chỉ hiển thị số + "s"
 const formatSimpleDuration = (seconds: number | undefined): string => {
@@ -20,6 +21,7 @@ const VideoDetail: React.FC = () => {
     const [video, setVideo] = useState<Video | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showHistory, setShowHistory] = useState(false);
 
     useEffect(() => {
         const fetchDetail = async () => {
@@ -56,9 +58,18 @@ const VideoDetail: React.FC = () => {
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', minHeight: '80vh', background: '#f5f5f5' }}>
             <div style={{ background: 'white', borderRadius: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: 32, maxWidth: 700, width: '100%', margin: '40px 0' }}>
-                <button className="btn btn-secondary" onClick={() => navigate(-1)} style={{ marginBottom: 24, fontWeight: 500, fontSize: 15 }}>
-                    ← Quay lại danh sách
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                    <button className="btn btn-secondary" onClick={() => navigate(-1)} style={{ fontWeight: 500, fontSize: 15 }}>
+                        ← Quay lại danh sách
+                    </button>
+                    <button 
+                        className="btn btn-outline-info" 
+                        onClick={() => setShowHistory(true)}
+                        style={{ fontWeight: 500, fontSize: 14 }}
+                    >
+                        📋 Lịch sử thay đổi
+                    </button>
+                </div>
 
                 <h2 style={{ textAlign: 'center', marginBottom: 24 }}>
                     Chi tiết Video #{video.id}
@@ -116,6 +127,13 @@ const VideoDetail: React.FC = () => {
                         {video.videoUrl && <div style={{ marginBottom: 16 }}><b>URL video:</b> <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">Xem video</a></div>}
                     </div>
                 </div>
+
+                {/* Video History Modal */}
+                <VideoHistory 
+                    videoId={video.id}
+                    isOpen={showHistory}
+                    onClose={() => setShowHistory(false)}
+                />
             </div>
         </div>
     );

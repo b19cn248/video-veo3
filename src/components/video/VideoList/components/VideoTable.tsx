@@ -15,6 +15,7 @@ interface VideoTableProps {
     onEdit: (video: Video) => void;
     onDelete: (id: number) => void;
     onViewDetail: (id: number) => void;
+    onViewHistory: (videoId: number) => void;
     onVideoUpdate: (updatedVideo: Video) => void;
 }
 
@@ -25,6 +26,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                                                    onEdit,
                                                    onDelete,
                                                    onViewDetail,
+                                                   onViewHistory,
                                                    onVideoUpdate
                                                }) => {
     const colSpan = isAdmin ? 13 : 11; // Tăng thêm 1 cột cho ngày thanh toán
@@ -137,6 +139,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                             onEdit={onEdit}
                             onDelete={onDelete}
                             onViewDetail={onViewDetail}
+                            onViewHistory={onViewHistory}
                             onVideoUpdate={onVideoUpdate}
                             isAdmin={isAdmin}
                         />

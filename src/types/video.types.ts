@@ -154,3 +154,31 @@ export interface CreatorsResponse {
     tenantId: string;
     timestamp: number;
 }
+
+// Interface cho audit history entry
+export interface AuditEntry {
+    id: number;
+    entityType: string;
+    entityId: number;
+    action: string;
+    actionDescription: string;
+    fieldName: string;
+    oldValue: string | null;
+    newValue: string | null;
+    performedBy: string;
+    performedAt: string;
+    ipAddress: string | null;
+    userAgent: string | null;
+    tenantId: string | null;
+    fieldLevelChange: boolean;
+    entityLevelOperation: boolean;
+    formattedDescription: string;
+    entityIdentifier: string;
+}
+
+// Interface cho response API audit history
+export interface VideoAuditHistoryResponse {
+    videoId: number;
+    totalCount: number;
+    audits: AuditEntry[];
+}
