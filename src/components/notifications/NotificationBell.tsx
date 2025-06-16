@@ -48,10 +48,7 @@ const NotificationBell: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          transition: 'all 0.2s ease',
-          ':hover': {
-            backgroundColor: '#f3f4f6'
-          }
+          transition: 'all 0.2s ease'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = '#f3f4f6';

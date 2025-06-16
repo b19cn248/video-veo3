@@ -81,9 +81,19 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onClo
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = notification.isRead ? '#f9fafb' : '#e0f2fe';
+        // Show actions on hover
+        const actions = e.currentTarget.querySelector('.notification-actions') as HTMLElement;
+        if (actions) {
+          actions.style.opacity = '1';
+        }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = notification.isRead ? 'white' : '#f0f9ff';
+        // Hide actions when not hovering
+        const actions = e.currentTarget.querySelector('.notification-actions') as HTMLElement;
+        if (actions) {
+          actions.style.opacity = '0';
+        }
       }}
     >
       {/* Unread Indicator */}
@@ -232,14 +242,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onClo
         </div>
       </div>
 
-      {/* CSS to show actions on hover */}
-      <style>
-        {`
-          .notification-item:hover .notification-actions {
-            opacity: 1 !important;
-          }
-        `}
-      </style>
     </div>
   );
 };
