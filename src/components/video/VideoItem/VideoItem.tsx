@@ -6,6 +6,7 @@ import {
 } from '../../../utils/formatters';
 import { tableStyles, createRowHoverEffect, formatDisplayName } from '../../video/VideoList/utils/videoListHelpers';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useNotifications } from '../../../contexts/NotificationContext';
 import { extractErrorMessage } from '../../../utils/errorUtils';
 
 // Import sub-components
@@ -78,6 +79,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
     isAdmin
 }) => {
     const { user } = useAuth();
+    const { refreshUnreadCount, loadRecentNotifications } = useNotifications();
 
     // State để tracking việc loading khi update các trạng thái
     const [isUpdatingStaff, setIsUpdatingStaff] = useState(false);
@@ -119,6 +121,14 @@ const VideoItem: React.FC<VideoItemProps> = ({
             if (response.success && onVideoUpdate) {
                 onVideoUpdate(response.data);
                 showToast(`Đã cập nhật trạng thái thành công!`, 'success');
+                
+                // Refresh notifications if status changed to "Đã sửa xong"
+                if (newStatus === VideoStatus.DA_SUA_XONG) {
+                    setTimeout(() => {
+                        loadRecentNotifications(10);
+                        refreshUnreadCount();
+                    }, 500); // Small delay to ensure backend notification is processed
+                }
             }
         } catch (error) {
             console.error('Error updating video status:', error);
@@ -127,7 +137,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
         } finally {
             setIsUpdatingStatus(false);
         }
-    }, [video.status, video.id, onVideoUpdate]);
+    }, [video.status, video.id, onVideoUpdate, loadRecentNotifications, refreshUnreadCount]);
 
     // Hàm xử lý cập nhật trạng thái giao hàng
     const handleDeliveryStatusChange = useCallback(async (newStatus: DeliveryStatus) => {
@@ -139,6 +149,14 @@ const VideoItem: React.FC<VideoItemProps> = ({
             if (response.success && onVideoUpdate) {
                 onVideoUpdate(response.data);
                 showToast(`Đã cập nhật trạng thái giao hàng!`, 'success');
+                
+                // Refresh notifications if status changed to "Cần sửa gấp"
+                if (newStatus === DeliveryStatus.CAN_SUA_GAP) {
+                    setTimeout(() => {
+                        loadRecentNotifications(10);
+                        refreshUnreadCount();
+                    }, 500); // Small delay to ensure backend notification is processed
+                }
             }
         } catch (error) {
             console.error('Error updating delivery status:', error);
@@ -147,7 +165,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
         } finally {
             setIsUpdatingDeliveryStatus(false);
         }
-    }, [video.deliveryStatus, video.id, onVideoUpdate]);
+    }, [video.deliveryStatus, video.id, onVideoUpdate, loadRecentNotifications, refreshUnreadCount]);
 
     // Hàm xử lý cập nhật trạng thái thanh toán
     const handlePaymentStatusChange = useCallback(async (newStatus: PaymentStatus) => {

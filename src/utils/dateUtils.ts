@@ -60,3 +60,33 @@ export const isValidDateFormat = (dateString: string): boolean => {
     const date = new Date(dateString);
     return date.toISOString().startsWith(dateString);
 };
+
+/**
+ * Tính khoảng cách thời gian từ một ngày đến hiện tại (dạng "X phút trước", "X giờ trước", etc.)
+ * @param date Ngày cần tính khoảng cách
+ * @returns string Mô tả khoảng cách thời gian
+ */
+export const formatDistanceToNow = (date: Date): string => {
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInSeconds = Math.floor(diffInMs / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInSeconds < 60) {
+        return 'Vừa xong';
+    } else if (diffInMinutes < 60) {
+        return `${diffInMinutes} phút trước`;
+    } else if (diffInHours < 24) {
+        return `${diffInHours} giờ trước`;
+    } else if (diffInDays < 7) {
+        return `${diffInDays} ngày trước`;
+    } else {
+        return date.toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+};

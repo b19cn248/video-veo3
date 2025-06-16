@@ -5,12 +5,15 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import ProtectedRoute from './components/common/ProtectedRoute/ProtectedRoute';
 import VideoList from './components/video/VideoList/VideoList';
 import VideoDetail from './components/video/VideoDetail/VideoDetail';
 import StaffSalaries from './components/staff/StaffSalaries/StaffSalaries';
 import SalesSalaries from './components/sales/SalesSalaries/SalesSalaries';
+import NotificationBell from './components/notifications/NotificationBell';
 import './styles/global.css';
 
 // Component hiển thị header với thông tin user và navigation
@@ -159,6 +162,9 @@ const AppHeader: React.FC = () => {
                         alignItems: 'center',
                         gap: '20px'
                     }}>
+                        {/* Notification Bell */}
+                        <NotificationBell />
+
                         {/* Thông tin user */}
                         <div style={{
                             display: 'flex',
@@ -334,9 +340,12 @@ const AppRoutes: React.FC = () => {
 const App: React.FC = () => {
     return (
         <AuthProvider>
-            <Router>
-                <AppRoutes />
-            </Router>
+            <NotificationProvider>
+                <Router>
+                    <AppRoutes />
+                </Router>
+                <Toaster />
+            </NotificationProvider>
         </AuthProvider>
     );
 };
