@@ -1,0 +1,138 @@
+.notification-bell-container {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f8f9fa;
+  border: 2px solid #e9ecef;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.notification-bell:hover {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  transform: scale(1.05);
+}
+
+.notification-bell.disconnected {
+  border-color: #ff6b6b;
+  background-color: #ffe0e0;
+}
+
+.notification-bell.disconnected:hover {
+  background-color: #ffcccc;
+}
+
+.bell-icon {
+  font-size: 18px;
+  display: block;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ff4444;
+  color: white;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+}
+
+.connection-status {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: 12px;
+  background-color: white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-bell.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.notification-panel-wrapper {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  margin-top: 8px;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-3px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .notification-bell {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .bell-icon {
+    font-size: 16px;
+  }
+  
+  .notification-badge {
+    top: -6px;
+    right: -6px;
+    font-size: 11px;
+    min-width: 16px;
+    height: 16px;
+  }
+  
+  .notification-panel-wrapper {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    margin-top: 0;
+  }
+}

@@ -6,11 +6,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import ProtectedRoute from './components/common/ProtectedRoute/ProtectedRoute';
 import VideoList from './components/video/VideoList/VideoList';
 import VideoDetail from './components/video/VideoDetail/VideoDetail';
 import StaffSalaries from './components/staff/StaffSalaries/StaffSalaries';
 import SalesSalaries from './components/sales/SalesSalaries/SalesSalaries';
+import NotificationBell from './components/common/NotificationBell';
+import NotificationPage from './components/notification/NotificationPage';
 import './styles/global.css';
 
 // Component hiển thị header với thông tin user và navigation
@@ -153,12 +156,15 @@ const AppHeader: React.FC = () => {
                         </nav>
                     </div>
 
-                    {/* User Info và Logout */}
+                    {/* User Info, Notifications và Logout */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '20px'
                     }}>
+                        {/* Notification Bell */}
+                        <NotificationBell />
+
                         {/* Thông tin user */}
                         <div style={{
                             display: 'flex',
@@ -275,6 +281,16 @@ const AppRoutes: React.FC = () => {
                         }
                     />
 
+                    {/* NEW: Route notifications - cho TẤT CẢ user */}
+                    <Route
+                        path="/notifications"
+                        element={
+                            <ProtectedRoute>
+                                <NotificationPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
                     {/* Route cho trường hợp không có quyền */}
                     <Route
                         path="/unauthorized"
@@ -330,13 +346,15 @@ const AppRoutes: React.FC = () => {
     );
 };
 
-// Component App chính với AuthProvider wrapper
+// Component App chính với AuthProvider và NotificationProvider wrapper
 const App: React.FC = () => {
     return (
         <AuthProvider>
-            <Router>
-                <AppRoutes />
-            </Router>
+            <NotificationProvider>
+                <Router>
+                    <AppRoutes />
+                </Router>
+            </NotificationProvider>
         </AuthProvider>
     );
 };

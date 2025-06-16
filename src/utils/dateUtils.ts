@@ -60,3 +60,40 @@ export const isValidDateFormat = (dateString: string): boolean => {
     const date = new Date(dateString);
     return date.toISOString().startsWith(dateString);
 };
+
+/**
+ * Format thời gian từ timestamp thành dạng "time ago"
+ * @param dateString ISO timestamp string
+ * @returns string Thời gian relative (vd: "2 phút trước", "1 giờ trước")
+ */
+export const formatTimeAgo = (dateString: string): string => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) {
+        return 'Vừa xong';
+    }
+    
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+        return `${diffInMinutes} phút trước`;
+    }
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+        return `${diffInHours} giờ trước`;
+    }
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+        return `${diffInDays} ngày trước`;
+    }
+    
+    // Nếu quá 7 ngày, hiển thị ngày cụ thể
+    return date.toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+};
