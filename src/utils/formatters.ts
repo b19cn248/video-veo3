@@ -17,7 +17,8 @@ export const formatDeliveryStatus = (status: DeliveryStatus): string => {
     const statusMap = {
         [DeliveryStatus.DA_GUI]: 'Đã gửi',
         [DeliveryStatus.CHUA_GUI]: 'Chưa gửi',
-        [DeliveryStatus.CAN_SUA_GAP]: 'Cần sửa gấp'  // Thêm format cho trạng thái mới
+        [DeliveryStatus.CAN_SUA_GAP]: 'Cần sửa gấp',  // Thêm format cho trạng thái mới
+        [DeliveryStatus.HUY]: 'Huỷ'  // Thêm format cho trạng thái huỷ
     };
     return statusMap[status] || status;
 };
@@ -122,10 +123,11 @@ export const getStatusColor = (status: VideoStatus | DeliveryStatus | PaymentSta
         [VideoStatus.DANG_SUA]: 'status-editing',
         [VideoStatus.DA_SUA_XONG]: 'status-edit-completed',
 
-        // Delivery status colors - UPDATED: Thêm CAN_SUA_GAP
+        // Delivery status colors - UPDATED: Thêm CAN_SUA_GAP và HUY
         [DeliveryStatus.CHUA_GUI]: 'status-pending',
         [DeliveryStatus.DA_GUI]: 'status-completed',
         [DeliveryStatus.CAN_SUA_GAP]: 'status-urgent',  // Thêm class mới cho trạng thái urgent
+        [DeliveryStatus.HUY]: 'status-cancelled',  // Thêm class mới cho trạng thái huỷ
 
         // Payment status colors
         [PaymentStatus.CHUA_THANH_TOAN]: 'status-pending',

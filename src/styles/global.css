@@ -288,6 +288,11 @@ body {
     color: white;
 }
 
+.status-cancelled {
+    background: #6b7280;
+    color: white;
+}
+
 /* Enhanced status badge styles */
 .status-badge {
     padding: 4px 12px;

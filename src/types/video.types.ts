@@ -15,7 +15,8 @@ export enum VideoStatus {
 export enum DeliveryStatus {
     DA_GUI = 'DA_GUI',
     CHUA_GUI = 'CHUA_GUI',
-    CAN_SUA_GAP = 'CAN_SUA_GAP'  // Thêm trạng thái mới: Cần sửa gấp
+    CAN_SUA_GAP = 'CAN_SUA_GAP',  // Thêm trạng thái mới: Cần sửa gấp
+    HUY = 'HUY'  // Thêm trạng thái mới: Huỷ
 }
 
 export enum PaymentStatus {
