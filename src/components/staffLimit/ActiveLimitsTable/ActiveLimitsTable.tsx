@@ -187,6 +187,12 @@ const ActiveLimitsTable: React.FC<ActiveLimitsTableProps> = ({
                                 </th>
                                 <th style={{
                                     ...tableStyles.headerCell,
+                                    width: '120px'
+                                }}>
+                                    📊 Đơn/Ngày
+                                </th>
+                                <th style={{
+                                    ...tableStyles.headerCell,
                                     width: '140px'
                                 }}>
                                     👨‍💼 Tạo bởi
@@ -257,6 +263,28 @@ const ActiveLimitsTable: React.FC<ActiveLimitsTableProps> = ({
                                             }}>
                                                 {remainingInfo.text}
                                             </span>
+                                        </td>
+
+                                        {/* Max Orders Per Day */}
+                                        <td style={tableStyles.bodyCell}>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <span style={{
+                                                    background: '#3b82f6',
+                                                    color: 'white',
+                                                    fontSize: '11px',
+                                                    fontWeight: '600',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '12px',
+                                                    minWidth: '40px',
+                                                    textAlign: 'center'
+                                                }}>
+                                                    {limit.maxOrdersPerDay || 3}
+                                                </span>
+                                            </div>
                                         </td>
 
                                         {/* Created By */}

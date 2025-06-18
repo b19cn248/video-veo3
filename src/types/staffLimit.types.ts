@@ -7,6 +7,7 @@ export interface StaffLimit {
     startDate: string;
     endDate: string;
     remainingDays: number;
+    maxOrdersPerDay: number;
     createdBy: string;
     createdAt: string;
     isCurrentlyActive: boolean;
@@ -15,6 +16,7 @@ export interface StaffLimit {
 export interface StaffLimitCreateRequest {
     staffName: string;
     lockDays: number;
+    maxOrdersPerDay?: number;
 }
 
 export interface StaffLimitCreateResponse {
@@ -23,6 +25,7 @@ export interface StaffLimitCreateResponse {
     data: {
         staffName: string;
         lockDays: number;
+        maxOrdersPerDay: number;
         startDate: string;
         endDate: string;
         remainingDays: number;
@@ -78,11 +81,13 @@ export interface StaffLimitErrorResponse {
 export interface StaffLimitFormData {
     staffName: string;
     lockDays: number;
+    maxOrdersPerDay?: number;
 }
 
 export interface StaffLimitFormErrors {
     staffName?: string;
     lockDays?: string;
+    maxOrdersPerDay?: string;
     general?: string;
 }
 

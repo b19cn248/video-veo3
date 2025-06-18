@@ -93,11 +93,18 @@ export class StaffLimitService {
         try {
             console.log('Creating staff limit:', request);
             
+            const params: any = {
+                staffName: request.staffName,
+                lockDays: request.lockDays
+            };
+
+            // Thêm maxOrdersPerDay nếu có
+            if (request.maxOrdersPerDay !== undefined) {
+                params.maxOrdersPerDay = request.maxOrdersPerDay;
+            }
+            
             const response = await apiClient.post('/videos/staff-limit', null, {
-                params: {
-                    staffName: request.staffName,
-                    lockDays: request.lockDays
-                }
+                params: params
             });
             
             console.log('Staff limit created successfully:', response.data);
@@ -201,6 +208,17 @@ export class StaffLimitService {
 
         if (!Number.isInteger(data.lockDays)) {
             errors.push('Số ngày khóa phải là số nguyên');
+        }
+
+        // Validate maxOrdersPerDay nếu có
+        if (data.maxOrdersPerDay !== undefined) {
+            if (data.maxOrdersPerDay < 1 || data.maxOrdersPerDay > 50) {
+                errors.push('Số đơn tối đa trong ngày phải từ 1 đến 50');
+            }
+
+            if (!Number.isInteger(data.maxOrdersPerDay)) {
+                errors.push('Số đơn tối đa trong ngày phải là số nguyên');
+            }
         }
 
         return {

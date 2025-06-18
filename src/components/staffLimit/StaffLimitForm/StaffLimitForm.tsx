@@ -26,7 +26,8 @@ const StaffLimitForm: React.FC<StaffLimitFormProps> = ({
 }) => {
     const [formData, setFormData] = useState<StaffLimitFormData>({
         staffName: '',
-        lockDays: 1
+        lockDays: 1,
+        maxOrdersPerDay: 3
     });
 
     const [errors, setErrors] = useState<StaffLimitFormErrors>({});
@@ -74,6 +75,17 @@ const StaffLimitForm: React.FC<StaffLimitFormProps> = ({
             newErrors.lockDays = 'Số ngày khóa phải là số nguyên';
         }
 
+        // Validate maxOrdersPerDay
+        if (formData.maxOrdersPerDay !== undefined) {
+            if (formData.maxOrdersPerDay < 1 || formData.maxOrdersPerDay > 50) {
+                newErrors.maxOrdersPerDay = 'Số đơn tối đa trong ngày phải từ 1 đến 50';
+            }
+
+            if (!Number.isInteger(formData.maxOrdersPerDay)) {
+                newErrors.maxOrdersPerDay = 'Số đơn tối đa trong ngày phải là số nguyên';
+            }
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -88,7 +100,7 @@ const StaffLimitForm: React.FC<StaffLimitFormProps> = ({
         try {
             await onSubmit(formData);
             // Reset form after successful submission
-            setFormData({ staffName: '', lockDays: 1 });
+            setFormData({ staffName: '', lockDays: 1, maxOrdersPerDay: 3 });
             setErrors({});
         } catch (error) {
             console.error('Form submission error:', error);
@@ -221,6 +233,49 @@ const StaffLimitForm: React.FC<StaffLimitFormProps> = ({
                             marginTop: '4px'
                         }}>
                             Nhân viên sẽ không thể nhận đơn hàng mới trong thời gian này
+                        </div>
+                    </div>
+
+                    {/* Max Orders Per Day Input */}
+                    <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#374151',
+                            marginBottom: '6px'
+                        }}>
+                            📊 Số đơn tối đa/ngày (1-50 đơn) - Mặc định: 3
+                        </label>
+                        <input
+                            type="number"
+                            min="1"
+                            max="50"
+                            value={formData.maxOrdersPerDay || 3}
+                            onChange={(e) => handleInputChange('maxOrdersPerDay', parseInt(e.target.value) || 3)}
+                            disabled={submitting}
+                            placeholder="Nhập số đơn tối đa trong một ngày..."
+                            style={{
+                                ...createFilterInputStyle(submitting),
+                                ...(errors.maxOrdersPerDay && { borderColor: '#ef4444' })
+                            }}
+                            {...createInputFocusHandlers(submitting)}
+                        />
+                        {errors.maxOrdersPerDay && (
+                            <div style={{
+                                color: '#ef4444',
+                                fontSize: '12px',
+                                marginTop: '4px'
+                            }}>
+                                {errors.maxOrdersPerDay}
+                            </div>
+                        )}
+                        <div style={{
+                            fontSize: '12px',
+                            color: '#6b7280',
+                            marginTop: '4px'
+                        }}>
+                            Giới hạn số đơn hàng nhân viên có thể nhận trong một ngày (để trống sẽ dùng mặc định 3 đơn)
                         </div>
                     </div>
 

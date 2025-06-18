@@ -12,7 +12,8 @@
       "Bash(npm run lint)",
       "Bash(rg:*)",
       "Bash(mkdir:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npm run:*)"
     ],
     "deny": []
   }
