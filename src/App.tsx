@@ -11,6 +11,7 @@ import VideoList from './components/video/VideoList/VideoList';
 import VideoDetail from './components/video/VideoDetail/VideoDetail';
 import StaffSalaries from './components/staff/StaffSalaries/StaffSalaries';
 import SalesSalaries from './components/sales/SalesSalaries/SalesSalaries';
+import StaffLimitManagement from './components/staffLimit/StaffLimitManagement/StaffLimitManagement';
 import './styles/global.css';
 
 // Component hiển thị header với thông tin user và navigation
@@ -32,6 +33,7 @@ const AppHeader: React.FC = () => {
     const isVideosPage = location.pathname.startsWith('/videos');
     const isStaffSalariesPage = location.pathname === '/staff-salaries';
     const isSalesSalariesPage = location.pathname === '/sales-salaries';
+    const isStaffLimitsPage = location.pathname === '/staff-limits';
 
     return (
         <header className="header">
@@ -148,6 +150,40 @@ const AppHeader: React.FC = () => {
                                     }}
                                 >
                                     💼 Lương Sales
+                                </a>
+                            )}
+
+                            {/* NEW: Staff Limits - chỉ hiển thị cho ADMIN */}
+                            {user?.roles && user.roles.some((role: string) => role.toLowerCase().includes('admin')) && (
+                                <a
+                                    href="/staff-limits"
+                                    style={{
+                                        textDecoration: 'none',
+                                        color: isStaffLimitsPage ? '#3b82f6' : '#6b7280',
+                                        fontWeight: isStaffLimitsPage ? '600' : '500',
+                                        fontSize: '15px',
+                                        padding: '8px 16px',
+                                        borderRadius: '6px',
+                                        background: isStaffLimitsPage ? '#eff6ff' : 'transparent',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (!isStaffLimitsPage) {
+                                            e.currentTarget.style.color = '#374151';
+                                            e.currentTarget.style.background = '#f3f4f6';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!isStaffLimitsPage) {
+                                            e.currentTarget.style.color = '#6b7280';
+                                            e.currentTarget.style.background = 'transparent';
+                                        }
+                                    }}
+                                >
+                                    🚫 Giới hạn nhân viên
                                 </a>
                             )}
                         </nav>
@@ -271,6 +307,16 @@ const AppRoutes: React.FC = () => {
                         element={
                             <ProtectedRoute requiredRoles={['admin']}>
                                 <SalesSalaries />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* NEW: Route quản lý giới hạn nhân viên - chỉ cho ADMIN */}
+                    <Route
+                        path="/staff-limits"
+                        element={
+                            <ProtectedRoute requiredRoles={['admin']}>
+                                <StaffLimitManagement />
                             </ProtectedRoute>
                         }
                     />

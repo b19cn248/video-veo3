@@ -1,10 +1,11 @@
 import React, {useState, useCallback} from 'react';
 import {Video, VideoStatus, DeliveryStatus, PaymentStatus} from '../../../types/video.types';
 import {VideoService} from '../../../services/videoService';
+import { StaffLimitService } from '../../../services/staffLimitService';
 import {
     formatPaymentDate
 } from '../../../utils/formatters';
-import { tableStyles, createRowHoverEffect, formatDisplayName } from '../../video/VideoList/utils/videoListHelpers';
+import { tableStyles, createRowHoverEffect, formatDisplayName, showToast } from '../../video/VideoList/utils/videoListHelpers';
 import { useAuth } from '../../../contexts/AuthContext';
 import { extractErrorMessage } from '../../../utils/errorUtils';
 
@@ -89,12 +90,24 @@ const VideoItem: React.FC<VideoItemProps> = ({
     // Get user display name
     const userDisplayName = user?.fullName || user?.username;
 
-    // Hàm xử lý assign video cho user hiện tại
+    // Hàm xử lý assign video cho user hiện tại với staff limit check
     const handleAssignToMe = useCallback(async () => {
         if (!user || !userDisplayName) return;
 
         setIsUpdatingStaff(true);
         try {
+            // NEW: Kiểm tra staff limit trước khi assign
+            console.log('Checking staff limit before assignment for:', userDisplayName);
+            const canAssign = await StaffLimitService.canStaffReceiveNewOrders(userDisplayName);
+            
+            if (!canAssign) {
+                showToast(
+                    `❌ Bạn hiện đang bị giới hạn không thể nhận đơn hàng mới. Vui lòng liên hệ admin để biết thêm chi tiết.`, 
+                    'error'
+                );
+                return;
+            }
+
             const response = await VideoService.updateAssignedStaff(video.id, userDisplayName);
             if (response.success && onVideoUpdate) {
                 onVideoUpdate(response.data);

@@ -103,7 +103,7 @@ export const extractErrorMessage = (error: any, fallbackMessage: string = 'Đã 
  * @returns Message lỗi cụ thể cho thao tác
  */
 export const createOperationErrorMessage = (
-    operation: 'create' | 'update' | 'delete' | 'fetch' | 'search' | 'cancel' | 'check',
+    operation: 'create' | 'update' | 'delete' | 'fetch' | 'search' | 'cancel' | 'check' | 'remove',
     resource: string,
     error: any
 ): string => {
@@ -122,7 +122,8 @@ export const createOperationErrorMessage = (
         fetch: `Lỗi khi tải ${resource}`,
         search: `Lỗi khi tìm kiếm ${resource}`,
         cancel: `Lỗi khi hủy ${resource}`,  // NEW: Thêm cancel operation
-        check: `Lỗi khi kiểm tra ${resource}`   // NEW: Thêm check operation
+        check: `Lỗi khi kiểm tra ${resource}`,   // NEW: Thêm check operation
+        remove: `Lỗi khi hủy ${resource}`   // NEW: Thêm remove operation (alias cho cancel)
     };
     
     return operationMap[operation];

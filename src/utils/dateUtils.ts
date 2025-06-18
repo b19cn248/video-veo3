@@ -60,3 +60,33 @@ export const isValidDateFormat = (dateString: string): boolean => {
     const date = new Date(dateString);
     return date.toISOString().startsWith(dateString);
 };
+
+/**
+ * Format date với pattern tùy chọn
+ * @param dateString ISO date string hoặc Date object
+ * @param pattern Pattern format (DD/MM/YYYY, HH:mm:ss, etc.)
+ * @returns string Ngày đã format
+ */
+export const formatDate = (dateString: string, pattern: string): string => {
+    if (!dateString) return '--';
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '--';
+    
+    // Lấy các thành phần ngày
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    // Thay thế pattern
+    return pattern
+        .replace(/DD/g, day)
+        .replace(/MM/g, month)
+        .replace(/YYYY/g, String(year))
+        .replace(/HH/g, hours)
+        .replace(/mm/g, minutes)
+        .replace(/ss/g, seconds);
+};
