@@ -102,7 +102,18 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
                 if (currentPage !== 0) {
                     setCurrentPage(0);
                 }
-            } else {
+            } 
+            // NEW: Nếu có video ID search, sử dụng search by ID API
+            else if (filters?.videoId && filters.videoId > 0) {
+                console.log('Using video ID search API for:', filters.videoId);
+                response = await VideoService.searchVideoById(filters.videoId);
+                
+                // Reset page về 0 khi search video ID (vì search không hỗ trợ pagination)
+                if (currentPage !== 0) {
+                    setCurrentPage(0);
+                }
+            }
+            else {
                 // Sử dụng API getVideos thông thường với filters khác
                 response = await VideoService.getVideos(
                     currentPage,

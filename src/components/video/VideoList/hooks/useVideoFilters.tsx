@@ -35,7 +35,8 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         deliveryStatus: '',
         paymentStatus: '',
         paymentDate: '', // NEW: Thêm filter ngày thanh toán
-        createdBy: '' // NEW: Thêm filter người tạo
+        createdBy: '', // NEW: Thêm filter người tạo
+        videoId: '' // NEW: Thêm filter video ID
     });
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -173,6 +174,13 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         if (currentFilters.createdBy && currentFilters.createdBy.trim()) {
             filterParams.createdBy = currentFilters.createdBy.trim();
         }
+        if (currentFilters.videoId && currentFilters.videoId.trim()) {
+            // Convert videoId string to number for API
+            const videoIdNumber = parseInt(currentFilters.videoId.trim(), 10);
+            if (!isNaN(videoIdNumber)) {
+                filterParams.videoId = videoIdNumber;
+            }
+        }
 
         return Object.keys(filterParams).length > 0 ? filterParams : undefined;
     }, []); // Empty dependency - function chỉ đọc từ ref
@@ -193,15 +201,15 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
     // REMOVED: Auto-apply useEffect để tránh infinite loop
     // Thay vào đó sử dụng manual applyFilters()
 
-    // Xử lý thay đổi filter với debounce cho customer name search
+    // Xử lý thay đổi filter với debounce cho customer name search và video ID
     const handleFilterChange = useCallback((filterType: keyof FilterState, value: string) => {
         setFilters(prev => ({
             ...prev,
             [filterType]: value
         }));
 
-        // Special handling cho customer name search với debounce dài hơn
-        const debounceTime = filterType === 'customerName' ? 500 : 300;
+        // Special handling cho customer name search và video ID với debounce dài hơn
+        const debounceTime = (filterType === 'customerName' || filterType === 'videoId') ? 500 : 300;
         
         setTimeout(() => {
             const filterParams = getFilterParams();
@@ -220,7 +228,8 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
             deliveryStatus: '',
             paymentStatus: '',
             paymentDate: '', // NEW: Reset payment date filter
-            createdBy: '' // NEW: Reset created by filter
+            createdBy: '', // NEW: Reset created by filter
+            videoId: '' // NEW: Reset video ID filter
         });
 
         // Apply empty filters immediately

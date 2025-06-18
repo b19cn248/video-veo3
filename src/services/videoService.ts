@@ -247,6 +247,39 @@ export class VideoService {
         }
     }
 
+    // NEW: Tìm kiếm video theo ID - sử dụng cho ID search filter  
+    static async searchVideoById(id: number): Promise<VideoListResponse> {
+        try {
+            console.log('Searching video by ID:', id);
+            const response = await apiClient.get('/videos/search/id', {
+                params: { id }
+            });
+            
+            // Chuyển đổi response từ search API thành format của VideoListResponse
+            const searchData = response.data;
+            return {
+                success: searchData.success,
+                message: searchData.message,
+                data: searchData.data || [],
+                pagination: {
+                    currentPage: 0,
+                    totalPages: 1,
+                    totalElements: searchData.total || searchData.data?.length || 0,
+                    pageSize: searchData.data?.length || 0,
+                    hasNext: false,
+                    hasPrevious: false,
+                    isFirst: true,
+                    isLast: true,
+                },
+                timestamp: searchData.timestamp || Date.now()
+            };
+        } catch (error) {
+            console.error('Error searching video by ID:', error);
+            const errorMessage = createOperationErrorMessage('search', 'video theo ID', error);
+            throw new Error(errorMessage);
+        }
+    }
+
     // DEPRECATED: Lọc video theo trạng thái - sẽ được thay thế bằng filter nâng cao
     static async getVideosByStatus(status: VideoStatus): Promise<ApiResponse<Video[]>> {
         try {

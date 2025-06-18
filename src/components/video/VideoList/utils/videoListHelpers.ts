@@ -183,7 +183,8 @@ export const filterBadgeColors = {
     deliveryStatus: '#ea580c', // Orange for delivery status
     paymentStatus: '#059669', // Green for payment status
     paymentDate: '#0891b2', // Cyan for payment date filter
-    createdBy: '#8b5cf6' // Violet for created by filter
+    createdBy: '#8b5cf6', // Violet for created by filter
+    videoId: '#dc2626' // Red for video ID search
 };
 
 // Responsive breakpoints for better mobile experience
@@ -220,7 +221,8 @@ export const formatFilterDisplayText = (filterType: string, value: string): stri
         deliveryStatus: '🚚 Giao hàng:',
         paymentStatus: '💰 Thanh toán:',
         paymentDate: '📅 Ngày thanh toán:',
-        createdBy: '✍️ Người tạo:'
+        createdBy: '✍️ Người tạo:',
+        videoId: '🆔' // Just icon for ID, value already includes "ID:" prefix
     };
 
     return `${prefixes[filterType as keyof typeof prefixes] || ''} ${value}`;

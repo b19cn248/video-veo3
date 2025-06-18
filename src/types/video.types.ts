@@ -82,6 +82,7 @@ export interface VideoFilterParams {
     customerName?: string; // NEW: Thêm search theo tên khách hàng
     paymentDate?: string; // NEW: Thêm filter theo ngày thanh toán
     createdBy?: string; // NEW: Thêm filter theo người tạo
+    videoId?: number; // NEW: Thêm search theo ID video
 }
 
 // Interface cho response từ API khi lấy danh sách có phân trang
@@ -126,6 +127,7 @@ export interface FilterState {
     paymentStatus: PaymentStatus | '';
     paymentDate: string; // NEW: Thêm filter theo ngày thanh toán
     createdBy: string; // NEW: Thêm filter theo người tạo
+    videoId: string; // NEW: Thêm search theo ID video
 }
 
 // NEW: Interface cho filter options
