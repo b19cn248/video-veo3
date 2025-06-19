@@ -335,16 +335,15 @@ export class VideoService {
         }
     }
 
-    // EXISTING: Lấy thông tin lương nhân viên (staff) - dành cho tất cả user
-    static async getStaffSalaries(date?: string): Promise<StaffSalariesResponse> {
+    // UPDATED: Lấy thông tin lương nhân viên (staff) theo khoảng thời gian - dành cho tất cả user
+    static async getStaffSalaries(startDate: string, endDate: string): Promise<StaffSalariesResponse> {
         try {
-            console.log('Fetching staff salaries from API for date:', date);
+            console.log('Fetching staff salaries from API for date range:', startDate, 'to', endDate);
             
-            // Tạo params object, chỉ thêm date nếu có giá trị
-            const params: any = {};
-            if (date) {
-                params.date = date;
-            }
+            const params = {
+                startDate,
+                endDate
+            };
             
             const response = await apiClient.get('/videos/staff-salaries', { params });
             console.log('Staff salaries response:', response.data);
@@ -358,13 +357,13 @@ export class VideoService {
 
     // ===== SALES MANAGEMENT APIs =====
 
-    // NEW: Lấy thông tin lương sales - ADMIN ONLY  
-    static async getSalesSalaries(currentDate: string): Promise<SalesSalariesResponse> {
+    // UPDATED: Lấy thông tin lương sales theo khoảng thời gian - ADMIN ONLY  
+    static async getSalesSalaries(startDate: string, endDate: string): Promise<SalesSalariesResponse> {
         try {
-            console.log('Fetching sales salaries from API for date:', currentDate);
+            console.log('Fetching sales salaries from API for date range:', startDate, 'to', endDate);
             
             const response = await apiClient.get('/videos/sales-salaries', {
-                params: { currentDate }
+                params: { startDate, endDate }
             });
             console.log('Sales salaries response:', response.data);
             return response.data;

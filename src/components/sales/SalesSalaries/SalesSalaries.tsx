@@ -29,6 +29,7 @@ const SalesSalaries: React.FC = () => {
         handleSearchChange,
         handleSortChange,
         handleDateChange,
+        handleDateRangeChange,
         getSortIcon
     } = useSalesSalariesWithDate();
 
@@ -121,10 +122,12 @@ const SalesSalaries: React.FC = () => {
                 </div>
             </div>
 
-            {/* Date Status - hiển thị thông tin ngày được chọn */}
-            {!loading && !error && summary && filter.selectedDate && (
+            {/* Date Status - hiển thị thông tin date range được chọn */}
+            {!loading && !error && summary && filter.startDate && filter.endDate && (
                 <SalesDateStatus
                     selectedDate={filter.selectedDate}
+                    startDate={filter.startDate}
+                    endDate={filter.endDate}
                     totalSales={summary.totalSalesPersons}
                     totalCommission={summary.totalCommission}
                     totalVideos={summary.totalPaidVideos}
@@ -299,10 +302,11 @@ const SalesSalaries: React.FC = () => {
                         flexWrap: 'wrap',
                         gap: '16px'
                     }}>
-                        {/* Date Selector */}
+                        {/* Date Range Selector */}
                         <DateSelector
-                            selectedDate={filter.selectedDate || ''}
-                            onDateChange={handleDateChange}
+                            startDate={filter.startDate || ''}
+                            endDate={filter.endDate || ''}
+                            onDateRangeChange={handleDateRangeChange}
                             loading={loading}
                         />
 
@@ -329,7 +333,7 @@ const SalesSalaries: React.FC = () => {
 
                         {/* Refresh Button */}
                         <button
-                            onClick={() => loadSalesSalaries(filter.selectedDate)}
+                            onClick={() => loadSalesSalaries(filter.startDate, filter.endDate)}
                             style={{
                                 background: '#3b82f6',
                                 color: 'white',

@@ -1,6 +1,6 @@
-// Custom hook quản lý logic Staff Salaries với date filtering
+// Custom hook quản lý logic Staff Salaries với date range filtering
 // Tách logic khỏi component để dễ test và maintain
-// NEW: Hook riêng cho việc quản lý state và API calls với date parameter
+// UPDATED: Hook với date range support thay vì single date
 
 import { useState, useEffect, useCallback } from 'react';
 import { StaffSalary, StaffSalaryFilter, SalarySummary, StaffSalariesResponse } from '../../../../types/staff.types';
@@ -20,10 +20,11 @@ interface UseStaffSalariesWithDateReturn {
     filter: StaffSalaryFilter;
 
     // Actions
-    loadStaffSalaries: (selectedDate?: string) => Promise<void>;
+    loadStaffSalaries: (startDate?: string, endDate?: string) => Promise<void>;
     handleSearchChange: (searchTerm: string) => void;
     handleSortChange: (sortBy: StaffSalaryFilter['sortBy']) => void;
     handleDateChange: (date: string) => void;
+    handleDateRangeChange: (startDate: string, endDate: string) => void;
     getSortIcon: (column: StaffSalaryFilter['sortBy']) => string;
 }
 export const useStaffSalariesWithDate = (): UseStaffSalariesWithDateReturn => {
@@ -34,24 +35,27 @@ export const useStaffSalariesWithDate = (): UseStaffSalariesWithDateReturn => {
     const [error, setError] = useState<string | null>(null);
     const [summary, setSummary] = useState<SalarySummary | null>(null);
 
-    // Filter states - mặc định là ngày hôm nay
+    // Filter states với date range - mặc định là ngày hôm nay
     const [filter, setFilter] = useState<StaffSalaryFilter>({
         sortBy: 'totalSalary',
         sortDirection: 'desc',
         searchTerm: '',
-        selectedDate: getTodayDate() // NEW: Mặc định là ngày hôm nay
+        selectedDate: getTodayDate(), // Backward compatibility
+        startDate: getTodayDate(), // Ngày bắt đầu
+        endDate: getTodayDate() // Ngày kết thúc
     });
 
-    // Load staff salaries với date parameter
-    const loadStaffSalaries = useCallback(async (selectedDate?: string) => {
+    // Load staff salaries với date range
+    const loadStaffSalaries = useCallback(async (startDate?: string, endDate?: string) => {
         try {
             setLoading(true);
             setError(null);
 
-            const dateToUse = selectedDate || filter.selectedDate;
-            console.log('Loading staff salaries for date:', dateToUse);
+            const targetStartDate = startDate || filter.startDate || getTodayDate();
+            const targetEndDate = endDate || filter.endDate || getTodayDate();
+            console.log('Loading staff salaries for date range:', targetStartDate, 'to', targetEndDate);
 
-            const response: StaffSalariesResponse = await VideoService.getStaffSalaries(dateToUse);
+            const response: StaffSalariesResponse = await VideoService.getStaffSalaries(targetStartDate, targetEndDate);
 
             if (response.success) {
                 setStaffSalaries(response.data);
@@ -67,7 +71,9 @@ export const useStaffSalariesWithDate = (): UseStaffSalariesWithDateReturn => {
                     totalSalary,
                     averageSalary: totalStaff > 0 ? totalSalary / totalStaff : 0,
                     averageVideosPerStaff: totalStaff > 0 ? totalVideos / totalStaff : 0,
-                    selectedDate: dateToUse
+                    selectedDate: targetStartDate,
+                    startDate: targetStartDate,
+                    endDate: targetEndDate
                 };
 
                 setSummary(newSummary);
@@ -86,7 +92,7 @@ export const useStaffSalariesWithDate = (): UseStaffSalariesWithDateReturn => {
         } finally {
             setLoading(false);
         }
-    }, [filter.selectedDate]);
+    }, [filter.startDate, filter.endDate]);
     // Apply filters và sorting
     const applyFiltersAndSort = useCallback(() => {
         let filtered = [...staffSalaries];
@@ -137,16 +143,23 @@ export const useStaffSalariesWithDate = (): UseStaffSalariesWithDateReturn => {
         }));
     }, []);
 
-    // NEW: Handle date change
-    const handleDateChange = useCallback((date: string) => {
+    // Handle date range change
+    const handleDateRangeChange = useCallback((startDate: string, endDate: string) => {
         setFilter(prev => ({
             ...prev,
-            selectedDate: date
+            startDate,
+            endDate,
+            selectedDate: startDate // Backward compatibility
         }));
         
-        // Load data với ngày mới
-        loadStaffSalaries(date);
+        // Load data với date range mới
+        loadStaffSalaries(startDate, endDate);
     }, [loadStaffSalaries]);
+
+    // Handle single date change (backward compatibility)
+    const handleDateChange = useCallback((date: string) => {
+        handleDateRangeChange(date, date);
+    }, [handleDateRangeChange]);
 
     // Get sort icon
     const getSortIcon = useCallback((column: StaffSalaryFilter['sortBy']): string => {
@@ -180,6 +193,7 @@ export const useStaffSalariesWithDate = (): UseStaffSalariesWithDateReturn => {
         handleSearchChange,
         handleSortChange,
         handleDateChange,
+        handleDateRangeChange,
         getSortIcon
     };
 };

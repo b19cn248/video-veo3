@@ -32,7 +32,9 @@ export interface StaffSalaryFilter {
     sortBy: 'staffName' | 'totalSalary' | 'totalVideos';
     sortDirection: 'asc' | 'desc';
     searchTerm?: string;
-    selectedDate?: string; // NEW: Ngày được chọn để lọc (yyyy-MM-dd format)
+    selectedDate?: string; // Backward compatibility
+    startDate?: string; // Ngày bắt đầu (yyyy-MM-dd format)
+    endDate?: string; // Ngày kết thúc (yyyy-MM-dd format)
 }
 
 // Interface cho summary statistics
@@ -42,5 +44,7 @@ export interface SalarySummary {
     totalSalary: number;
     averageSalary: number;
     averageVideosPerStaff: number;
-    selectedDate?: string; // NEW: Ngày được chọn để hiển thị
+    selectedDate?: string; // Backward compatibility
+    startDate?: string; // Ngày bắt đầu
+    endDate?: string; // Ngày kết thúc
 }

@@ -33,7 +33,9 @@ export interface SalesSalaryFilter {
     sortBy: 'salesName' | 'commissionSalary' | 'totalPaidVideos' | 'totalSalesValue';
     sortDirection: 'asc' | 'desc';
     searchTerm?: string;
-    selectedDate?: string; // Ngày được chọn để lọc (yyyy-MM-dd format)
+    selectedDate?: string; // Backward compatibility
+    startDate?: string; // Ngày bắt đầu (yyyy-MM-dd format)
+    endDate?: string; // Ngày kết thúc (yyyy-MM-dd format)
 }
 
 // Interface cho summary statistics của sales
@@ -45,5 +47,7 @@ export interface SalesSalarySummary {
     averageCommission: number;
     averageVideosPerSales: number;
     commissionRate: string;
-    selectedDate?: string;
+    selectedDate?: string; // Backward compatibility
+    startDate?: string; // Ngày bắt đầu
+    endDate?: string; // Ngày kết thúc
 }

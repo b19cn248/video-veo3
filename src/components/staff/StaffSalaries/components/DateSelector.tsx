@@ -1,83 +1,230 @@
-// Component Date Selector cho Staff Salaries
-// Cho phép chọn ngày để lọc thống kê lương nhân viên
-// NEW: Component riêng để tái sử dụng và maintain dễ dàng
+// Component Date Range Selector cho Staff Salaries
+// Cho phép chọn khoảng thời gian để lọc thống kê lương nhân viên
+// UPDATED: Hỗ trợ date range selection (startDate - endDate)
 
-import React from 'react';
-import { getTodayDate, createDateLabel, isToday } from '../../../../utils/dateUtils';
+import React, { useState } from 'react';
+import { getTodayDate, isToday } from '../../../../utils/dateUtils';
 
 interface DateSelectorProps {
-    selectedDate: string;
-    onDateChange: (date: string) => void;
+    startDate: string;
+    endDate: string;
+    onDateRangeChange: (startDate: string, endDate: string) => void;
     loading?: boolean;
 }
 
 const DateSelector: React.FC<DateSelectorProps> = ({
-    selectedDate,
-    onDateChange,
+    startDate,
+    endDate,
+    onDateRangeChange,
     loading = false
 }) => {
+    const [mode, setMode] = useState<'single' | 'range'>(
+        startDate === endDate ? 'single' : 'range'
+    );
+
+    const handleModeChange = (newMode: 'single' | 'range') => {
+        setMode(newMode);
+        if (newMode === 'single') {
+            // Khi chuyển về single, set cả 2 ngày về startDate
+            onDateRangeChange(startDate, startDate);
+        }
+    };
+
+    const handleStartDateChange = (newStartDate: string) => {
+        if (mode === 'single') {
+            onDateRangeChange(newStartDate, newStartDate);
+        } else {
+            // Đảm bảo startDate <= endDate
+            if (newStartDate <= endDate) {
+                onDateRangeChange(newStartDate, endDate);
+            } else {
+                onDateRangeChange(newStartDate, newStartDate);
+            }
+        }
+    };
+
+    const handleEndDateChange = (newEndDate: string) => {
+        // Đảm bảo endDate >= startDate
+        if (newEndDate >= startDate) {
+            onDateRangeChange(startDate, newEndDate);
+        } else {
+            onDateRangeChange(newEndDate, newEndDate);
+        }
+    };
+
     return (
-        <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px',
-            minWidth: '200px' 
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
         }}>
-            <label style={{
-                fontSize: '13px',
-                fontWeight: '500',
-                color: '#374151',
-                whiteSpace: 'nowrap'
+            {/* Mode Toggle */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
             }}>
-                📅 Ngày thống kê:
-            </label>
-            
-            <div style={{ position: 'relative', flex: 1 }}>
-                <input
-                    type="date"
-                    value={selectedDate}
-                    max={getTodayDate()} // Không cho phép chọn ngày tương lai
-                    onChange={(e) => onDateChange(e.target.value)}
-                    disabled={loading}
-                    style={{
-                        width: '100%',
-                        padding: '8px 12px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '6px',
-                        fontSize: '13px',
-                        outline: 'none',
-                        transition: 'border-color 0.2s ease',
-                        backgroundColor: loading ? '#f9fafb' : 'white',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        opacity: loading ? 0.7 : 1
-                    }}
-                    onFocus={(e) => {
-                        if (!loading) e.target.style.borderColor = '#3b82f6';
-                    }}
-                    onBlur={(e) => {
-                        if (!loading) e.target.style.borderColor = '#e5e7eb';
-                    }}
-                />
-                
-                {/* Today badge khi chọn ngày hôm nay */}
-                {isToday(selectedDate) && (
-                    <div style={{
-                        position: 'absolute',
-                        top: '-8px',
-                        right: '-8px',
-                        background: '#10b981',
-                        color: 'white',
-                        fontSize: '10px',
-                        fontWeight: '600',
-                        padding: '2px 6px',
-                        borderRadius: '10px',
-                        pointerEvents: 'none',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                <label style={{
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    whiteSpace: 'nowrap'
+                }}>
+                    📅 Thống kê lương:
+                </label>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                    <button
+                        type="button"
+                        onClick={() => handleModeChange('single')}
+                        disabled={loading}
+                        style={{
+                            padding: '3px 8px',
+                            fontSize: '11px',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            background: mode === 'single' ? '#3b82f6' : '#e5e7eb',
+                            color: mode === 'single' ? 'white' : '#374151',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        Theo ngày
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleModeChange('range')}
+                        disabled={loading}
+                        style={{
+                            padding: '3px 8px',
+                            fontSize: '11px',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            background: mode === 'range' ? '#3b82f6' : '#e5e7eb',
+                            color: mode === 'range' ? 'white' : '#374151',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        Theo khoảng
+                    </button>
+                </div>
+            </div>
+
+            {/* Date Inputs */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                flexWrap: 'wrap'
+            }}>
+                {/* Start Date */}
+                <div style={{ position: 'relative' }}>
+                    <label style={{
+                        fontSize: '11px',
+                        color: '#6b7280',
+                        marginBottom: '3px',
+                        display: 'block'
                     }}>
-                        Hôm nay
-                    </div>
+                        {mode === 'single' ? 'Ngày' : 'Từ ngày'}
+                    </label>
+                    <input
+                        type="date"
+                        value={startDate}
+                        max={getTodayDate()}
+                        onChange={(e) => handleStartDateChange(e.target.value)}
+                        disabled={loading}
+                        style={{
+                            padding: '6px 10px',
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '6px',
+                            fontSize: '13px',
+                            outline: 'none',
+                            transition: 'border-color 0.2s ease',
+                            backgroundColor: loading ? '#f9fafb' : 'white',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            opacity: loading ? 0.7 : 1
+                        }}
+                        onFocus={(e) => !loading && (e.target.style.borderColor = '#3b82f6')}
+                        onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                    />
+                    {/* Today badge */}
+                    {mode === 'single' && isToday(startDate) && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '-4px',
+                            right: '-8px',
+                            background: '#10b981',
+                            color: 'white',
+                            fontSize: '9px',
+                            fontWeight: '600',
+                            padding: '2px 5px',
+                            borderRadius: '8px',
+                            pointerEvents: 'none',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}>
+                            Hôm nay
+                        </div>
+                    )}
+                </div>
+
+                {/* End Date (chỉ hiển thị trong range mode) */}
+                {mode === 'range' && (
+                    <>
+                        <span style={{ color: '#6b7280', fontSize: '12px', marginTop: '14px' }}>→</span>
+                        <div>
+                            <label style={{
+                                fontSize: '11px',
+                                color: '#6b7280',
+                                marginBottom: '3px',
+                                display: 'block'
+                            }}>
+                                Đến ngày
+                            </label>
+                            <input
+                                type="date"
+                                value={endDate}
+                                min={startDate}
+                                max={getTodayDate()}
+                                onChange={(e) => handleEndDateChange(e.target.value)}
+                                disabled={loading}
+                                style={{
+                                    padding: '6px 10px',
+                                    border: '2px solid #e5e7eb',
+                                    borderRadius: '6px',
+                                    fontSize: '13px',
+                                    outline: 'none',
+                                    transition: 'border-color 0.2s ease',
+                                    backgroundColor: loading ? '#f9fafb' : 'white',
+                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                    opacity: loading ? 0.7 : 1
+                                }}
+                                onFocus={(e) => !loading && (e.target.style.borderColor = '#3b82f6')}
+                                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                            />
+                        </div>
+                    </>
                 )}
             </div>
+
+            {/* Date Range Summary */}
+            {startDate && endDate && (
+                <div style={{
+                    fontSize: '11px',
+                    color: '#6b7280',
+                    padding: '6px 8px',
+                    background: '#f9fafb',
+                    borderRadius: '4px',
+                    border: '1px solid #e5e7eb'
+                }}>
+                    {startDate === endDate ? (
+                        `📊 Thống kê ngày ${startDate}`
+                    ) : (
+                        `📊 Thống kê từ ${startDate} đến ${endDate} (${Math.ceil(
+                            (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
+                        ) + 1} ngày)`
+                    )}
+                </div>
+            )}
         </div>
     );
 };

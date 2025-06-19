@@ -1,12 +1,14 @@
-// Component hiển thị trạng thái ngày được chọn cho thống kê lương
-// Hiển thị thông tin về ngày đang xem và số liệu tổng quan
-// NEW: Component riêng để tái sử dụng và maintain dễ dàng
+// Component hiển thị trạng thái khoảng thời gian được chọn cho thống kê lương
+// UPDATED: Hỗ trợ hiển thị date range thay vì single date
+// Component riêng để tái sử dụng và maintain dễ dàng
 
 import React from 'react';
-import { createDateLabel, isToday } from '../../../../utils/dateUtils';
+import { createDateLabel, isToday, formatDateForDisplay } from '../../../../utils/dateUtils';
 
 interface SalaryDateStatusProps {
-    selectedDate: string;
+    selectedDate?: string; // Backward compatibility
+    startDate: string;
+    endDate: string;
     totalStaff: number;
     totalSalary: number;
     totalVideos: number;
@@ -15,15 +17,44 @@ interface SalaryDateStatusProps {
 
 const SalaryDateStatus: React.FC<SalaryDateStatusProps> = ({
     selectedDate,
+    startDate,
+    endDate,
     totalStaff,
     totalSalary,
     totalVideos,
     loading
 }) => {
+    // Xác định xem có phải single date hay date range
+    const isSingleDate = startDate === endDate;
+    
+    // Format date range để hiển thị
+    const getDateDisplay = () => {
+        if (isSingleDate) {
+            return createDateLabel(startDate);
+        } else {
+            return `${formatDateForDisplay(startDate)} → ${formatDateForDisplay(endDate)}`;
+        }
+    };
+    
+    // Tính số ngày trong range
+    const getDaysCount = () => {
+        if (isSingleDate) return 1;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = end.getTime() - start.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return diffDays;
+    };
+    
+    // Xác định theme color dựa trên isSingleDate và isToday
+    const isShowingToday = isSingleDate && isToday(startDate);
+    const themeColor = isShowingToday ? { bg: '#f0f9ff', border: '#0ea5e9', text: '#0369a1', subText: '#0284c7' } 
+                                      : { bg: '#fef3c7', border: '#f59e0b', text: '#92400e', subText: '#a16207' };
+
     return (
         <div style={{
-            background: isToday(selectedDate) ? '#f0f9ff' : '#fef3c7',
-            border: `1px solid ${isToday(selectedDate) ? '#0ea5e9' : '#f59e0b'}`,
+            background: themeColor.bg,
+            border: `1px solid ${themeColor.border}`,
             borderRadius: '8px',
             padding: '12px 16px',
             marginBottom: '16px',
@@ -39,19 +70,20 @@ const SalaryDateStatus: React.FC<SalaryDateStatusProps> = ({
                 <span style={{
                     fontSize: '16px'
                 }}>
-                    {isToday(selectedDate) ? '📅' : '📆'}
+                    {isSingleDate ? (isShowingToday ? '📅' : '📆') : '📊'}
                 </span>
                 <div>
                     <div style={{
                         fontSize: '14px',
                         fontWeight: '600',
-                        color: isToday(selectedDate) ? '#0369a1' : '#92400e'
+                        color: themeColor.text
                     }}>
-                        Thống kê lương nhân viên - {createDateLabel(selectedDate)}
+                        Thống kê lương nhân viên - {getDateDisplay()}
+                        {!isSingleDate && ` (${getDaysCount()} ngày)`}
                     </div>
                     <div style={{
                         fontSize: '12px',
-                        color: isToday(selectedDate) ? '#0284c7' : '#a16207',
+                        color: themeColor.subText,
                         marginTop: '2px'
                     }}>
                         {loading ? (
@@ -68,7 +100,7 @@ const SalaryDateStatus: React.FC<SalaryDateStatusProps> = ({
                 </div>
             </div>
             
-            {isToday(selectedDate) && (
+            {isShowingToday && (
                 <div style={{
                     background: '#10b981',
                     color: 'white',

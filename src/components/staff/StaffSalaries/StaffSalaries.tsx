@@ -13,7 +13,7 @@ import ErrorDisplay from '../../common/ErrorDisplay/ErrorDisplay';
 import { extractErrorMessage } from '../../../utils/errorUtils';
 
 const StaffSalaries: React.FC = () => {
-    // NEW: Sử dụng custom hook để quản lý logic với date filtering
+    // UPDATED: Sử dụng custom hook để quản lý logic với date range filtering
     const {
         staffSalaries,
         filteredSalaries,
@@ -25,6 +25,7 @@ const StaffSalaries: React.FC = () => {
         handleSearchChange,
         handleSortChange,
         handleDateChange,
+        handleDateRangeChange,
         getSortIcon
     } = useStaffSalariesWithDate();
 
@@ -57,10 +58,12 @@ const StaffSalaries: React.FC = () => {
                 </p>
             </div>
 
-            {/* NEW: Date Status - hiển thị thông tin ngày được chọn */}
-            {!loading && !error && summary && filter.selectedDate && (
+            {/* UPDATED: Date Status - hiển thị thông tin date range được chọn */}
+            {!loading && !error && summary && filter.startDate && filter.endDate && (
                 <SalaryDateStatus
                     selectedDate={filter.selectedDate}
+                    startDate={filter.startDate}
+                    endDate={filter.endDate}
                     totalStaff={summary.totalStaff}
                     totalSalary={summary.totalSalary}
                     totalVideos={summary.totalVideos}
@@ -210,10 +213,11 @@ const StaffSalaries: React.FC = () => {
                         flexWrap: 'wrap',
                         gap: '16px'
                     }}>
-                        {/* NEW: Date Selector */}
+                        {/* UPDATED: Date Range Selector */}
                         <DateSelector
-                            selectedDate={filter.selectedDate || ''}
-                            onDateChange={handleDateChange}
+                            startDate={filter.startDate || ''}
+                            endDate={filter.endDate || ''}
+                            onDateRangeChange={handleDateRangeChange}
                             loading={loading}
                         />
 
@@ -240,7 +244,7 @@ const StaffSalaries: React.FC = () => {
 
                         {/* Refresh Button */}
                         <button
-                            onClick={() => loadStaffSalaries(filter.selectedDate)}
+                            onClick={() => loadStaffSalaries(filter.startDate, filter.endDate)}
                             style={{
                                 background: '#3b82f6',
                                 color: 'white',

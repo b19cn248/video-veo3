@@ -1,12 +1,14 @@
-// Component hiển thị thông tin tổng quan ngày tính lương sales
-// Hiển thị thông tin ngày được chọn và các thống kê tổng quan
+// Component hiển thị thông tin tổng quan về khoảng thời gian tính lương sales
+// UPDATED: Hỗ trợ hiển thị date range thay vì single date
 // Tương tự SalaryDateStatus cho Staff nhưng với data structure khác
 
 import React from 'react';
 import { formatCurrency, formatDate } from '../../../../utils/formatters';
 
 interface SalesDateStatusProps {
-    selectedDate: string;
+    selectedDate?: string; // Backward compatibility
+    startDate: string;
+    endDate: string;
     totalSales: number;
     totalCommission: number;
     totalVideos: number;
@@ -14,8 +16,10 @@ interface SalesDateStatusProps {
 }
 
 /**
- * Component hiển thị thông tin tổng quan về ngày tính lương sales
- * @param selectedDate - Ngày được chọn (yyyy-MM-dd)
+ * Component hiển thị thông tin tổng quan về khoảng thời gian tính lương sales
+ * @param startDate - Ngày bắt đầu (yyyy-MM-dd)
+ * @param endDate - Ngày kết thúc (yyyy-MM-dd)
+ * @param selectedDate - Backward compatibility
  * @param totalSales - Tổng số sales persons
  * @param totalCommission - Tổng hoa hồng
  * @param totalVideos - Tổng số video đã thanh toán
@@ -23,22 +27,48 @@ interface SalesDateStatusProps {
  */
 const SalesDateStatus: React.FC<SalesDateStatusProps> = ({
     selectedDate,
+    startDate,
+    endDate,
     totalSales,
     totalCommission,
     totalVideos,
     loading
 }) => {
-    // Format ngày để hiển thị
-    const formattedDate = formatDate(selectedDate);
+    // Xác định xem có phải single date hay date range
+    const isSingleDate = startDate === endDate;
     
-    // Xác định trạng thái ngày (hôm nay, hôm qua, v.v.)
+    // Format date range để hiển thị
+    const getDateDisplay = () => {
+        if (isSingleDate) {
+            return formatDate(startDate);
+        } else {
+            return `${formatDate(startDate)} → ${formatDate(endDate)}`;
+        }
+    };
+    
+    // Tính số ngày trong range
+    const getDaysCount = () => {
+        if (isSingleDate) return 1;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = end.getTime() - start.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return diffDays;
+    };
+    
+    // Xác định trạng thái date range
     const getDateStatus = () => {
-        const today = new Date().toISOString().split('T')[0];
-        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-        
-        if (selectedDate === today) return '📅 Hôm nay';
-        if (selectedDate === yesterday) return '📆 Hôm qua';
-        return '📋 Ngày đã chọn';
+        if (isSingleDate) {
+            const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            
+            if (startDate === today) return '📅 Hôm nay';
+            if (startDate === yesterday) return '📆 Hôm qua';
+            return '📋 Ngày đã chọn';
+        } else {
+            const daysCount = getDaysCount();
+            return `📊 Khoảng thời gian (${daysCount} ngày)`;
+        }
     };
 
     return (
@@ -69,17 +99,19 @@ const SalesDateStatus: React.FC<SalesDateStatusProps> = ({
                         {getDateStatus()}
                     </div>
                     <div style={{
-                        fontSize: '24px',
+                        fontSize: '20px',
                         fontWeight: '700',
-                        marginBottom: '4px'
+                        marginBottom: '4px',
+                        lineHeight: 1.2
                     }}>
-                        {formattedDate}
+                        {getDateDisplay()}
                     </div>
                     <div style={{
                         fontSize: '13px',
                         opacity: 0.8
                     }}>
                         📊 Báo cáo lương sales (Hoa hồng 12%)
+                        {!isSingleDate && ` • ${getDaysCount()} ngày`}
                     </div>
                 </div>
 

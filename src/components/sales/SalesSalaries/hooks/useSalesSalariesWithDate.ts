@@ -1,6 +1,6 @@
-// Custom hook để quản lý logic Sales Salaries với date filtering
+// Custom hook để quản lý logic Sales Salaries với date range filtering
 // Tách biệt logic khỏi UI component để dễ maintain và test
-// Pattern tương tự như useStaffSalariesWithDate
+// UPDATED: Hỗ trợ date range thay vì single date
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { VideoService } from '../../../../services/videoService';
@@ -8,7 +8,7 @@ import { SalesSalary, SalesSalaryFilter, SalesSalarySummary } from '../../../../
 import { extractErrorMessage } from '../../../../utils/errorUtils';
 
 /**
- * Custom hook để quản lý state và logic cho Sales Salaries
+ * Custom hook để quản lý state và logic cho Sales Salaries với date range
  * @returns Object chứa state và methods để tương tác với sales salaries data
  */
 export const useSalesSalariesWithDate = () => {
@@ -17,28 +17,33 @@ export const useSalesSalariesWithDate = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // State cho filter và search
+    // State cho filter và search với date range
     const [filter, setFilter] = useState<SalesSalaryFilter>({
         sortBy: 'commissionSalary',
         sortDirection: 'desc',
         searchTerm: '',
-        selectedDate: new Date().toISOString().split('T')[0] // Mặc định là hôm nay
+        selectedDate: new Date().toISOString().split('T')[0], // Backward compatibility
+        startDate: new Date().toISOString().split('T')[0], // Ngày bắt đầu
+        endDate: new Date().toISOString().split('T')[0] // Ngày kết thúc, mặc định = startDate
     });
 
     /**
-     * Load sales salaries data từ API
-     * @param date - Ngày cần load data (yyyy-MM-dd), mặc định là ngày được chọn trong filter
+     * Load sales salaries data từ API với date range
+     * @param startDate - Ngày bắt đầu (yyyy-MM-dd)
+     * @param endDate - Ngày kết thúc (yyyy-MM-dd)
      */
-    const loadSalesSalaries = useCallback(async (date?: string) => {
-        const targetDate = date || filter.selectedDate;
-        if (!targetDate) return;
+    const loadSalesSalaries = useCallback(async (startDate?: string, endDate?: string) => {
+        const targetStartDate = startDate || filter.startDate;
+        const targetEndDate = endDate || filter.endDate;
+        
+        if (!targetStartDate || !targetEndDate) return;
 
         setLoading(true);
         setError(null);
 
         try {
-            console.log('Loading sales salaries for date:', targetDate);
-            const response = await VideoService.getSalesSalaries(targetDate);
+            console.log('Loading sales salaries for date range:', targetStartDate, 'to', targetEndDate);
+            const response = await VideoService.getSalesSalaries(targetStartDate, targetEndDate);
 
             if (response.success && response.data) {
                 setSalesSalaries(response.data);
@@ -55,7 +60,7 @@ export const useSalesSalariesWithDate = () => {
         } finally {
             setLoading(false);
         }
-    }, [filter.selectedDate]);
+    }, [filter.startDate, filter.endDate]);
 
     /**
      * Effect để load data khi component mount hoặc date thay đổi
@@ -117,9 +122,11 @@ export const useSalesSalariesWithDate = () => {
             averageCommission: filteredSalaries.length > 0 ? totalCommission / filteredSalaries.length : 0,
             averageVideosPerSales: filteredSalaries.length > 0 ? totalVideos / filteredSalaries.length : 0,
             commissionRate: '12%',
-            selectedDate: filter.selectedDate
+            selectedDate: filter.selectedDate,
+            startDate: filter.startDate,
+            endDate: filter.endDate
         };
-    }, [filteredSalaries, filter.selectedDate]);
+    }, [filteredSalaries, filter.selectedDate, filter.startDate, filter.endDate]);
 
     /**
      * Handler để thay đổi search term
@@ -143,16 +150,25 @@ export const useSalesSalariesWithDate = () => {
     }, []);
 
     /**
-     * Handler để thay đổi ngày được chọn
+     * Handler để thay đổi date range
      */
-    const handleDateChange = useCallback((selectedDate: string) => {
+    const handleDateRangeChange = useCallback((startDate: string, endDate: string) => {
         setFilter(prev => ({
             ...prev,
-            selectedDate
+            startDate,
+            endDate,
+            selectedDate: startDate // Backward compatibility
         }));
-        // Load data cho ngày mới
-        loadSalesSalaries(selectedDate);
+        // Load data cho date range mới
+        loadSalesSalaries(startDate, endDate);
     }, [loadSalesSalaries]);
+
+    /**
+     * Handler để thay đổi ngày được chọn (backward compatibility)
+     */
+    const handleDateChange = useCallback((selectedDate: string) => {
+        handleDateRangeChange(selectedDate, selectedDate);
+    }, [handleDateRangeChange]);
 
     /**
      * Get sort icon based on current sort state
@@ -176,6 +192,7 @@ export const useSalesSalariesWithDate = () => {
         handleSearchChange,
         handleSortChange,
         handleDateChange,
+        handleDateRangeChange,
         getSortIcon
     };
 };
