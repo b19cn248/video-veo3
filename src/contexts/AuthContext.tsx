@@ -12,6 +12,8 @@ interface AuthContextValue extends AuthState {
     refreshToken: () => Promise<boolean>;
     hasRole: (role: string) => boolean;
     hasAnyRole: (roles: string[]) => boolean;
+    hasVideoVeo3BeAdminRole: () => boolean;  // Thêm function check admin role trong video-veo3-be
+    getResourceRoles: (resourceName: string) => string[];  // Thêm function lấy roles từ resource
     getUserDisplayName: () => string;  // Thêm helper function
     isInitialized: boolean;  // Thêm flag để biết đã khởi tạo xong chưa
 }
@@ -197,6 +199,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return AuthService.hasAnyRole(roles);
     };
 
+    // Function để kiểm tra admin role trong video-veo3-be resource
+    const hasVideoVeo3BeAdminRole = (): boolean => {
+        return AuthService.hasVideoVeo3BeAdminRole();
+    };
+
+    // Function để lấy roles từ một resource cụ thể
+    const getResourceRoles = (resourceName: string): string[] => {
+        return AuthService.getResourceRoles(resourceName);
+    };
+
     // NEW: Function để lấy display name của user hiện tại
     const getUserDisplayName = (): string => {
         if (!authState.user) {
@@ -217,6 +229,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         refreshToken,
         hasRole,
         hasAnyRole,
+        hasVideoVeo3BeAdminRole,
+        getResourceRoles,
         getUserDisplayName,
         isInitialized
     };
@@ -249,11 +263,17 @@ export const useIsAuthenticated = (): boolean => {
     return isAuthenticated;
 };
 
-// Custom hook để kiểm tra quyền admin
+// Custom hook để kiểm tra quyền admin (dựa trên hardcoded list)
 export const useIsAdmin = (): boolean => {
     const { user } = useAuth();
     const adminUsers = ['admin', 'thuong', 'hanh','thanh', 'asao','yennhi','tuyenpv'];
     return adminUsers.includes(user?.username ?? '');
+};
+
+// Custom hook để kiểm tra admin role trong video-veo3-be
+export const useIsVideoVeo3BeAdmin = (): boolean => {
+    const { hasVideoVeo3BeAdminRole } = useAuth();
+    return hasVideoVeo3BeAdminRole();
 };
 
 

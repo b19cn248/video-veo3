@@ -101,6 +101,28 @@ export class AuthService {
         return roles.some(role => userRoles.includes(role));
     }
 
+    // Kiểm tra user có role admin trong video-veo3-be resource
+    static hasVideoVeo3BeAdminRole(): boolean {
+        if (!keycloak.authenticated || !keycloak.tokenParsed) {
+            return false;
+        }
+
+        const tokenParsed = keycloak.tokenParsed;
+        const videoVeo3BeRoles = tokenParsed.resource_access?.['video-veo3-be']?.roles || [];
+        
+        return videoVeo3BeRoles.includes('admin');
+    }
+
+    // Lấy roles từ một resource cụ thể
+    static getResourceRoles(resourceName: string): string[] {
+        if (!keycloak.authenticated || !keycloak.tokenParsed) {
+            return [];
+        }
+
+        const tokenParsed = keycloak.tokenParsed;
+        return tokenParsed.resource_access?.[resourceName]?.roles || [];
+    }
+
     // Lấy access token hiện tại
     static getToken(): string | null {
         if (!keycloak.authenticated) {

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider, useAuth, useIsVideoVeo3BeAdmin } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute/ProtectedRoute';
 import VideoList from './components/video/VideoList/VideoList';
 import VideoDetail from './components/video/VideoDetail/VideoDetail';
@@ -17,6 +17,7 @@ import './styles/global.css';
 // Component hiển thị header với thông tin user và navigation
 const AppHeader: React.FC = () => {
     const { user, logout, isAuthenticated } = useAuth();
+    const isVideoVeo3BeAdmin = useIsVideoVeo3BeAdmin();
     const location = useLocation();
 
     if (!isAuthenticated) {
@@ -119,8 +120,8 @@ const AppHeader: React.FC = () => {
                                 💰 Lương nhân viên
                             </a>
 
-                            {/* NEW: Sales Salaries - chỉ hiển thị cho ADMIN */}
-                            {user?.roles && user.roles.some((role: string) => role.toLowerCase().includes('admin')) && (
+                            {/* NEW: Sales Salaries - chỉ hiển thị cho ADMIN trong video-veo3-be */}
+                            {isVideoVeo3BeAdmin && (
                                 <a
                                     href="/sales-salaries"
                                     style={{
@@ -301,11 +302,11 @@ const AppRoutes: React.FC = () => {
                         }
                     />
 
-                    {/* NEW: Route lương sales - chỉ cho ADMIN */}
+                    {/* NEW: Route lương sales - chỉ cho ADMIN trong video-veo3-be */}
                     <Route
                         path="/sales-salaries"
                         element={
-                            <ProtectedRoute requiredRoles={['admin']}>
+                            <ProtectedRoute>
                                 <SalesSalaries />
                             </ProtectedRoute>
                         }

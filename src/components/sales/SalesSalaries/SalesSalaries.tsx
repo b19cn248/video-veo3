@@ -10,9 +10,14 @@ import SalesDateStatus from './components/SalesDateStatus';
 import Loading from '../../common/Loading/Loading';
 import ErrorDisplay from '../../common/ErrorDisplay/ErrorDisplay';
 import { extractErrorMessage } from '../../../utils/errorUtils';
+import { useIsVideoVeo3BeAdmin } from '../../../contexts/AuthContext';
 
 const SalesSalaries: React.FC = () => {
+    // Kiểm tra quyền admin trong video-veo3-be
+    const isVideoVeo3BeAdmin = useIsVideoVeo3BeAdmin();
+    
     // Sử dụng custom hook để quản lý logic với date filtering
+    // PHẢI gọi hook trước khi return conditional
     const {
         salesSalaries,
         filteredSalaries,
@@ -34,6 +39,55 @@ const SalesSalaries: React.FC = () => {
         }
         return name;
     };
+
+    // Nếu không có quyền admin, hiển thị thông báo lỗi
+    if (!isVideoVeo3BeAdmin) {
+        return (
+            <div style={{ 
+                padding: '20px', 
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <div style={{
+                    backgroundColor: 'white',
+                    padding: '40px',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                    textAlign: 'center',
+                    maxWidth: '500px'
+                }}>
+                    <div style={{
+                        fontSize: '48px',
+                        marginBottom: '20px'
+                    }}>🔒</div>
+                    <h2 style={{
+                        fontSize: '24px',
+                        fontWeight: '600',
+                        color: '#1f2937',
+                        marginBottom: '12px'
+                    }}>
+                        Truy cập bị từ chối
+                    </h2>
+                    <p style={{
+                        fontSize: '16px',
+                        color: '#6b7280',
+                        marginBottom: '8px'
+                    }}>
+                        Bạn không có quyền truy cập trang này.
+                    </p>
+                    <p style={{
+                        fontSize: '14px',
+                        color: '#9ca3af'
+                    }}>
+                        Chỉ người dùng có role admin trong video-veo3-be mới có thể xem bảng lương sales.
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div style={{ padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
