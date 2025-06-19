@@ -49,8 +49,10 @@ export interface StaffLimitRemoveResponse {
 export interface ActiveLimitsResponse {
     success: boolean;
     message: string;
-    data: StaffLimit[];
-    total: number;
+    data: {
+        limits: StaffLimit[];
+        total: number;
+    };
     timestamp: number;
     tenantId: string;
 }

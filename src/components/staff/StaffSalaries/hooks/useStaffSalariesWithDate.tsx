@@ -56,10 +56,10 @@ export const useStaffSalariesWithDate = (): UseStaffSalariesWithDateReturn => {
             if (response.success) {
                 setStaffSalaries(response.data);
 
-                // Tính toán summary statistics với ngày được chọn
-                const totalStaff = response.totalStaff;
-                const totalVideos = response.totalVideos;
-                const totalSalary = response.totalSalary;
+                // Tính toán summary statistics từ data array
+                const totalStaff = response.data.length;
+                const totalVideos = response.data.reduce((sum, staff) => sum + staff.totalVideos, 0);
+                const totalSalary = response.data.reduce((sum, staff) => sum + staff.totalSalary, 0);
 
                 const newSummary: SalarySummary = {
                     totalStaff,
@@ -67,7 +67,7 @@ export const useStaffSalariesWithDate = (): UseStaffSalariesWithDateReturn => {
                     totalSalary,
                     averageSalary: totalStaff > 0 ? totalSalary / totalStaff : 0,
                     averageVideosPerStaff: totalStaff > 0 ? totalVideos / totalStaff : 0,
-                    selectedDate: dateToUse // NEW: Lưu ngày được chọn
+                    selectedDate: dateToUse
                 };
 
                 setSummary(newSummary);

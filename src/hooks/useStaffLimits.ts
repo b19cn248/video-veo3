@@ -39,9 +39,9 @@ export const useStaffLimits = (): UseStaffLimitsReturn => {
             const response = await StaffLimitService.getActiveLimits();
 
             if (response.success) {
-                setActiveLimits(response.data);
+                setActiveLimits(response.data.limits);
                 setLastUpdated(Date.now());
-                console.log('Active limits loaded successfully:', response.data);
+                console.log('Active limits loaded successfully:', response.data.limits);
             } else {
                 const errorMessage = extractErrorMessage(response, 'Không thể tải danh sách giới hạn');
                 setError(errorMessage);

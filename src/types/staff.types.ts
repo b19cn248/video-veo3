@@ -11,10 +11,6 @@ export interface StaffSalary {
 // Interface cho response API lấy danh sách lương nhân viên
 export interface StaffSalariesResponse {
     data: StaffSalary[];
-    totalSalary: number;
-    totalStaff: number;
-    totalVideos: number;
-    date?: string; // NEW: Ngày được lọc (yyyy-MM-dd format)
     success: boolean;
     tenantId: string;
     message: string;

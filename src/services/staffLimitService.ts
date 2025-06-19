@@ -248,8 +248,8 @@ export class StaffLimitService {
     static async checkHealth(): Promise<boolean> {
         try {
             // Thử gọi endpoint đơn giản nhất
-            await apiClient.get('/videos/staff-limits');
-            return true;
+            const response = await apiClient.get('/videos/staff-limits');
+            return response.data.success === true;
         } catch (error) {
             console.error('Staff limit API health check failed:', error);
             return false;
