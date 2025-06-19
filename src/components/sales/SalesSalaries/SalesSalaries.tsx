@@ -110,7 +110,7 @@ const SalesSalaries: React.FC = () => {
                     color: '#6b7280',
                     margin: 0
                 }}>
-                    Tổng quan về lương và hoa hồng của sales theo từng ngày (12% commission)
+                    Tổng quan về lương và hoa hồng của sales theo từng ngày (10% commission)
                 </p>
                 <div style={{
                     fontSize: '12px',
@@ -475,7 +475,7 @@ const SalesSalaries: React.FC = () => {
                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                                 >
-                                    💰 Hoa hồng (12%) {getSortIcon('commissionSalary')}
+                                    💰 Hoa hồng (10%) {getSortIcon('commissionSalary')}
                                 </th>
                                 <th style={{
                                     padding: '14px 16px',

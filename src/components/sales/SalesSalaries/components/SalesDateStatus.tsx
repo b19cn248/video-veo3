@@ -110,7 +110,7 @@ const SalesDateStatus: React.FC<SalesDateStatusProps> = ({
                         fontSize: '13px',
                         opacity: 0.8
                     }}>
-                        📊 Báo cáo lương sales (Hoa hồng 12%)
+                        📊 Báo cáo lương sales (Hoa hồng 10%)
                         {!isSingleDate && ` • ${getDaysCount()} ngày`}
                     </div>
                 </div>

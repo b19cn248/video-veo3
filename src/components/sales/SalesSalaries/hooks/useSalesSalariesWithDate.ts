@@ -121,7 +121,7 @@ export const useSalesSalariesWithDate = () => {
             totalCommission: totalCommission,
             averageCommission: filteredSalaries.length > 0 ? totalCommission / filteredSalaries.length : 0,
             averageVideosPerSales: filteredSalaries.length > 0 ? totalVideos / filteredSalaries.length : 0,
-            commissionRate: '12%',
+            commissionRate: '10%',
             selectedDate: filter.selectedDate,
             startDate: filter.startDate,
             endDate: filter.endDate

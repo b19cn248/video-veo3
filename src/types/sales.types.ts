@@ -1,5 +1,5 @@
 // Định nghĩa các kiểu dữ liệu cho Sales Salary
-// Types cho tính năng tính lương sales với commission 12%
+// Types cho tính năng tính lương sales với commission 10%
 
 // Interface cho thông tin lương của một sales person
 export interface SalesSalary {
