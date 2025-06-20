@@ -34,7 +34,10 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         assignedStaff: '',
         deliveryStatus: '',
         paymentStatus: '',
-        paymentDate: '', // NEW: Thêm filter ngày thanh toán
+        fromPaymentDate: '', // UPDATED: Đổi từ paymentDate thành fromPaymentDate
+        toPaymentDate: '', // NEW: Thêm toPaymentDate cho date range
+        fromDateCreatedVideo: '', // NEW: Thêm fromDateCreatedVideo cho date range
+        toDateCreatedVideo: '', // NEW: Thêm toDateCreatedVideo cho date range
         createdBy: '', // NEW: Thêm filter người tạo
         videoId: '' // NEW: Thêm filter video ID
     });
@@ -168,8 +171,18 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         if (currentFilters.paymentStatus) {
             filterParams.paymentStatus = currentFilters.paymentStatus as any;
         }
-        if (currentFilters.paymentDate) {
-            filterParams.paymentDate = currentFilters.paymentDate;
+        // UPDATED: Sử dụng date range parameters mới
+        if (currentFilters.fromPaymentDate) {
+            filterParams.fromPaymentDate = currentFilters.fromPaymentDate;
+        }
+        if (currentFilters.toPaymentDate) {
+            filterParams.toPaymentDate = currentFilters.toPaymentDate;
+        }
+        if (currentFilters.fromDateCreatedVideo) {
+            filterParams.fromDateCreatedVideo = currentFilters.fromDateCreatedVideo;
+        }
+        if (currentFilters.toDateCreatedVideo) {
+            filterParams.toDateCreatedVideo = currentFilters.toDateCreatedVideo;
         }
         if (currentFilters.createdBy && currentFilters.createdBy.trim()) {
             filterParams.createdBy = currentFilters.createdBy.trim();
@@ -227,7 +240,10 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
             assignedStaff: '',
             deliveryStatus: '',
             paymentStatus: '',
-            paymentDate: '', // NEW: Reset payment date filter
+            fromPaymentDate: '', // UPDATED: Reset fromPaymentDate
+            toPaymentDate: '', // NEW: Reset toPaymentDate
+            fromDateCreatedVideo: '', // NEW: Reset fromDateCreatedVideo
+            toDateCreatedVideo: '', // NEW: Reset toDateCreatedVideo
             createdBy: '', // NEW: Reset created by filter
             videoId: '' // NEW: Reset video ID filter
         });

@@ -14,7 +14,12 @@
       "Bash(mkdir:*)",
       "Bash(rm:*)",
       "Bash(npm run:*)",
-      "Bash(npm start)"
+      "Bash(npm start)",
+      "Bash(killall:*)",
+      "Bash(true)",
+      "Bash(timeout 30s npm start)",
+      "Bash(timeout 45s npm start)",
+      "Bash(find:*)"
     ],
     "deny": []
   }

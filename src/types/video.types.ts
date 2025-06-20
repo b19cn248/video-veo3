@@ -82,7 +82,10 @@ export interface VideoFilterParams {
     deliveryStatus?: DeliveryStatus;
     paymentStatus?: PaymentStatus;
     customerName?: string; // NEW: Thêm search theo tên khách hàng
-    paymentDate?: string; // NEW: Thêm filter theo ngày thanh toán
+    fromPaymentDate?: string; // UPDATED: Đổi từ paymentDate thành fromPaymentDate
+    toPaymentDate?: string; // NEW: Thêm toPaymentDate cho date range
+    fromDateCreatedVideo?: string; // NEW: Thêm fromDateCreatedVideo cho date range
+    toDateCreatedVideo?: string; // NEW: Thêm toDateCreatedVideo cho date range
     createdBy?: string; // NEW: Thêm filter theo người tạo
     videoId?: number; // NEW: Thêm search theo ID video
 }
@@ -127,7 +130,10 @@ export interface FilterState {
     assignedStaff: string;
     deliveryStatus: DeliveryStatus | '';
     paymentStatus: PaymentStatus | '';
-    paymentDate: string; // NEW: Thêm filter theo ngày thanh toán
+    fromPaymentDate: string; // UPDATED: Đổi từ paymentDate thành fromPaymentDate
+    toPaymentDate: string; // NEW: Thêm toPaymentDate cho date range
+    fromDateCreatedVideo: string; // NEW: Thêm fromDateCreatedVideo cho date range
+    toDateCreatedVideo: string; // NEW: Thêm toDateCreatedVideo cho date range
     createdBy: string; // NEW: Thêm filter theo người tạo
     videoId: string; // NEW: Thêm search theo ID video
 }

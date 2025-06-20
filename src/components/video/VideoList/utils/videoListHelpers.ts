@@ -182,7 +182,10 @@ export const filterBadgeColors = {
     assignedStaff: '#7c3aed', // Purple for staff assignment
     deliveryStatus: '#ea580c', // Orange for delivery status
     paymentStatus: '#059669', // Green for payment status
-    paymentDate: '#0891b2', // Cyan for payment date filter
+    fromPaymentDate: '#0891b2', // Cyan for from payment date filter
+    toPaymentDate: '#0891b2', // Cyan for to payment date filter
+    fromDateCreatedVideo: '#0d9488', // Teal for from creation date filter
+    toDateCreatedVideo: '#0d9488', // Teal for to creation date filter
     createdBy: '#8b5cf6', // Violet for created by filter
     videoId: '#dc2626' // Red for video ID search
 };
@@ -220,7 +223,10 @@ export const formatFilterDisplayText = (filterType: string, value: string): stri
         assignedStaff: '👨‍💼 Nhân viên:',
         deliveryStatus: '🚚 Giao hàng:',
         paymentStatus: '💰 Thanh toán:',
-        paymentDate: '📅 Ngày thanh toán:',
+        fromPaymentDate: '📅',
+        toPaymentDate: '📅',
+        fromDateCreatedVideo: '📅',
+        toDateCreatedVideo: '📅',
         createdBy: '✍️ Người tạo:',
         videoId: '🆔' // Just icon for ID, value already includes "ID:" prefix
     };

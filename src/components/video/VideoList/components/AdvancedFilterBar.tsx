@@ -15,14 +15,29 @@ import {
     formatFilterDisplayText
 } from '../utils/videoListHelpers';
 
+// Local interface để đảm bảo type safety
+interface LocalFilterState {
+    customerName: string;
+    status: VideoStatus | '';
+    assignedStaff: string;
+    deliveryStatus: DeliveryStatus | '';
+    paymentStatus: PaymentStatus | '';
+    fromPaymentDate: string;
+    toPaymentDate: string;
+    fromDateCreatedVideo: string;
+    toDateCreatedVideo: string;
+    createdBy: string;
+    videoId: string;
+}
+
 interface AdvancedFilterBarProps {
-    filters: FilterState;
+    filters: LocalFilterState;
     filterOptions: FilterOptions;
     activeFiltersCount: number;
     loadingStaffList: boolean;
     loadingCreatorsList: boolean; // NEW: Loading state cho creators
     isAdmin: boolean;
-    onFilterChange: (filterType: keyof FilterState, value: string) => void;
+    onFilterChange: (filterType: keyof LocalFilterState, value: string) => void;
     onResetAllFilters: () => void;
     onRefreshStaffList: () => void;
     onCreateNew: () => void;
@@ -97,14 +112,14 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                 )}
             </div>
 
-            {/* Filter Controls Grid - UPDATED: Thêm Customer Name Search, Payment Date và Created By cho admin */}
+            {/* Filter Controls Grid - REVERTED: 4 separate date inputs */}
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: isAdmin 
-                    ? 'repeat(auto-fit, minmax(180px, 1fr))' // Admin: 8 columns (thêm video ID search)
-                    : 'repeat(auto-fit, minmax(200px, 1fr))', // User: 5 columns (thêm video ID search)
-                gap: '16px',
-                alignItems: 'end'
+                    ? 'repeat(auto-fit, minmax(160px, 1fr))' // Admin: 10+ columns
+                    : 'repeat(auto-fit, minmax(180px, 1fr))', // User: 9 columns (4 date inputs)
+                gap: '12px',
+                alignItems: 'end' // REVERTED: back to 'end'
             }}>
                 {/* Video ID Search - hiển thị cho tất cả người dùng */}
                 <div>
@@ -359,56 +374,201 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                     </select>
                 </div>
 
-                {/* NEW: Payment Date Filter - chỉ cho admin */}
-                {isAdmin && (
-                    <div>
-                        <label style={{
-                            display: 'block',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            color: '#374151',
-                            marginBottom: '6px'
-                        }}>
-                            📅 Ngày thanh toán
-                        </label>
-                        <div style={{ position: 'relative' }}>
-                            <input
-                                type="date"
-                                value={filters.paymentDate}
-                                onChange={(e) => onFilterChange('paymentDate', e.target.value)}
+                {/* From Payment Date Filter - hiển thị cho tất cả người dùng */}
+                <div>
+                    <label style={{
+                        display: 'block',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        color: '#374151',
+                        marginBottom: '6px'
+                    }}>
+                        📅 Từ ngày TT
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="date"
+                            value={filters.fromPaymentDate}
+                            onChange={(e) => onFilterChange('fromPaymentDate', e.target.value)}
+                            style={{
+                                ...createFilterInputStyle(),
+                                paddingRight: filters.fromPaymentDate ? '36px' : '12px'
+                            }}
+                            {...createInputFocusHandlers()}
+                        />
+                        {/* Clear button khi có date */}
+                        {filters.fromPaymentDate && (
+                            <button
+                                onClick={() => onFilterChange('fromPaymentDate', '')}
                                 style={{
-                                    ...createFilterInputStyle(),
-                                    paddingRight: filters.paymentDate ? '36px' : '12px'
+                                    position: 'absolute',
+                                    right: '8px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '16px',
+                                    color: '#6b7280',
+                                    padding: '2px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
                                 }}
-                                {...createInputFocusHandlers()}
-                            />
-                            {/* Clear button khi có date */}
-                            {filters.paymentDate && (
-                                <button
-                                    onClick={() => onFilterChange('paymentDate', '')}
-                                    style={{
-                                        position: 'absolute',
-                                        right: '8px',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '16px',
-                                        color: '#6b7280',
-                                        padding: '2px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
-                                    title="Xóa ngày thanh toán"
-                                >
-                                    ✖️
-                                </button>
-                            )}
-                        </div>
+                                title="Xóa từ ngày thanh toán"
+                            >
+                                ✖️
+                            </button>
+                        )}
                     </div>
-                )}
+                </div>
+
+                {/* To Payment Date Filter - hiển thị cho tất cả người dùng */}
+                <div>
+                    <label style={{
+                        display: 'block',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        color: '#374151',
+                        marginBottom: '6px'
+                    }}>
+                        📅 Đến ngày TT
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="date"
+                            value={filters.toPaymentDate}
+                            onChange={(e) => onFilterChange('toPaymentDate', e.target.value)}
+                            style={{
+                                ...createFilterInputStyle(),
+                                paddingRight: filters.toPaymentDate ? '36px' : '12px'
+                            }}
+                            {...createInputFocusHandlers()}
+                        />
+                        {/* Clear button khi có date */}
+                        {filters.toPaymentDate && (
+                            <button
+                                onClick={() => onFilterChange('toPaymentDate', '')}
+                                style={{
+                                    position: 'absolute',
+                                    right: '8px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '16px',
+                                    color: '#6b7280',
+                                    padding: '2px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Xóa đến ngày thanh toán"
+                            >
+                                ✖️
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* From Creation Date Filter - hiển thị cho tất cả người dùng */}
+                <div>
+                    <label style={{
+                        display: 'block',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        color: '#374151',
+                        marginBottom: '6px'
+                    }}>
+                        📅 Từ ngày tạo
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="date"
+                            value={filters.fromDateCreatedVideo}
+                            onChange={(e) => onFilterChange('fromDateCreatedVideo', e.target.value)}
+                            style={{
+                                ...createFilterInputStyle(),
+                                paddingRight: filters.fromDateCreatedVideo ? '36px' : '12px'
+                            }}
+                            {...createInputFocusHandlers()}
+                        />
+                        {/* Clear button khi có date */}
+                        {filters.fromDateCreatedVideo && (
+                            <button
+                                onClick={() => onFilterChange('fromDateCreatedVideo', '')}
+                                style={{
+                                    position: 'absolute',
+                                    right: '8px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '16px',
+                                    color: '#6b7280',
+                                    padding: '2px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Xóa từ ngày tạo"
+                            >
+                                ✖️
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* To Creation Date Filter - hiển thị cho tất cả người dùng */}
+                <div>
+                    <label style={{
+                        display: 'block',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        color: '#374151',
+                        marginBottom: '6px'
+                    }}>
+                        📅 Đến ngày tạo
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="date"
+                            value={filters.toDateCreatedVideo}
+                            onChange={(e) => onFilterChange('toDateCreatedVideo', e.target.value)}
+                            style={{
+                                ...createFilterInputStyle(),
+                                paddingRight: filters.toDateCreatedVideo ? '36px' : '12px'
+                            }}
+                            {...createInputFocusHandlers()}
+                        />
+                        {/* Clear button khi có date */}
+                        {filters.toDateCreatedVideo && (
+                            <button
+                                onClick={() => onFilterChange('toDateCreatedVideo', '')}
+                                style={{
+                                    position: 'absolute',
+                                    right: '8px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '16px',
+                                    color: '#6b7280',
+                                    padding: '2px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                title="Xóa đến ngày tạo"
+                            >
+                                ✖️
+                            </button>
+                        )}
+                    </div>
+                </div>
 
                 {/* Create Button - chỉ hiển thị cho admin */}
                 {isAdmin && (
@@ -495,9 +655,26 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                                 {formatFilterDisplayText('paymentStatus', formatPaymentStatus(filters.paymentStatus as PaymentStatus))}
                             </span>
                         )}
-                        {isAdmin && filters.paymentDate && (
-                            <span style={createFilterBadgeStyle(filterBadgeColors.paymentDate || filterBadgeColors.status)}>
-                                {formatFilterDisplayText('paymentDate', filters.paymentDate)}
+                        {/* Payment Date Range Badges - hiển thị cho tất cả người dùng */}
+                        {filters.fromPaymentDate && (
+                            <span style={createFilterBadgeStyle(filterBadgeColors.fromPaymentDate || filterBadgeColors.status)}>
+                                {formatFilterDisplayText('fromPaymentDate', `Từ TT: ${filters.fromPaymentDate}`)}
+                            </span>
+                        )}
+                        {filters.toPaymentDate && (
+                            <span style={createFilterBadgeStyle(filterBadgeColors.toPaymentDate || filterBadgeColors.status)}>
+                                {formatFilterDisplayText('toPaymentDate', `Đến TT: ${filters.toPaymentDate}`)}
+                            </span>
+                        )}
+                        {/* Creation Date Range Badges - hiển thị cho tất cả người dùng */}
+                        {filters.fromDateCreatedVideo && (
+                            <span style={createFilterBadgeStyle(filterBadgeColors.fromDateCreatedVideo || filterBadgeColors.status)}>
+                                {formatFilterDisplayText('fromDateCreatedVideo', `Từ tạo: ${filters.fromDateCreatedVideo}`)}
+                            </span>
+                        )}
+                        {filters.toDateCreatedVideo && (
+                            <span style={createFilterBadgeStyle(filterBadgeColors.toDateCreatedVideo || filterBadgeColors.status)}>
+                                {formatFilterDisplayText('toDateCreatedVideo', `Đến tạo: ${filters.toDateCreatedVideo}`)}
                             </span>
                         )}
                         {isAdmin && filters.createdBy && (

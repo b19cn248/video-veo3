@@ -134,11 +134,24 @@ export class VideoService {
                 if (filters.paymentStatus) {
                     params.paymentStatus = filters.paymentStatus;
                 }
-                if (filters.paymentDate) {
-                    params.paymentDate = filters.paymentDate;
+                // UPDATED: Sử dụng date range parameters mới
+                if (filters.fromPaymentDate) {
+                    params.fromPaymentDate = filters.fromPaymentDate;
+                }
+                if (filters.toPaymentDate) {
+                    params.toPaymentDate = filters.toPaymentDate;
+                }
+                if (filters.fromDateCreatedVideo) {
+                    params.fromDateCreatedVideo = filters.fromDateCreatedVideo;
+                }
+                if (filters.toDateCreatedVideo) {
+                    params.toDateCreatedVideo = filters.toDateCreatedVideo;
                 }
                 if (filters.createdBy && filters.createdBy.trim()) {
                     params.createdBy = filters.createdBy.trim();
+                }
+                if (filters.videoId) {
+                    params.videoId = filters.videoId;
                 }
             }
 
