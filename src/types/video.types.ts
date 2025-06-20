@@ -31,6 +31,7 @@ export interface Video {
     customerName: string;
     videoContent?: string;
     imageUrl?: string;
+    billImageUrl?: string; // NEW: URL hình ảnh thanh toán/hóa đơn
     videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
     deliveryTime?: string;
     assignedStaff?: string;
@@ -56,6 +57,7 @@ export interface VideoFormData {
     customerName: string;
     videoContent?: string;
     imageUrl?: string;
+    billImageUrl?: string; // NEW: URL hình ảnh thanh toán/hóa đơn
     videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
     deliveryTime?: string;
     assignedStaff?: string;

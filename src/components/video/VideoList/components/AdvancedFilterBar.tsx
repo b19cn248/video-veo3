@@ -102,61 +102,59 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                 display: 'grid',
                 gridTemplateColumns: isAdmin 
                     ? 'repeat(auto-fit, minmax(180px, 1fr))' // Admin: 8 columns (thêm video ID search)
-                    : 'repeat(auto-fit, minmax(200px, 1fr))', // User: 4 columns như cũ
+                    : 'repeat(auto-fit, minmax(200px, 1fr))', // User: 5 columns (thêm video ID search)
                 gap: '16px',
                 alignItems: 'end'
             }}>
-                {/* NEW: Video ID Search - chỉ cho admin */}
-                {isAdmin && (
-                    <div>
-                        <label style={{
-                            display: 'block',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            color: '#374151',
-                            marginBottom: '6px'
-                        }}>
-                            🆔 Tìm theo ID video
-                        </label>
-                        <div style={{ position: 'relative' }}>
-                            <input
-                                type="text"
-                                value={filters.videoId}
-                                onChange={(e) => onFilterChange('videoId', e.target.value)}
-                                placeholder="Nhập ID video..."
+                {/* Video ID Search - hiển thị cho tất cả người dùng */}
+                <div>
+                    <label style={{
+                        display: 'block',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        color: '#374151',
+                        marginBottom: '6px'
+                    }}>
+                        🆔 Tìm theo ID video
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="text"
+                            value={filters.videoId}
+                            onChange={(e) => onFilterChange('videoId', e.target.value)}
+                            placeholder="Nhập ID video..."
+                            style={{
+                                ...createFilterInputStyle(),
+                                paddingRight: filters.videoId ? '36px' : '12px'
+                            }}
+                            {...createInputFocusHandlers()}
+                        />
+                        {/* Clear button khi có text */}
+                        {filters.videoId && (
+                            <button
+                                onClick={() => onFilterChange('videoId', '')}
                                 style={{
-                                    ...createFilterInputStyle(),
-                                    paddingRight: filters.videoId ? '36px' : '12px'
+                                    position: 'absolute',
+                                    right: '8px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '16px',
+                                    color: '#6b7280',
+                                    padding: '2px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
                                 }}
-                                {...createInputFocusHandlers()}
-                            />
-                            {/* Clear button khi có text */}
-                            {filters.videoId && (
-                                <button
-                                    onClick={() => onFilterChange('videoId', '')}
-                                    style={{
-                                        position: 'absolute',
-                                        right: '8px',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '16px',
-                                        color: '#6b7280',
-                                        padding: '2px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
-                                    title="Xóa tìm kiếm"
-                                >
-                                    ✖️
-                                </button>
-                            )}
-                        </div>
+                                title="Xóa tìm kiếm"
+                            >
+                                ✖️
+                            </button>
+                        )}
                     </div>
-                )}
+                </div>
                 {/* NEW: Customer Name Search - chỉ cho admin */}
                 {isAdmin && (
                     <div>
@@ -465,8 +463,8 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                         flexWrap: 'wrap',
                         gap: '6px'
                     }}>
-                        {/* NEW: Video ID Search Badge - chỉ cho admin */}
-                        {isAdmin && filters.videoId && (
+                        {/* Video ID Search Badge - hiển thị cho tất cả người dùng */}
+                        {filters.videoId && (
                             <span style={createFilterBadgeStyle(filterBadgeColors.videoId || filterBadgeColors.status)}>
                                 {formatFilterDisplayText('videoId', `ID: ${filters.videoId}`)}
                             </span>

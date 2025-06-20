@@ -491,6 +491,29 @@ const VideoDetailModal: React.FC<VideoDetailModalProps> = ({ isOpen, videoId, on
                                         <strong>Ngày thanh toán:</strong> {formatDate(video.paymentDate)}
                                     </div>
                                 )}
+
+                                {/* Hình ảnh thanh toán - chỉ hiển thị khi có URL */}
+                                {video.billImageUrl && (
+                                    <div style={{ marginBottom: 16 }}>
+                                        <strong>Hình ảnh thanh toán:</strong>
+                                        <div style={{ marginTop: 8 }}>
+                                            <img 
+                                                src={video.billImageUrl} 
+                                                alt="Hình ảnh thanh toán" 
+                                                style={{ 
+                                                    maxWidth: 200, 
+                                                    maxHeight: 150, 
+                                                    borderRadius: 4, 
+                                                    objectFit: 'cover',
+                                                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                                                    cursor: 'pointer'
+                                                }}
+                                                onClick={() => window.open(video.billImageUrl, '_blank')}
+                                                title="Click để xem ảnh kích thước đầy đủ"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </>

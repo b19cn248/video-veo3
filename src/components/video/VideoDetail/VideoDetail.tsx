@@ -125,6 +125,29 @@ const VideoDetail: React.FC = () => {
                         )}
 
                         {video.videoUrl && <div style={{ marginBottom: 16 }}><b>URL video:</b> <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">Xem video</a></div>}
+
+                        {/* Hình ảnh thanh toán - chỉ hiển thị khi có URL */}
+                        {video.billImageUrl && (
+                            <div style={{ marginBottom: 16 }}>
+                                <b>Hình ảnh thanh toán:</b>
+                                <div style={{ marginTop: 8 }}>
+                                    <img 
+                                        src={video.billImageUrl} 
+                                        alt="Hình ảnh thanh toán" 
+                                        style={{ 
+                                            maxWidth: 200, 
+                                            maxHeight: 150, 
+                                            borderRadius: 4, 
+                                            objectFit: 'cover',
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={() => window.open(video.billImageUrl, '_blank')}
+                                        title="Click để xem ảnh kích thước đầy đủ"
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

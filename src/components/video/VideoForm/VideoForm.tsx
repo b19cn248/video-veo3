@@ -43,6 +43,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         customerName: '',
         videoContent: '',
         imageUrl: '',
+        billImageUrl: '', // NEW: URL hình ảnh thanh toán
         videoDuration: 8, // Mặc định là 8 giây
         deliveryTime: '',
         assignedStaff: '',
@@ -65,6 +66,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 customerName: video.customerName,
                 videoContent: video.videoContent || '',
                 imageUrl: video.imageUrl || '',
+                billImageUrl: video.billImageUrl || '', // NEW: URL hình ảnh thanh toán
                 videoDuration: video.videoDuration || 8,
                 deliveryTime: video.deliveryTime || '',
                 assignedStaff: video.assignedStaff || '',
@@ -194,6 +196,19 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                     onChange={handleInputChange}
                     className="form-input"
                     disabled={isLoading}
+                />
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">URL hình ảnh thanh toán</label>
+                <input
+                    type="url"
+                    name="billImageUrl"
+                    value={formData.billImageUrl}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    disabled={isLoading}
+                    placeholder="Nhập URL hình ảnh hóa đơn/thanh toán"
                 />
             </div>
 
