@@ -43,7 +43,6 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         customerName: '',
         videoContent: '',
         imageUrl: '',
-        billImageUrl: '', // URL hình ảnh thanh toán
         linkfb: '', // NEW: Link Facebook
         phoneNumber: '', // NEW: Số điện thoại
         videoDuration: 8, // Mặc định là 8 giây
@@ -68,7 +67,6 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 customerName: video.customerName,
                 videoContent: video.videoContent || '',
                 imageUrl: video.imageUrl || '',
-                billImageUrl: video.billImageUrl || '', // URL hình ảnh thanh toán
                 linkfb: video.linkfb || '', // NEW: Link Facebook
                 phoneNumber: video.phoneNumber || '', // NEW: Số điện thoại
                 videoDuration: video.videoDuration || 8,
@@ -203,18 +201,6 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 />
             </div>
 
-            <div className="form-group">
-                <label className="form-label">URL hình ảnh thanh toán</label>
-                <input
-                    type="url"
-                    name="billImageUrl"
-                    value={formData.billImageUrl}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    disabled={isLoading}
-                    placeholder="Nhập URL hình ảnh hóa đơn/thanh toán"
-                />
-            </div>
 
             <div className="form-group">
                 <label className="form-label">Link Facebook</label>
