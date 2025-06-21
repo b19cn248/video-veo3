@@ -11,11 +11,12 @@ export enum VideoStatus {
     DA_SUA_XONG = 'DA_SUA_XONG'
 }
 
-// UPDATED: Thêm CAN_SUA_GAP vào DeliveryStatus enum
+// UPDATED: Thêm CAN_SUA_GAP và SUA_XONG_CAN_GUI vào DeliveryStatus enum
 export enum DeliveryStatus {
     DA_GUI = 'DA_GUI',
     CHUA_GUI = 'CHUA_GUI',
     CAN_SUA_GAP = 'CAN_SUA_GAP',  // Thêm trạng thái mới: Cần sửa gấp
+    SUA_XONG_CAN_GUI = 'SUA_XONG_CAN_GUI',  // Thêm trạng thái mới: Sửa xong, cần gửi
     HUY = 'HUY'  // Thêm trạng thái mới: Huỷ
 }
 

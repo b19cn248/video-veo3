@@ -12,12 +12,13 @@ export const formatVideoStatus = (status: VideoStatus): string => {
     return statusMap[status] || status;
 };
 
-// UPDATED: Thêm format cho CAN_SUA_GAP
+// UPDATED: Thêm format cho CAN_SUA_GAP và SUA_XONG_CAN_GUI
 export const formatDeliveryStatus = (status: DeliveryStatus): string => {
     const statusMap = {
         [DeliveryStatus.DA_GUI]: 'Đã gửi',
         [DeliveryStatus.CHUA_GUI]: 'Chưa gửi',
         [DeliveryStatus.CAN_SUA_GAP]: 'Cần sửa gấp',  // Thêm format cho trạng thái mới
+        [DeliveryStatus.SUA_XONG_CAN_GUI]: 'Sửa xong, cần gửi',  // Thêm format cho trạng thái mới
         [DeliveryStatus.HUY]: 'Huỷ'  // Thêm format cho trạng thái huỷ
     };
     return statusMap[status] || status;
@@ -123,10 +124,11 @@ export const getStatusColor = (status: VideoStatus | DeliveryStatus | PaymentSta
         [VideoStatus.DANG_SUA]: 'status-editing',
         [VideoStatus.DA_SUA_XONG]: 'status-edit-completed',
 
-        // Delivery status colors - UPDATED: Thêm CAN_SUA_GAP và HUY
+        // Delivery status colors - UPDATED: Thêm CAN_SUA_GAP, SUA_XONG_CAN_GUI và HUY
         [DeliveryStatus.CHUA_GUI]: 'status-pending',
         [DeliveryStatus.DA_GUI]: 'status-completed',
         [DeliveryStatus.CAN_SUA_GAP]: 'status-urgent',  // Thêm class mới cho trạng thái urgent
+        [DeliveryStatus.SUA_XONG_CAN_GUI]: 'status-ready',  // Thêm class mới cho trạng thái sửa xong cần gửi
         [DeliveryStatus.HUY]: 'status-cancelled',  // Thêm class mới cho trạng thái huỷ
 
         // Payment status colors

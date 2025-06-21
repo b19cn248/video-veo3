@@ -14,6 +14,7 @@ const getSelectStyleForDelivery = (status: DeliveryStatus) => {
         [DeliveryStatus.CHUA_GUI]: { color: '#dc2626', backgroundColor: '#fef2f2' },
         [DeliveryStatus.DA_GUI]: { color: '#16a34a', backgroundColor: '#f0fdf4' },
         [DeliveryStatus.CAN_SUA_GAP]: { color: '#ffffff', backgroundColor: '#ff6b35' },
+        [DeliveryStatus.SUA_XONG_CAN_GUI]: { color: '#ffffff', backgroundColor: '#3b82f6' },
         [DeliveryStatus.HUY]: { color: '#6b7280', backgroundColor: '#f3f4f6' }
     };
     return colorMap[status] || { color: '#6b7280', backgroundColor: '#f9fafb' };
