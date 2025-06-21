@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-interface VideoUrlEditorProps {
-    videoUrl?: string;
+interface BillImageUrlEditorProps {
+    billImageUrl?: string;
     isUpdating: boolean;
     onUpdate: (url: string) => void;
-    onCopy: () => void;
+    onView: () => void;
 }
 
-// Hàm validate URL
+// Hàm validate URL (tương tự VideoUrlEditor)
 const isValidUrl = (url: string): boolean => {
     if (!url.trim()) return true; // Empty URL is allowed
     try {
@@ -18,39 +18,40 @@ const isValidUrl = (url: string): boolean => {
     }
 };
 
-const VideoUrlEditor: React.FC<VideoUrlEditorProps> = ({
-    videoUrl,
+
+const BillImageUrlEditor: React.FC<BillImageUrlEditorProps> = ({
+    billImageUrl,
     isUpdating,
     onUpdate,
-    onCopy
+    onView
 }) => {
-    const [editingVideoUrl, setEditingVideoUrl] = useState(false);
-    const [tempVideoUrl, setTempVideoUrl] = useState(videoUrl || '');
+    const [editingBillImageUrl, setEditingBillImageUrl] = useState(false);
+    const [tempBillImageUrl, setTempBillImageUrl] = useState(billImageUrl || '');
     const [urlError, setUrlError] = useState('');
     const [showTooltip, setShowTooltip] = useState(false);
 
     // Update temp URL when prop changes
     useEffect(() => {
-        setTempVideoUrl(videoUrl || '');
-    }, [videoUrl]);
+        setTempBillImageUrl(billImageUrl || '');
+    }, [billImageUrl]);
 
-    // Hàm xử lý khi bắt đầu edit video URL
-    const handleVideoUrlEditStart = () => {
-        setEditingVideoUrl(true);
-        setTempVideoUrl(videoUrl || '');
+    // Hàm xử lý khi bắt đầu edit bill image URL
+    const handleBillImageUrlEditStart = () => {
+        setEditingBillImageUrl(true);
+        setTempBillImageUrl(billImageUrl || '');
         setUrlError('');
     };
 
-    // Hàm xử lý khi hủy edit video URL
-    const handleVideoUrlEditCancel = () => {
-        setEditingVideoUrl(false);
-        setTempVideoUrl(videoUrl || '');
+    // Hàm xử lý khi hủy edit bill image URL
+    const handleBillImageUrlEditCancel = () => {
+        setEditingBillImageUrl(false);
+        setTempBillImageUrl(billImageUrl || '');
         setUrlError('');
     };
 
-    // Hàm xử lý khi thay đổi video URL
-    const handleVideoUrlChange = (newUrl: string) => {
-        setTempVideoUrl(newUrl);
+    // Hàm xử lý khi thay đổi bill image URL
+    const handleBillImageUrlChange = (newUrl: string) => {
+        setTempBillImageUrl(newUrl);
 
         // Validate URL realtime
         if (newUrl.trim() && !isValidUrl(newUrl)) {
@@ -60,9 +61,9 @@ const VideoUrlEditor: React.FC<VideoUrlEditorProps> = ({
         }
     };
 
-    // Hàm xử lý cập nhật video URL
-    const handleVideoUrlUpdate = () => {
-        const trimmedUrl = tempVideoUrl.trim();
+    // Hàm xử lý cập nhật bill image URL
+    const handleBillImageUrlUpdate = () => {
+        const trimmedUrl = tempBillImageUrl.trim();
 
         // Validate URL
         if (trimmedUrl && !isValidUrl(trimmedUrl)) {
@@ -71,28 +72,28 @@ const VideoUrlEditor: React.FC<VideoUrlEditorProps> = ({
         }
 
         // Nếu URL không thay đổi
-        if (trimmedUrl === (videoUrl || '')) {
-            setEditingVideoUrl(false);
+        if (trimmedUrl === (billImageUrl || '')) {
+            setEditingBillImageUrl(false);
             return;
         }
 
         onUpdate(trimmedUrl);
-        setEditingVideoUrl(false);
+        setEditingBillImageUrl(false);
     };
 
-    // Hàm xử lý key press trong input video URL
-    const handleVideoUrlKeyPress = (e: React.KeyboardEvent) => {
+    // Hàm xử lý key press trong input bill image URL
+    const handleBillImageUrlKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
-            handleVideoUrlUpdate();
+            handleBillImageUrlUpdate();
         } else if (e.key === 'Escape') {
-            handleVideoUrlEditCancel();
+            handleBillImageUrlEditCancel();
         }
     };
 
-    // Hàm mở video trong tab mới
-    const handleOpenVideo = () => {
-        if (videoUrl) {
-            window.open(videoUrl, '_blank', 'noopener,noreferrer');
+    // Hàm mở ảnh trong tab mới
+    const handleOpenImage = () => {
+        if (billImageUrl) {
+            window.open(billImageUrl, '_blank', 'noopener,noreferrer');
         }
     };
 
@@ -135,16 +136,16 @@ const VideoUrlEditor: React.FC<VideoUrlEditorProps> = ({
 
     return (
         <div style={{ position: 'relative' }}>
-            {editingVideoUrl ? (
+            {editingBillImageUrl ? (
                 <div style={{ position: 'relative' }}>
                     <input
                         type="text"
-                        value={tempVideoUrl}
-                        onChange={(e) => handleVideoUrlChange(e.target.value)}
-                        onBlur={handleVideoUrlUpdate}
-                        onKeyDown={handleVideoUrlKeyPress}
+                        value={tempBillImageUrl}
+                        onChange={(e) => handleBillImageUrlChange(e.target.value)}
+                        onBlur={handleBillImageUrlUpdate}
+                        onKeyDown={handleBillImageUrlKeyPress}
                         disabled={isUpdating}
-                        placeholder="Nhập link video..."
+                        placeholder="Nhập link hình ảnh hóa đơn..."
                         autoFocus
                         style={{
                             width: '100%',
@@ -191,40 +192,40 @@ const VideoUrlEditor: React.FC<VideoUrlEditorProps> = ({
                     gap: '4px',
                     justifyContent: 'center'
                 }}>
-                    {videoUrl ? (
+                    {billImageUrl ? (
                         <>
                             {/* View button */}
                             <button
-                                onClick={handleOpenVideo}
+                                onClick={handleOpenImage}
                                 onMouseEnter={() => setShowTooltip(true)}
                                 onMouseLeave={() => setShowTooltip(false)}
                                 style={{
                                     ...iconButtonStyle,
-                                    backgroundColor: '#f0fdf4',
-                                    borderColor: '#86efac',
-                                    color: '#059669'
+                                    backgroundColor: '#fef3c7',
+                                    borderColor: '#fcd34d',
+                                    color: '#d97706'
                                 }}
                                 onMouseOver={(e) => {
-                                    e.currentTarget.style.backgroundColor = '#dcfce7';
+                                    e.currentTarget.style.backgroundColor = '#fde68a';
                                     e.currentTarget.style.transform = 'scale(1.05)';
                                 }}
                                 onMouseOut={(e) => {
-                                    e.currentTarget.style.backgroundColor = '#f0fdf4';
+                                    e.currentTarget.style.backgroundColor = '#fef3c7';
                                     e.currentTarget.style.transform = 'scale(1)';
                                 }}
-                                title="Xem video"
+                                title="Xem ảnh hóa đơn"
                             >
-                                🎬
+                                🖼️
                                 {showTooltip && (
                                     <div style={tooltipStyle}>
-                                        {videoUrl}
+                                        {billImageUrl}
                                     </div>
                                 )}
                             </button>
 
-                            {/* Copy button */}
+                            {/* Edit button */}
                             <button
-                                onClick={onCopy}
+                                onClick={handleBillImageUrlEditStart}
                                 style={{
                                     ...iconButtonStyle,
                                     backgroundColor: '#eff6ff',
@@ -239,28 +240,6 @@ const VideoUrlEditor: React.FC<VideoUrlEditorProps> = ({
                                     e.currentTarget.style.backgroundColor = '#eff6ff';
                                     e.currentTarget.style.transform = 'scale(1)';
                                 }}
-                                title="Copy link"
-                            >
-                                📋
-                            </button>
-
-                            {/* Edit button */}
-                            <button
-                                onClick={handleVideoUrlEditStart}
-                                style={{
-                                    ...iconButtonStyle,
-                                    backgroundColor: '#fef3c7',
-                                    borderColor: '#fcd34d',
-                                    color: '#d97706'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = '#fde68a';
-                                    e.currentTarget.style.transform = 'scale(1.05)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = '#fef3c7';
-                                    e.currentTarget.style.transform = 'scale(1)';
-                                }}
                                 title="Sửa link"
                             >
                                 ✏️
@@ -269,7 +248,7 @@ const VideoUrlEditor: React.FC<VideoUrlEditorProps> = ({
                     ) : (
                         /* Add button when no URL */
                         <button
-                            onClick={handleVideoUrlEditStart}
+                            onClick={handleBillImageUrlEditStart}
                             style={{
                                 ...iconButtonStyle,
                                 backgroundColor: '#f3f4f6',
@@ -289,7 +268,7 @@ const VideoUrlEditor: React.FC<VideoUrlEditorProps> = ({
                                 e.currentTarget.style.borderColor = '#d1d5db';
                                 e.currentTarget.style.transform = 'scale(1)';
                             }}
-                            title="Thêm link video"
+                            title="Thêm ảnh hóa đơn"
                         >
                             <span style={{ fontSize: '16px' }}>+</span>
                             <span style={{ fontSize: '12px' }}>Thêm</span>
@@ -301,4 +280,4 @@ const VideoUrlEditor: React.FC<VideoUrlEditorProps> = ({
     );
 };
 
-export default React.memo(VideoUrlEditor);
+export default React.memo(BillImageUrlEditor);

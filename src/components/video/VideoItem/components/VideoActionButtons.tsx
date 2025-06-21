@@ -24,20 +24,21 @@ const VideoActionButtons: React.FC<VideoActionButtonsProps> = ({
     return (
         <div style={{ 
             display: 'flex', 
-            gap: '4px', 
+            gap: '3px', // OPTIMIZED: Reduced gap from 4px to 3px
             alignItems: 'center',
             flexWrap: 'nowrap',
             overflow: 'visible',
-            minWidth: '200px'
+            minWidth: '170px', // OPTIMIZED: Reduced from 200px to 170px
+            maxWidth: '180px' // OPTIMIZED: Ensure buttons fit in allocated space
         }}>
             <button
                 className="btn btn-primary"
                 style={{
-                    padding: '3px 6px',
+                    padding: '2px 4px', // OPTIMIZED: Reduced padding for smaller buttons
                     fontSize: '11px',
-                    minWidth: '32px',
+                    minWidth: '28px', // OPTIMIZED: Reduced from 32px to 28px
                     borderRadius: '4px',
-                    height: '28px',
+                    height: '26px', // OPTIMIZED: Reduced from 28px to 26px
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -51,11 +52,11 @@ const VideoActionButtons: React.FC<VideoActionButtonsProps> = ({
             <button
                 className="btn btn-outline-info"
                 style={{
-                    padding: '3px 6px',
+                    padding: '2px 4px', // OPTIMIZED: Reduced padding for smaller buttons
                     fontSize: '11px',
-                    minWidth: '32px',
+                    minWidth: '28px', // OPTIMIZED: Reduced from 32px to 28px
                     borderRadius: '4px',
-                    height: '28px',
+                    height: '26px', // OPTIMIZED: Reduced from 28px to 26px
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -93,9 +94,9 @@ const VideoActionButtons: React.FC<VideoActionButtonsProps> = ({
                         onVideoUpdate={onVideoUpdate}
                         size="small"
                         style={{
-                            height: '28px',
-                            minWidth: '32px',
-                            padding: '3px 6px'
+                            height: '26px', // OPTIMIZED: Reduced from 28px to 26px
+                            minWidth: '28px', // OPTIMIZED: Reduced from 32px to 28px
+                            padding: '2px 4px' // OPTIMIZED: Reduced padding
                         }}
                     />
                     

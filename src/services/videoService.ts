@@ -450,6 +450,20 @@ export class VideoService {
         }
     }
 
+    // NEW: Cập nhật bill image URL - chỉ người tạo video mới có quyền
+    static async updateBillImageUrl(id: number, billImageUrl: string): Promise<ApiResponse<Video>> {
+        try {
+            const response = await apiClient.put(`/videos/${id}/bill-image-url`, null, {
+                params: {billImageUrl}
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating bill image URL for video ${id}:`, error);
+            const errorMessage = createOperationErrorMessage('update', 'URL hình ảnh hóa đơn', error);
+            throw new Error(errorMessage);
+        }
+    }
+
     // ===== APIs cho việc cập nhật trạng thái giao hàng và thanh toán =====
 
     // Cập nhật trạng thái giao hàng

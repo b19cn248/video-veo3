@@ -234,31 +234,36 @@ export const formatFilterDisplayText = (filterType: string, value: string): stri
     return `${prefixes[filterType as keyof typeof prefixes] || ''} ${value}`;
 };
 
-// Common table styles - optimized for better UX
+// Common table styles - optimized for better UX with responsive design
 export const tableStyles = {
     container: {
         background: 'white',
         borderRadius: '10px',
-        overflow: 'hidden',
+        overflow: 'auto', // OPTIMIZED: Allow horizontal scroll on small screens
         border: '1px solid #e5e7eb',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        maxWidth: '100%' // OPTIMIZED: Prevent container overflow
     },
     table: {
         width: '100%',
         borderCollapse: 'collapse' as const,
-        tableLayout: 'fixed' as const // Better column width control
+        tableLayout: 'fixed' as const, // Better column width control
+        minWidth: '1200px' // OPTIMIZED: Minimum width to ensure all columns fit
     },
     headerCell: {
-        padding: '16px 12px',
+        padding: '12px 8px', // OPTIMIZED: Reduced padding for better space usage
         textAlign: 'left' as const,
         fontWeight: '600',
-        fontSize: '14px',
+        fontSize: '13px', // OPTIMIZED: Slightly smaller font for headers
         color: '#374151',
         background: '#f8fafc',
         borderBottom: '2px solid #e2e8f0',
         position: 'sticky' as const,
         top: 0,
-        zIndex: 10
+        zIndex: 10,
+        whiteSpace: 'nowrap' as const, // OPTIMIZED: Prevent header text wrapping
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     },
     headerRow: {
         background: '#f8fafc'
@@ -269,26 +274,30 @@ export const tableStyles = {
         cursor: 'default'
     },
     bodyCell: {
-        padding: '12px',
-        fontSize: '13px',
+        padding: '10px 8px', // OPTIMIZED: Reduced padding for better space usage  
+        fontSize: '12px', // OPTIMIZED: Slightly smaller font for content
         color: '#475569',
-        verticalAlign: 'middle' as const
+        verticalAlign: 'middle' as const,
+        whiteSpace: 'nowrap' as const, // OPTIMIZED: Prevent content wrapping
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     }
 };
 
-// Optimized column widths for better space utilization
+// OPTIMIZED: Column widths for better space utilization and fixing ID display issue
 export const columnWidths = {
-    id: '48px', // Reduced to 60% of original 80px
-    customer: '160px',
-    creator: '120px',
-    duration: '80px', // New column for video duration
-    status: '140px',
-    staff: '160px',
-    delivery: '120px',
-    payment: '120px',
-    paymentDate: '120px',
-    videoUrl: '200px',
-    actions: '220px' // Increased to accommodate 5 buttons for admin
+    id: '55px', // FIXED: Increased from 40px to display full ID (e.g., "#752")
+    customer: '140px', // OPTIMIZED: Reduced from 160px to give more space to other columns
+    creator: '100px', // OPTIMIZED: Reduced from 120px, enough for names
+    duration: '50px', // FIXED: Reduced from 70px to 50px since header is now just "Time"
+    status: '130px', // OPTIMIZED: Slightly reduced from 140px
+    staff: '140px', // OPTIMIZED: Reduced from 160px to prevent 2-line display
+    delivery: '110px', // OPTIMIZED: Reduced from 120px
+    payment: '110px', // OPTIMIZED: Reduced from 120px  
+    paymentDate: '100px', // OPTIMIZED: Reduced from 120px, date format is short
+    videoUrl: '100px', // OPTIMIZED: Reduced to 100px for icon-based UI
+    billImageUrl: '100px', // OPTIMIZED: Reduced to 100px for icon-based UI
+    actions: '180px' // CRITICAL: Reduced from 220px but ensure buttons are visible
 };
 
 // Empty state configuration - enhanced

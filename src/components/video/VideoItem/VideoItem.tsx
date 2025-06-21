@@ -5,7 +5,7 @@ import { StaffLimitService } from '../../../services/staffLimitService';
 import {
     formatPaymentDate
 } from '../../../utils/formatters';
-import { tableStyles, createRowHoverEffect, formatDisplayName, showToast } from '../../video/VideoList/utils/videoListHelpers';
+import { tableStyles, createRowHoverEffect, formatDisplayName } from '../../video/VideoList/utils/videoListHelpers';
 import { useAuth } from '../../../contexts/AuthContext';
 import { extractErrorMessage } from '../../../utils/errorUtils';
 
@@ -16,6 +16,7 @@ import VideoDeliveryStatusSelector from './components/VideoDeliveryStatusSelecto
 import VideoPaymentStatusSelector from './components/VideoPaymentStatusSelector';
 import VideoStaffAssignment from './components/VideoStaffAssignment';
 import VideoUrlEditor from './components/VideoUrlEditor';
+import BillImageUrlEditor from './components/BillImageUrlEditor';
 
 interface VideoItemProps {
     video: Video;
@@ -84,6 +85,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
     const [isUpdatingStaff, setIsUpdatingStaff] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [isUpdatingVideoUrl, setIsUpdatingVideoUrl] = useState(false);
+    const [isUpdatingBillImageUrl, setIsUpdatingBillImageUrl] = useState(false); // NEW: Bill image URL updating state
     const [isUpdatingDeliveryStatus, setIsUpdatingDeliveryStatus] = useState(false);
     const [isUpdatingPaymentStatus, setIsUpdatingPaymentStatus] = useState(false);
 
@@ -219,6 +221,36 @@ const VideoItem: React.FC<VideoItemProps> = ({
             setIsUpdatingVideoUrl(false);
         }
     }, [video.videoUrl, video.id, onVideoUpdate]);
+
+    // NEW: Hàm xử lý cập nhật bill image URL
+    const handleBillImageUrlUpdate = useCallback(async (newUrl: string) => {
+        if (newUrl === (video.billImageUrl || '')) return;
+
+        setIsUpdatingBillImageUrl(true);
+        try {
+            const response = await VideoService.updateBillImageUrl(video.id, newUrl);
+            if (response.success && onVideoUpdate) {
+                onVideoUpdate(response.data);
+                showToast(
+                    newUrl ? 'Đã cập nhật link ảnh hóa đơn' : 'Đã xóa link ảnh hóa đơn',
+                    'success'
+                );
+            }
+        } catch (error) {
+            console.error('Error updating bill image URL:', error);
+            const errorMessage = extractErrorMessage(error, 'Lỗi khi cập nhật link ảnh hóa đơn');
+            showToast(errorMessage, 'error');
+        } finally {
+            setIsUpdatingBillImageUrl(false);
+        }
+    }, [video.billImageUrl, video.id, onVideoUpdate]);
+
+    // NEW: Hàm xử lý xem bill image URL trong tab mới
+    const handleViewBillImage = useCallback(() => {
+        if (video.billImageUrl && video.billImageUrl.trim()) {
+            window.open(video.billImageUrl, '_blank', 'noopener,noreferrer');
+        }
+    }, [video.billImageUrl]);
 
     // Hàm hiển thị toast notification đơn giản
     const showToast = (message: string, type: 'success' | 'error') => {
@@ -371,6 +403,18 @@ const VideoItem: React.FC<VideoItemProps> = ({
                     onCopy={handleCopyVideoUrl}
                 />
             </td>
+
+            {/* NEW: Bill Image URL Editor - chỉ hiển thị cho admin */}
+            {isAdmin && (
+                <td style={tableStyles.bodyCell}>
+                    <BillImageUrlEditor
+                        billImageUrl={video.billImageUrl}
+                        isUpdating={isUpdatingBillImageUrl}
+                        onUpdate={handleBillImageUrlUpdate}
+                        onView={handleViewBillImage}
+                    />
+                </td>
+            )}
 
             {/* Action Buttons */}
             <td style={{

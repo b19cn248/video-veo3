@@ -29,7 +29,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                                                    onViewHistory,
                                                    onVideoUpdate
                                                }) => {
-    const colSpan = isAdmin ? 11 : 10; // Updated to include duration column
+    const colSpan = isAdmin ? 12 : 10; // UPDATED: Admin now has 12 columns (added bill image URL)
 
     return (
         <div style={tableStyles.container}>
@@ -54,15 +54,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
 
                     {/* Cột thời lượng - hiển thị cho tất cả người dùng */}
                     <th style={{...tableStyles.headerCell, width: columnWidths.duration}}>
-                        ⏱️ Thời lượng
-                        <div style={{
-                            fontSize: '11px',
-                            fontWeight: '400',
-                            color: '#64748b',
-                            marginTop: '2px'
-                        }}>
-                            Giây
-                        </div>
+                        ⏱️ Time
                     </th>
 
                     <th style={{...tableStyles.headerCell, width: columnWidths.status}}>
@@ -128,15 +120,14 @@ const VideoTable: React.FC<VideoTableProps> = ({
 
                     <th style={{...tableStyles.headerCell, width: columnWidths.videoUrl}}>
                         🎥 Link video
-                        <div style={{
-                            fontSize: '11px',
-                            fontWeight: '400',
-                            color: '#64748b',
-                            marginTop: '2px'
-                        }}>
-                            Sửa | 📋 Copy
-                        </div>
                     </th>
+
+                    {/* NEW: Bill Image URL Column - chỉ hiển thị cho admin */}
+                    {isAdmin && (
+                        <th style={{...tableStyles.headerCell, width: columnWidths.billImageUrl}}>
+                            🧾 Ảnh hóa đơn
+                        </th>
+                    )}
 
                     <th style={{...tableStyles.headerCell, width: columnWidths.actions}}>
                         ⚙️ Thao tác

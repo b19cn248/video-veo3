@@ -19,6 +19,7 @@ import { Video } from '../../../types/video.types';
 import { VideoService } from '../../../services/videoService';
 import { useIsAdmin } from '../../../contexts/AuthContext';
 import { extractErrorMessage } from '../../../utils/errorUtils';
+import Modal from '../../common/Modal/Modal';
 
 interface CancelVideoButtonProps {
     video: Video;
@@ -77,220 +78,6 @@ const showToast = (message: string, type: 'success' | 'error' | 'warning') => {
     }, 4000);
 };
 
-/**
- * Component hiển thị confirmation dialog
- */
-interface ConfirmDialogProps {
-    isOpen: boolean;
-    onConfirm: () => void;
-    onCancel: () => void;
-    video: Video;
-    isLoading: boolean;
-}
-
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ 
-    isOpen, 
-    onConfirm, 
-    onCancel, 
-    video, 
-    isLoading 
-}) => {
-    if (!isOpen) return null;
-
-    return (
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000,
-        }}>
-            <div style={{
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                padding: '24px',
-                minWidth: '400px',
-                maxWidth: '500px',
-                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-            }}>
-                {/* Header */}
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginBottom: '16px',
-                    gap: '8px'
-                }}>
-                    <span style={{ fontSize: '20px' }}>⚠️</span>
-                    <h3 style={{ 
-                        margin: 0, 
-                        color: '#dc2626',
-                        fontSize: '18px',
-                        fontWeight: '600'
-                    }}>
-                        Xác nhận hủy video
-                    </h3>
-                </div>
-
-                {/* Content */}
-                <div style={{ marginBottom: '20px' }}>
-                    <p style={{ 
-                        margin: '0 0 12px 0',
-                        color: '#374151',
-                        lineHeight: '1.5'
-                    }}>
-                        Bạn có chắc chắn muốn hủy video này không?
-                    </p>
-                    
-                    <div style={{
-                        backgroundColor: '#f9fafb',
-                        padding: '12px',
-                        borderRadius: '6px',
-                        border: '1px solid #e5e7eb'
-                    }}>
-                        <div style={{ 
-                            fontSize: '14px',
-                            color: '#6b7280',
-                            marginBottom: '6px'
-                        }}>
-                            Thông tin video:
-                        </div>
-                        <div style={{
-                            fontSize: '14px',
-                            color: '#111827',
-                            fontWeight: '500'
-                        }}>
-                            #{video.id} - {video.customerName}
-                        </div>
-                        {video.assignedStaff && (
-                            <div style={{
-                                fontSize: '13px',
-                                color: '#6b7280',
-                                marginTop: '4px'
-                            }}>
-                                Hiện tại: {video.assignedStaff}
-                            </div>
-                        )}
-                    </div>
-
-                    <div style={{
-                        marginTop: '12px',
-                        padding: '8px 12px',
-                        backgroundColor: '#fef3c7',
-                        borderRadius: '4px',
-                        border: '1px solid #fbbf24'
-                    }}>
-                        <div style={{
-                            fontSize: '13px',
-                            color: '#92400e',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px'
-                        }}>
-                            <span>💡</span>
-                            <span>
-                                Video sẽ được reset về trạng thái "Chưa ai nhận" và assignedStaff sẽ bị xóa.
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Actions */}
-                <div style={{
-                    display: 'flex',
-                    gap: '12px',
-                    justifyContent: 'flex-end'
-                }}>
-                    <button
-                        onClick={onCancel}
-                        disabled={isLoading}
-                        style={{
-                            padding: '10px 20px',
-                            borderRadius: '6px',
-                            border: '1px solid #d1d5db',
-                            backgroundColor: 'white',
-                            color: '#374151',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            cursor: isLoading ? 'not-allowed' : 'pointer',
-                            transition: 'all 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                            if (!isLoading) {
-                                e.currentTarget.style.backgroundColor = '#f9fafb';
-                                e.currentTarget.style.borderColor = '#9ca3af';
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (!isLoading) {
-                                e.currentTarget.style.backgroundColor = 'white';
-                                e.currentTarget.style.borderColor = '#d1d5db';
-                            }
-                        }}
-                    >
-                        Hủy bỏ
-                    </button>
-                    
-                    <button
-                        onClick={onConfirm}
-                        disabled={isLoading}
-                        style={{
-                            padding: '10px 20px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            backgroundColor: isLoading ? '#f87171' : '#dc2626',
-                            color: 'white',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            cursor: isLoading ? 'not-allowed' : 'pointer',
-                            transition: 'all 0.2s ease',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            minWidth: '120px',
-                            justifyContent: 'center'
-                        }}
-                        onMouseEnter={(e) => {
-                            if (!isLoading) {
-                                e.currentTarget.style.backgroundColor = '#b91c1c';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (!isLoading) {
-                                e.currentTarget.style.backgroundColor = '#dc2626';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                            }
-                        }}
-                    >
-                        {isLoading ? (
-                            <>
-                                <span style={{
-                                    display: 'inline-block',
-                                    width: '12px',
-                                    height: '12px',
-                                    border: '2px solid #fff',
-                                    borderTopColor: 'transparent',
-                                    borderRadius: '50%',
-                                    animation: 'spin 1s linear infinite'
-                                }}></span>
-                                Đang hủy...
-                            </>
-                        ) : (
-                            <>
-                                🚫 Xác nhận hủy
-                            </>
-                        )}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 /**
  * Main CancelVideoButton component
@@ -428,14 +215,121 @@ const CancelVideoButton: React.FC<CancelVideoButtonProps> = ({
                 )}
             </button>
 
-            {/* Confirmation Dialog */}
-            <ConfirmDialog
+            {/* Confirmation Modal */}
+            <Modal
                 isOpen={showConfirmDialog}
-                onConfirm={handleConfirmCancel}
-                onCancel={handleCancelConfirmation}
-                video={video}
-                isLoading={isLoading}
-            />
+                onClose={handleCancelConfirmation}
+                title="⚠️ Xác nhận hủy video"
+            >
+                <div style={{ padding: '20px' }}>
+                    {/* Content */}
+                    <div style={{ marginBottom: '20px' }}>
+                        <p style={{ 
+                            margin: '0 0 12px 0',
+                            color: '#374151',
+                            lineHeight: '1.5'
+                        }}>
+                            Bạn có chắc chắn muốn hủy video này không?
+                        </p>
+                        
+                        <div style={{
+                            backgroundColor: '#f9fafb',
+                            padding: '12px',
+                            borderRadius: '6px',
+                            border: '1px solid #e5e7eb'
+                        }}>
+                            <div style={{ 
+                                fontSize: '14px',
+                                color: '#6b7280',
+                                marginBottom: '6px'
+                            }}>
+                                Thông tin video:
+                            </div>
+                            <div style={{
+                                fontSize: '14px',
+                                color: '#111827',
+                                fontWeight: '500'
+                            }}>
+                                #{video.id} - {video.customerName}
+                            </div>
+                            {video.assignedStaff && (
+                                <div style={{
+                                    fontSize: '13px',
+                                    color: '#6b7280',
+                                    marginTop: '4px'
+                                }}>
+                                    Hiện tại: {video.assignedStaff}
+                                </div>
+                            )}
+                        </div>
+
+                        <div style={{
+                            marginTop: '12px',
+                            padding: '8px 12px',
+                            backgroundColor: '#fef3c7',
+                            borderRadius: '4px',
+                            border: '1px solid #fbbf24'
+                        }}>
+                            <div style={{
+                                fontSize: '13px',
+                                color: '#92400e',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                            }}>
+                                <span>💡</span>
+                                <span>
+                                    Video sẽ được reset về trạng thái "Chưa ai nhận" và assignedStaff sẽ bị xóa.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{
+                        display: 'flex',
+                        gap: '12px',
+                        justifyContent: 'flex-end'
+                    }}>
+                        <button
+                            className="btn btn-secondary"
+                            onClick={handleCancelConfirmation}
+                            disabled={isLoading}
+                        >
+                            Hủy bỏ
+                        </button>
+                        
+                        <button
+                            className="btn btn-danger"
+                            onClick={handleConfirmCancel}
+                            disabled={isLoading}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                minWidth: '120px',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <span className="loading-spinner" style={{
+                                        width: '12px',
+                                        height: '12px',
+                                        border: '2px solid #fff',
+                                        borderTopColor: 'transparent'
+                                    }}></span>
+                                    Đang hủy...
+                                </>
+                            ) : (
+                                <>
+                                    🚫 Xác nhận hủy
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
 
             {/* Keyframes for loading spinner */}
             <style>{`
