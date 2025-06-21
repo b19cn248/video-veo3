@@ -31,7 +31,9 @@ export interface Video {
     customerName: string;
     videoContent?: string;
     imageUrl?: string;
-    billImageUrl?: string; // NEW: URL hình ảnh thanh toán/hóa đơn
+    billImageUrl?: string; // URL hình ảnh thanh toán/hóa đơn
+    linkfb?: string; // NEW: Link Facebook
+    phoneNumber?: string; // NEW: Số điện thoại khách hàng
     videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
     deliveryTime?: string;
     assignedStaff?: string;
@@ -57,7 +59,9 @@ export interface VideoFormData {
     customerName: string;
     videoContent?: string;
     imageUrl?: string;
-    billImageUrl?: string; // NEW: URL hình ảnh thanh toán/hóa đơn
+    billImageUrl?: string; // URL hình ảnh thanh toán/hóa đơn
+    linkfb?: string; // NEW: Link Facebook
+    phoneNumber?: string; // NEW: Số điện thoại khách hàng
     videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
     deliveryTime?: string;
     assignedStaff?: string;
@@ -192,4 +196,42 @@ export interface VideoAuditHistoryResponse {
     videoId: number;
     totalCount: number;
     audits: AuditEntry[];
+}
+
+// NEW: Interface cho customer contact information
+export interface CustomerContactDto {
+    customerName: string;
+    linkfb?: string;
+    phoneNumber?: string;
+    totalVideos?: number; // Tổng số video của khách hàng này
+    latestVideoDate?: string; // Video gần nhất
+}
+
+// NEW: Interface cho response API customer contacts với pagination
+export interface CustomerContactResponse {
+    success: boolean;
+    message: string;
+    data: CustomerContactDto[];
+    pagination: {
+        currentPage: number;
+        totalPages: number;
+        totalElements: number;
+        pageSize: number;
+        hasNext: boolean;
+        hasPrevious: boolean;
+        isFirst: boolean;
+        isLast: boolean;
+    };
+    timestamp: number;
+}
+
+// NEW: Interface cho customer contact filter parameters
+export interface CustomerContactFilterParams {
+    page?: number;
+    size?: number;
+    search?: string; // Tìm kiếm theo tên khách hàng
+    hasLinkfb?: boolean; // Lọc khách hàng có Facebook
+    hasPhoneNumber?: boolean; // Lọc khách hàng có số điện thoại
+    sortBy?: string; // Trường sắp xếp
+    sortDirection?: 'asc' | 'desc'; // Hướng sắp xếp
 }

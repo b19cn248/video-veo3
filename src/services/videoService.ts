@@ -7,7 +7,7 @@
 // NEW: Thêm Staff Salary APIs và cập nhật Assigned Staff API
 
 import axios from 'axios';
-import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse, CreatorsResponse, VideoAuditHistoryResponse} from '../types/video.types';
+import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse, CreatorsResponse, VideoAuditHistoryResponse, CustomerContactResponse, CustomerContactFilterParams, CustomerContactDto} from '../types/video.types';
 import {StaffSalariesResponse, AssignedStaffResponse} from '../types/staff.types';
 import {SalesSalariesResponse} from '../types/sales.types';
 import {AuthService} from './authService';
@@ -450,7 +450,7 @@ export class VideoService {
         }
     }
 
-    // NEW: Cập nhật bill image URL - chỉ người tạo video mới có quyền
+    // Cập nhật bill image URL - chỉ người tạo video mới có quyền
     static async updateBillImageUrl(id: number, billImageUrl: string): Promise<ApiResponse<Video>> {
         try {
             const response = await apiClient.put(`/videos/${id}/bill-image-url`, null, {
@@ -544,6 +544,79 @@ export class VideoService {
         } catch (error) {
             console.error('Error fetching current user:', error);
             const errorMessage = createOperationErrorMessage('fetch', 'thông tin người dùng hiện tại', error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    // ===== CUSTOMER CONTACT APIs =====
+
+    /**
+     * Lấy thông tin liên hệ khách hàng với pagination và filtering
+     * GET /api/v1/videos/customer-contacts
+     */
+    static async getCustomerContacts(params?: CustomerContactFilterParams): Promise<CustomerContactResponse> {
+        try {
+            console.log('Fetching customer contacts with params:', params);
+            
+            const queryParams = new URLSearchParams();
+            
+            if (params?.page !== undefined) queryParams.append('page', params.page.toString());
+            if (params?.size !== undefined) queryParams.append('size', params.size.toString());
+            if (params?.search) queryParams.append('search', params.search);
+            if (params?.hasLinkfb !== undefined) queryParams.append('hasLinkfb', params.hasLinkfb.toString());
+            if (params?.hasPhoneNumber !== undefined) queryParams.append('hasPhoneNumber', params.hasPhoneNumber.toString());
+            if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+            if (params?.sortDirection) queryParams.append('sortDirection', params.sortDirection);
+
+            const url = `/videos/customer-contacts${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+            const response = await apiClient.get(url);
+            
+            console.log('Customer contacts response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching customer contacts:', error);
+            const errorMessage = createOperationErrorMessage('fetch', 'thông tin liên hệ khách hàng', error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    /**
+     * Lấy thông tin liên hệ của một khách hàng cụ thể theo Video ID
+     * GET /api/v1/videos/{id}/customer-contact
+     * API mới - preferred method
+     */
+    static async getCustomerContactByVideoId(videoId: number): Promise<ApiResponse<CustomerContactDto>> {
+        try {
+            console.log('Fetching customer contact for video ID:', videoId);
+            
+            const response = await apiClient.get(`/videos/${videoId}/customer-contact`);
+            
+            console.log('Customer contact response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching customer contact by video ID:', error);
+            const errorMessage = createOperationErrorMessage('fetch', `thông tin liên hệ khách hàng video #${videoId}`, error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    /**
+     * DEPRECATED: Lấy thông tin liên hệ của một khách hàng cụ thể
+     * Sử dụng search để tìm theo tên khách hàng
+     * @deprecated Use getCustomerContactByVideoId instead
+     */
+    static async getCustomerContactByName(customerName: string): Promise<CustomerContactResponse> {
+        try {
+            console.log('Fetching customer contact for:', customerName);
+            
+            return await this.getCustomerContacts({
+                search: customerName,
+                page: 0,
+                size: 1 // Chỉ lấy 1 kết quả đầu tiên
+            });
+        } catch (error) {
+            console.error('Error fetching customer contact by name:', error);
+            const errorMessage = createOperationErrorMessage('fetch', `thông tin liên hệ khách hàng '${customerName}'`, error);
             throw new Error(errorMessage);
         }
     }

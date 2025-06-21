@@ -122,7 +122,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                         🎥 Link video
                     </th>
 
-                    {/* NEW: Bill Image URL Column - chỉ hiển thị cho admin */}
+                    {/* Bill Image URL Column - chỉ hiển thị cho admin */}
                     {isAdmin && (
                         <th style={{...tableStyles.headerCell, width: columnWidths.billImageUrl}}>
                             🧾 Ảnh hóa đơn

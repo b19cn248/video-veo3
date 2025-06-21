@@ -17,6 +17,7 @@ import VideoPaymentStatusSelector from './components/VideoPaymentStatusSelector'
 import VideoStaffAssignment from './components/VideoStaffAssignment';
 import VideoUrlEditor from './components/VideoUrlEditor';
 import BillImageUrlEditor from './components/BillImageUrlEditor';
+import CustomerContactModal from '../CustomerContactModal';
 
 interface VideoItemProps {
     video: Video;
@@ -85,9 +86,12 @@ const VideoItem: React.FC<VideoItemProps> = ({
     const [isUpdatingStaff, setIsUpdatingStaff] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [isUpdatingVideoUrl, setIsUpdatingVideoUrl] = useState(false);
-    const [isUpdatingBillImageUrl, setIsUpdatingBillImageUrl] = useState(false); // NEW: Bill image URL updating state
+    const [isUpdatingBillImageUrl, setIsUpdatingBillImageUrl] = useState(false);
     const [isUpdatingDeliveryStatus, setIsUpdatingDeliveryStatus] = useState(false);
     const [isUpdatingPaymentStatus, setIsUpdatingPaymentStatus] = useState(false);
+    
+    // NEW: State for customer contact modal
+    const [showCustomerContactModal, setShowCustomerContactModal] = useState(false);
 
     // Get user display name
     const userDisplayName = user?.fullName || user?.username;
@@ -222,7 +226,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
         }
     }, [video.videoUrl, video.id, onVideoUpdate]);
 
-    // NEW: Hàm xử lý cập nhật bill image URL
+    // Hàm xử lý cập nhật bill image URL
     const handleBillImageUrlUpdate = useCallback(async (newUrl: string) => {
         if (newUrl === (video.billImageUrl || '')) return;
 
@@ -245,12 +249,21 @@ const VideoItem: React.FC<VideoItemProps> = ({
         }
     }, [video.billImageUrl, video.id, onVideoUpdate]);
 
-    // NEW: Hàm xử lý xem bill image URL trong tab mới
+    // Hàm xử lý xem bill image URL trong tab mới
     const handleViewBillImage = useCallback(() => {
         if (video.billImageUrl && video.billImageUrl.trim()) {
             window.open(video.billImageUrl, '_blank', 'noopener,noreferrer');
         }
     }, [video.billImageUrl]);
+
+    // NEW: Handler for customer contact modal
+    const handleShowCustomerContact = useCallback(() => {
+        setShowCustomerContactModal(true);
+    }, []);
+
+    const handleCloseCustomerContact = useCallback(() => {
+        setShowCustomerContactModal(false);
+    }, []);
 
     // Hàm hiển thị toast notification đơn giản
     const showToast = (message: string, type: 'success' | 'error') => {
@@ -285,7 +298,8 @@ const VideoItem: React.FC<VideoItemProps> = ({
     };
 
     return (
-        <tr style={tableStyles.bodyRow} {...createRowHoverEffect()}>
+        <>
+            <tr style={tableStyles.bodyRow} {...createRowHoverEffect()}>
             <td style={{
                 ...tableStyles.bodyCell,
                 fontWeight: '600',
@@ -301,7 +315,44 @@ const VideoItem: React.FC<VideoItemProps> = ({
                     fontWeight: '500',
                     color: '#1f2937'
                 }}>
-                    {formatDisplayName(video.customerName)}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                    }}>
+                        <span>{formatDisplayName(video.customerName)}</span>
+                        <button
+                            onClick={handleShowCustomerContact}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                color: '#6b7280',
+                                padding: '2px',
+                                borderRadius: '3px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                                minWidth: '20px',
+                                height: '20px'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f3f4f6';
+                                e.currentTarget.style.color = '#374151';
+                                e.currentTarget.style.transform = 'scale(1.1)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                                e.currentTarget.style.color = '#6b7280';
+                                e.currentTarget.style.transform = 'scale(1)';
+                            }}
+                            title="Xem thông tin liên hệ khách hàng"
+                        >
+                            👁️
+                        </button>
+                    </div>
                 </td>
             )}
 
@@ -404,7 +455,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 />
             </td>
 
-            {/* NEW: Bill Image URL Editor - chỉ hiển thị cho admin */}
+            {/* Bill Image URL Editor - chỉ hiển thị cho admin */}
             {isAdmin && (
                 <td style={tableStyles.bodyCell}>
                     <BillImageUrlEditor
@@ -432,7 +483,17 @@ const VideoItem: React.FC<VideoItemProps> = ({
                     onVideoUpdate={onVideoUpdate}
                 />
             </td>
-        </tr>
+            </tr>
+            
+            {/* Customer Contact Modal - chỉ hiển thị cho admin */}
+            {isAdmin && (
+                <CustomerContactModal
+                    isOpen={showCustomerContactModal}
+                    onClose={handleCloseCustomerContact}
+                    videoId={video.id}
+                />
+            )}
+        </>
     );
 };
 

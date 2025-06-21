@@ -43,7 +43,9 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         customerName: '',
         videoContent: '',
         imageUrl: '',
-        billImageUrl: '', // NEW: URL hình ảnh thanh toán
+        billImageUrl: '', // URL hình ảnh thanh toán
+        linkfb: '', // NEW: Link Facebook
+        phoneNumber: '', // NEW: Số điện thoại
         videoDuration: 8, // Mặc định là 8 giây
         deliveryTime: '',
         assignedStaff: '',
@@ -66,7 +68,9 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 customerName: video.customerName,
                 videoContent: video.videoContent || '',
                 imageUrl: video.imageUrl || '',
-                billImageUrl: video.billImageUrl || '', // NEW: URL hình ảnh thanh toán
+                billImageUrl: video.billImageUrl || '', // URL hình ảnh thanh toán
+                linkfb: video.linkfb || '', // NEW: Link Facebook
+                phoneNumber: video.phoneNumber || '', // NEW: Số điện thoại
                 videoDuration: video.videoDuration || 8,
                 deliveryTime: video.deliveryTime || '',
                 assignedStaff: video.assignedStaff || '',
@@ -209,6 +213,33 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                     className="form-input"
                     disabled={isLoading}
                     placeholder="Nhập URL hình ảnh hóa đơn/thanh toán"
+                />
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Link Facebook</label>
+                <input
+                    type="url"
+                    name="linkfb"
+                    value={formData.linkfb}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    disabled={isLoading}
+                    placeholder="Nhập link Facebook của khách hàng"
+                />
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Số điện thoại</label>
+                <input
+                    type="tel"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    disabled={isLoading}
+                    placeholder="Nhập số điện thoại khách hàng"
+                    pattern="[0-9+()-\s]*"
                 />
             </div>
 
