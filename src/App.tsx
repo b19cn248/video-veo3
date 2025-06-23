@@ -5,19 +5,21 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, useAuth, useIsVideoVeo3BeAdmin } from './contexts/AuthContext';
+import { AuthProvider, useAuth, useIsVideoVeo3BeAdmin, useIsRealmAdmin } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute/ProtectedRoute';
 import VideoList from './components/video/VideoList/VideoList';
 import VideoDetail from './components/video/VideoDetail/VideoDetail';
 import StaffSalaries from './components/staff/StaffSalaries/StaffSalaries';
 import SalesSalaries from './components/sales/SalesSalaries/SalesSalaries';
 import StaffLimitManagement from './components/staffLimit/StaffLimitManagement/StaffLimitManagement';
+import UserManagement from './components/user/UserManagement/UserManagement';
 import './styles/global.css';
 
 // Component hiển thị header với thông tin user và navigation
 const AppHeader: React.FC = () => {
     const { user, logout, isAuthenticated } = useAuth();
     const isVideoVeo3BeAdmin = useIsVideoVeo3BeAdmin();
+    const isRealmAdmin = useIsRealmAdmin();
     const location = useLocation();
 
     if (!isAuthenticated) {
@@ -154,8 +156,37 @@ const AppHeader: React.FC = () => {
                                 </a>
                             )}
 
-                            {/* NEW: Staff Limits - chỉ hiển thị cho ADMIN */}
-                            {user?.roles && user.roles.some((role: string) => role.toLowerCase().includes('admin')) && (
+                            {/* NEW: User Management - chỉ hiển thị cho REALM ADMIN (Super Admin) */}
+                            {isRealmAdmin && (
+                                <a
+                                    href="/users"
+                                    style={{
+                                        textDecoration: 'none',
+                                        color: location.pathname === '/users' ? '#3b82f6' : '#6b7280',
+                                        fontWeight: location.pathname === '/users' ? '600' : '500',
+                                        fontSize: '15px',
+                                        padding: '8px 16px',
+                                        borderRadius: '6px',
+                                        background: location.pathname === '/users' ? '#eff6ff' : 'transparent',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (location.pathname !== '/users') {
+                                            e.currentTarget.style.background = '#f3f4f6';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (location.pathname !== '/users') {
+                                            e.currentTarget.style.background = 'transparent';
+                                        }
+                                    }}
+                                >
+                                    👥 User Management
+                                </a>
+                            )}
+
+                            {/* NEW: Staff Limits - chỉ hiển thị cho REALM ADMIN (Super Admin) */}
+                            {isRealmAdmin && (
                                 <a
                                     href="/staff-limits"
                                     style={{
@@ -308,6 +339,16 @@ const AppRoutes: React.FC = () => {
                         element={
                             <ProtectedRoute>
                                 <SalesSalaries />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* NEW: Route quản lý người dùng - chỉ cho REALM ADMIN (Super Admin) */}
+                    <Route
+                        path="/users"
+                        element={
+                            <ProtectedRoute>
+                                <UserManagement />
                             </ProtectedRoute>
                         }
                     />

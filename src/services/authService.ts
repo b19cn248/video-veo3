@@ -183,6 +183,64 @@ export class AuthService {
         return timeUntilExpiry <= (thresholdSeconds * 1000);
     }
 
+    // Kiểm tra user có role realm admin không (super admin)
+    static async checkRealmAdmin(username: string): Promise<boolean> {
+        try {
+            const token = await this.ensureTokenValid();
+            if (!token) {
+                throw new Error('No valid token available');
+            }
+
+            const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api/v1';
+            const response = await fetch(`${API_BASE_URL}/users/check-realm-admin?username=${encodeURIComponent(username)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.data === true;
+        } catch (error) {
+            console.error('Error checking realm admin:', error);
+            return false;
+        }
+    }
+
+    // Kiểm tra user có role resource admin không (admin trong video-veo3-be)
+    static async checkResourceAdmin(username: string): Promise<boolean> {
+        try {
+            const token = await this.ensureTokenValid();
+            if (!token) {
+                throw new Error('No valid token available');
+            }
+
+            const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api/v1';
+            const response = await fetch(`${API_BASE_URL}/users/check-resource-admin?username=${encodeURIComponent(username)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.data === true;
+        } catch (error) {
+            console.error('Error checking resource admin:', error);
+            return false;
+        }
+    }
+
     // Register event listeners cho Keycloak events
     static setupEventListeners(
         onAuthSuccess?: () => void,

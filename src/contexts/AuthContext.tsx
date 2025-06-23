@@ -263,17 +263,46 @@ export const useIsAuthenticated = (): boolean => {
     return isAuthenticated;
 };
 
-// Custom hook để kiểm tra quyền admin (dựa trên hardcoded list)
+// Custom hook để kiểm tra quyền admin (sử dụng API check-resource-admin)
 export const useIsAdmin = (): boolean => {
     const { user } = useAuth();
-    const adminUsers = ['admin', 'thuong', 'hanh','thanh', 'asao','yennhi','tuyenpv','hungnm'];
-    return adminUsers.includes(user?.username ?? '');
+    const [isAdmin, setIsAdmin] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        if (user?.username) {
+            AuthService.checkResourceAdmin(user.username)
+                .then(setIsAdmin)
+                .catch(() => setIsAdmin(false));
+        } else {
+            setIsAdmin(false);
+        }
+    }, [user?.username]);
+
+    return isAdmin;
 };
 
 // Custom hook để kiểm tra admin role trong video-veo3-be
 export const useIsVideoVeo3BeAdmin = (): boolean => {
     const { hasVideoVeo3BeAdminRole } = useAuth();
     return hasVideoVeo3BeAdminRole();
+};
+
+// Custom hook để kiểm tra realm admin (super admin)
+export const useIsRealmAdmin = (): boolean => {
+    const { user } = useAuth();
+    const [isRealmAdmin, setIsRealmAdmin] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        if (user?.username) {
+            AuthService.checkRealmAdmin(user.username)
+                .then(setIsRealmAdmin)
+                .catch(() => setIsRealmAdmin(false));
+        } else {
+            setIsRealmAdmin(false);
+        }
+    }, [user?.username]);
+
+    return isRealmAdmin;
 };
 
 
