@@ -7,6 +7,7 @@ import { VideoFormData, Video, VideoStatus, DeliveryStatus, PaymentStatus } from
 import { useAuth } from '../../../contexts/AuthContext';
 import { useCustomerCheck } from '../hooks/useCustomerCheck';
 import CustomerWarning from '../components/CustomerWarning';
+import { PAGE_OPTIONS, getPageFullName, getPageShortValue } from '../../../constants/pageConstants';
 
 interface VideoFormProps {
     video?: Video;                              // Video để edit (undefined nếu tạo mới)
@@ -22,8 +23,11 @@ const VIDEO_DURATION_OPTIONS = [
     { value: 16, label: '16 giây' },
     { value: 24, label: '24 giây' },
     { value: 32, label: '32 giây' },
-    { value: 40, label: '40 giây' }
+    { value: 40, label: '40 giây' },
+    { value: 48, label: '48 giây' },
+    { value: 60, label: '60 giây' }
 ];
+
 
 const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoading = false, isAdmin }) => {
     // Get current user info từ AuthContext
@@ -46,6 +50,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         linkfb: '', // NEW: Link Facebook
         phoneNumber: '', // NEW: Số điện thoại
         videoDuration: 8, // Mặc định là 8 giây
+        pageName: '', // NEW: Tên page để đăng video
         deliveryTime: '',
         assignedStaff: '',
         status: VideoStatus.CHUA_AI_NHAN,
@@ -70,6 +75,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 linkfb: video.linkfb || '', // NEW: Link Facebook
                 phoneNumber: video.phoneNumber || '', // NEW: Số điện thoại
                 videoDuration: video.videoDuration || 8,
+                pageName: getPageShortValue(video.pageName || ''), // NEW: Convert full name về short value cho form
                 deliveryTime: video.deliveryTime || '',
                 assignedStaff: video.assignedStaff || '',
                 status: video.status,
@@ -123,7 +129,14 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
     // Hàm xử lý submit form
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(formData);
+        
+        // Transform pageName từ short value sang full name trước khi submit
+        const submissionData = {
+            ...formData,
+            pageName: getPageFullName(formData.pageName || '')
+        };
+        
+        onSubmit(submissionData);
     };
 
     // Helper function để hiển thị customer input với loading indicator
@@ -240,6 +253,24 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                     required
                 >
                     {VIDEO_DURATION_OPTIONS.map(option => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="form-group">
+                <label className="form-label">Tên page đăng video</label>
+                <select
+                    name="pageName"
+                    value={formData.pageName}
+                    onChange={handleInputChange}
+                    className="form-select"
+                    disabled={isLoading}
+                >
+                    <option value="">-- Chọn page --</option>
+                    {PAGE_OPTIONS.map(option => (
                         <option key={option.value} value={option.value}>
                             {option.label}
                         </option>

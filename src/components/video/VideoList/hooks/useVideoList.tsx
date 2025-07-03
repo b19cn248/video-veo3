@@ -76,7 +76,8 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
     const currentFiltersRef = useRef<VideoFilterParams | undefined>(undefined);
     const loadingRef = useRef(false);
 
-    // FIXED: Stable loadVideos function với proper memoization và customer search support
+    // FIXED: Stable loadVideos function với proper memoization
+    // UPDATED: Customer search giờ sử dụng API getVideos với param customerName
     const loadVideos = useCallback(async (filters?: VideoFilterParams) => {
         // Tránh duplicate calls
         if (loadingRef.current) {
@@ -93,18 +94,8 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
 
             let response;
 
-            // NEW: Nếu có customer name search, sử dụng search API riêng
-            if (filters?.customerName && filters.customerName.trim()) {
-                console.log('Using customer search API for:', filters.customerName);
-                response = await VideoService.searchVideosByCustomerName(filters.customerName.trim());
-                
-                // Reset page về 0 khi search customer name (vì search không hỗ trợ pagination)
-                if (currentPage !== 0) {
-                    setCurrentPage(0);
-                }
-            } 
-            // NEW: Nếu có video ID search, sử dụng search by ID API
-            else if (filters?.videoId && filters.videoId > 0) {
+            // NEW: Nếu có video ID search, sử dụng search by ID API riêng
+            if (filters?.videoId && filters.videoId > 0) {
                 console.log('Using video ID search API for:', filters.videoId);
                 response = await VideoService.searchVideoById(filters.videoId);
                 
@@ -114,7 +105,7 @@ export const useVideoList = (isAdmin: boolean): UseVideoListReturn => {
                 }
             }
             else {
-                // Sử dụng API getVideos thông thường với filters khác
+                // Sử dụng API getVideos thông thường với tất cả filters (bao gồm customerName)
                 response = await VideoService.getVideos(
                     currentPage,
                     10,

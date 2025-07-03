@@ -187,7 +187,8 @@ export const filterBadgeColors = {
     fromDateCreatedVideo: '#0d9488', // Teal for from creation date filter
     toDateCreatedVideo: '#0d9488', // Teal for to creation date filter
     createdBy: '#8b5cf6', // Violet for created by filter
-    videoId: '#dc2626' // Red for video ID search
+    videoId: '#dc2626', // Red for video ID search
+    pageName: '#f59e0b' // Amber for page name filter
 };
 
 // Responsive breakpoints for better mobile experience

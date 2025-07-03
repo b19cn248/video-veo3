@@ -153,6 +153,9 @@ export class VideoService {
                 if (filters.videoId) {
                     params.videoId = filters.videoId;
                 }
+                if (filters.pageName && filters.pageName.trim()) {
+                    params.pageName = filters.pageName.trim();
+                }
             }
 
             console.log('Making API call with params:', params);
@@ -227,38 +230,7 @@ export class VideoService {
         }
     }
 
-    // NEW: Tìm kiếm video theo tên khách hàng - sử dụng cho customer search filter  
-    static async searchVideosByCustomerName(customerName: string): Promise<VideoListResponse> {
-        try {
-            console.log('Searching videos by customer name:', customerName);
-            const response = await apiClient.get('/videos/search', {
-                params: { customerName }
-            });
-            
-            // Chuyển đổi response từ search API thành format của VideoListResponse
-            const searchData = response.data;
-            return {
-                success: searchData.success,
-                message: searchData.message,
-                data: searchData.data || [],
-                pagination: {
-                    currentPage: 0,
-                    totalPages: 1,
-                    totalElements: searchData.total || searchData.data?.length || 0,
-                    pageSize: searchData.data?.length || 0,
-                    hasNext: false,
-                    hasPrevious: false,
-                    isFirst: true,
-                    isLast: true,
-                },
-                timestamp: searchData.timestamp || Date.now()
-            };
-        } catch (error) {
-            console.error('Error searching videos by customer name:', error);
-            const errorMessage = createOperationErrorMessage('search', 'video theo tên khách hàng', error);
-            throw new Error(errorMessage);
-        }
-    }
+    // DEPRECATED: searchVideosByCustomerName đã được tích hợp vào getVideos API với param customerName
 
     // NEW: Tìm kiếm video theo ID - sử dụng cho ID search filter  
     static async searchVideoById(id: number): Promise<VideoListResponse> {
