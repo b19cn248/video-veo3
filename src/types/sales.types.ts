@@ -51,3 +51,21 @@ export interface SalesSalarySummary {
     startDate?: string; // Ngày bắt đầu
     endDate?: string; // Ngày kết thúc
 }
+
+// NEW: Interface cho revenue statistics
+export interface RevenueStatistics {
+    totalRevenue: number;
+    totalVideos: number;
+    averageRevenuePerVideo: number;
+    fromDate: string;
+    toDate: string;
+}
+
+// NEW: Interface cho response API revenue statistics
+export interface RevenueStatisticsResponse {
+    success: boolean;
+    message: string;
+    data: RevenueStatistics;
+    tenantId: string;
+    timestamp: number;
+}

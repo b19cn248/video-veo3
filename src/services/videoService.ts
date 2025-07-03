@@ -9,7 +9,7 @@
 import axios from 'axios';
 import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse, CreatorsResponse, VideoAuditHistoryResponse, CustomerContactResponse, CustomerContactFilterParams, CustomerContactDto} from '../types/video.types';
 import {StaffSalariesResponse, AssignedStaffResponse} from '../types/staff.types';
-import {SalesSalariesResponse} from '../types/sales.types';
+import {SalesSalariesResponse, RevenueStatisticsResponse} from '../types/sales.types';
 import {AuthService} from './authService';
 import { extractErrorMessage, createOperationErrorMessage } from '../utils/errorUtils';
 import { GlobalErrorHandler } from '../utils/globalErrorHandler';
@@ -355,6 +355,23 @@ export class VideoService {
         } catch (error) {
             console.error('Error fetching sales salaries:', error);
             const errorMessage = createOperationErrorMessage('fetch', 'lương sales', error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    // NEW: Lấy thống kê tổng doanh thu - ADMIN ONLY
+    static async getRevenueStatistics(startDate: string, endDate: string): Promise<RevenueStatisticsResponse> {
+        try {
+            console.log('Fetching revenue statistics from API for date range:', startDate, 'to', endDate);
+            
+            const response = await apiClient.get('/videos/revenue-statistics', {
+                params: { fromDate: startDate, toDate: endDate }
+            });
+            console.log('Revenue statistics response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching revenue statistics:', error);
+            const errorMessage = createOperationErrorMessage('fetch', 'thống kê doanh thu', error);
             throw new Error(errorMessage);
         }
     }

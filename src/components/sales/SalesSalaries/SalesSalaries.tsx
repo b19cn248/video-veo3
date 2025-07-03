@@ -2,11 +2,13 @@
 // Tương tự StaffSalaries nhưng với data structure khác và quyền hạn admin
 // UI/UX: Dashboard-style với date selector, cards thống kê và bảng responsive
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { useSalesSalariesWithDate } from './hooks/useSalesSalariesWithDate';
+import { useRevenueStatistics } from './hooks/useRevenueStatistics';
 import DateSelector from './components/DateSelector';
 import SalesDateStatus from './components/SalesDateStatus';
+import RevenueCard from './components/RevenueCard';
 import Loading from '../../common/Loading/Loading';
 import ErrorDisplay from '../../common/ErrorDisplay/ErrorDisplay';
 import { extractErrorMessage } from '../../../utils/errorUtils';
@@ -32,6 +34,22 @@ const SalesSalaries: React.FC = () => {
         handleDateRangeChange,
         getSortIcon
     } = useSalesSalariesWithDate();
+
+    // NEW: Hook để lấy revenue statistics
+    const {
+        revenueStats,
+        loading: revenueLoading,
+        error: revenueError,
+        loadRevenueStatistics
+    } = useRevenueStatistics();
+
+    // NEW: Auto-load revenue statistics khi date range thay đổi
+    useEffect(() => {
+        if (filter.startDate && filter.endDate) {
+            console.log('Auto-loading revenue statistics for date range:', filter.startDate, 'to', filter.endDate);
+            loadRevenueStatistics(filter.startDate, filter.endDate);
+        }
+    }, [filter.startDate, filter.endDate, loadRevenueStatistics]);
 
     // Hàm format sales name (xử lý trường hợp empty hoặc Unknown)
     const formatSalesName = (name: string): string => {
@@ -284,6 +302,13 @@ const SalesSalaries: React.FC = () => {
                             📊 Hoa hồng TB
                         </div>
                     </div>
+
+                    {/* NEW: Revenue Statistics Card */}
+                    <RevenueCard
+                        revenueStats={revenueStats}
+                        loading={revenueLoading}
+                        error={revenueError}
+                    />
                 </div>
             )}            {/* Search and Controls với Date Selector */}
             {!loading && !error && (
