@@ -176,7 +176,7 @@ const VideoDetailModal: React.FC<VideoDetailModalProps> = ({ isOpen, videoId, on
                             fontWeight: 600,
                             color: '#1f2937'
                         }}>
-                            Chi tiết Video #{video.id}
+                            Chi tiết Video {video.code || `#${video.id}`}
                         </h2>
 
                         {/* Image preview */}
@@ -215,7 +215,7 @@ const VideoDetailModal: React.FC<VideoDetailModalProps> = ({ isOpen, videoId, on
                                     </div>
                                 ) : (
                                     <div style={{ marginBottom: 16 }}>
-                                        <strong>Mã khách hàng:</strong> #{video.id.toString().padStart(4, '0')}
+                                        <strong>Mã khách hàng:</strong> {video.code || `#${video.id.toString().padStart(4, '0')}`}
                                     </div>
                                 )}
 

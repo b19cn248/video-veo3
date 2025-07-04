@@ -72,7 +72,7 @@ const VideoDetail: React.FC = () => {
                 </div>
 
                 <h2 style={{ textAlign: 'center', marginBottom: 24 }}>
-                    Chi tiết Video #{video.id}
+                    Chi tiết Video {video.code || `#${video.id}`}
                 </h2>
 
                 {video.imageUrl && (
@@ -87,7 +87,7 @@ const VideoDetail: React.FC = () => {
                         {isAdmin ? (
                             <div style={{ marginBottom: 16 }}><b>Khách hàng:</b> {video.customerName}</div>
                         ) : (
-                            <div style={{ marginBottom: 16 }}><b>Mã khách hàng:</b> #{video.id.toString().padStart(4, '0')}</div>
+                            <div style={{ marginBottom: 16 }}><b>Mã khách hàng:</b> {video.code || `#${video.id.toString().padStart(4, '0')}`}</div>
                         )}
 
                         <div style={{ marginBottom: 16 }}><b>Nội dung:</b> {video.videoContent || '--'}</div>

@@ -29,6 +29,7 @@ export enum PaymentStatus {
 // Interface định nghĩa cấu trúc của một Video object
 export interface Video {
     id: number;
+    code?: string; // NEW: Mã code từ API
     customerName: string;
     videoContent?: string;
     imageUrl?: string;
@@ -59,6 +60,7 @@ export interface Video {
 // Interface cho form tạo/sửa video
 export interface VideoFormData {
     customerName: string;
+    code?: string; // NEW: Mã code từ API
     videoContent?: string;
     imageUrl?: string;
     billImageUrl?: string; // URL hình ảnh thanh toán/hóa đơn

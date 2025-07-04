@@ -37,7 +37,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                 <thead>
                 <tr style={tableStyles.headerRow}>
                     <th style={{...tableStyles.headerCell, width: columnWidths.id}}>
-                        ID
+                        Code
                     </th>
 
                     {/* Cột khách hàng - chỉ hiển thị cho admin */}

@@ -305,7 +305,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 fontWeight: '600',
                 color: '#374151'
             }}>
-                #{video.id}
+                {video.code || `#${video.id}`}
             </td>
 
             {/* Cột khách hàng - chỉ hiển thị cho admin */}
