@@ -15,7 +15,7 @@ import { extractErrorMessage, createOperationErrorMessage } from '../utils/error
 import { GlobalErrorHandler } from '../utils/globalErrorHandler';
 
 // Cấu hình base URL cho API
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://video.openlearnhub.io.vn/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://video.api.nguocchieuvangle.io.vn/api/v1';
 
 // Tạo axios instance với cấu hình sẵn
 const apiClient = axios.create({

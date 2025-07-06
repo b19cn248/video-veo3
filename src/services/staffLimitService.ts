@@ -15,7 +15,7 @@ import { createOperationErrorMessage } from '../utils/errorUtils';
 import { GlobalErrorHandler } from '../utils/globalErrorHandler';
 
 // Sử dụng cùng config với videoService
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://video.openlearnhub.io.vn/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://video.api.nguocchieuvangle.io.vn/api/v1';
 
 // Tạo axios instance với cấu hình tương tự videoService
 const apiClient = axios.create({
