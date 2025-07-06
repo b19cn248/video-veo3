@@ -13,7 +13,7 @@ export interface KeycloakConfig {
 // Cấu hình mặc định cho Keycloak
 // Có thể được override bằng environment variables
 export const keycloakConfig: KeycloakConfig = {
-    url: process.env.REACT_APP_KEYCLOAK_URL || 'https://keycloak.openlearnhub.io.vn/',
+    url: process.env.REACT_APP_KEYCLOAK_URL || 'https://auth.nguocchieuvangle.io.vn/',
     realm: process.env.REACT_APP_KEYCLOAK_REALM || 'OpenLearnHub',
     clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || 'video-veo3'
 };
