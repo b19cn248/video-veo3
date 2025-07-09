@@ -25,7 +25,9 @@ const VIDEO_DURATION_OPTIONS = [
     { value: 32, label: '32 giây' },
     { value: 40, label: '40 giây' },
     { value: 48, label: '48 giây' },
-    { value: 60, label: '60 giây' }
+    { value: 60, label: '60 giây' },
+    { value: 72, label: '72 giây' },
+    { value: 80, label: '80 giây' }
 ];
 
 
