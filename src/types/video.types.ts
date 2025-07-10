@@ -242,3 +242,27 @@ export interface CustomerContactFilterParams {
     sortBy?: string; // Trường sắp xếp
     sortDirection?: 'asc' | 'desc'; // Hướng sắp xếp
 }
+
+// NEW: Interface cho video pricing response
+export interface VideoPricingResponseDto {
+    duration: number; // Video duration in seconds
+    orderValue: number; // Order value calculated based on duration
+    exactPrice: number; // Exact price calculated with progressive increments
+    roundedPrice: number; // Rounded price (rounded up to nearest 10,000)
+    priceIncreasePercentage: string; // Price increase percentage compared to base pricing
+}
+
+// NEW: Interface cho pricing table theme
+export interface PricingTableTheme {
+    name: string;
+    displayName: string;
+    colors: {
+        primary: string;
+        secondary: string;
+        background: string;
+        text: string;
+        accent: string;
+        border: string;
+        hover: string;
+    };
+}

@@ -8,6 +8,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useCustomerCheck } from '../hooks/useCustomerCheck';
 import CustomerWarning from '../components/CustomerWarning';
 import { PAGE_OPTIONS, getPageFullName, getPageShortValue } from '../../../constants/pageConstants';
+import { DurationSelector } from './components';
 
 interface VideoFormProps {
     video?: Video;                              // Video để edit (undefined nếu tạo mới)
@@ -17,18 +18,7 @@ interface VideoFormProps {
     isAdmin: boolean;                           // Kiểm tra quyền admin
 }
 
-// Các options thời lượng video cố định (tính bằng giây)
-const VIDEO_DURATION_OPTIONS = [
-    { value: 8, label: '8 giây' },
-    { value: 16, label: '16 giây' },
-    { value: 24, label: '24 giây' },
-    { value: 32, label: '32 giây' },
-    { value: 40, label: '40 giây' },
-    { value: 48, label: '48 giây' },
-    { value: 60, label: '60 giây' },
-    { value: 72, label: '72 giây' },
-    { value: 80, label: '80 giây' }
-];
+// VIDEO_DURATION_OPTIONS đã được thay thế bằng DurationSelector component
 
 
 const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoading = false, isAdmin }) => {
@@ -51,7 +41,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         imageUrl: '',
         linkfb: '', // NEW: Link Facebook
         phoneNumber: '', // NEW: Số điện thoại
-        videoDuration: 8, // Mặc định là 8 giây
+        videoDuration: 16, // Mặc định là 16 giây
         pageName: '', // NEW: Tên page để đăng video
         deliveryTime: '',
         assignedStaff: '',
@@ -76,7 +66,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 imageUrl: video.imageUrl || '',
                 linkfb: video.linkfb || '', // NEW: Link Facebook
                 phoneNumber: video.phoneNumber || '', // NEW: Số điện thoại
-                videoDuration: video.videoDuration || 8,
+                videoDuration: video.videoDuration || 16,
                 pageName: getPageShortValue(video.pageName || ''), // NEW: Convert full name về short value cho form
                 deliveryTime: video.deliveryTime || '',
                 assignedStaff: video.assignedStaff || '',
@@ -246,20 +236,17 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
 
             <div className="form-group">
                 <label className="form-label">Thời lượng video</label>
-                <select
-                    name="videoDuration"
-                    value={formData.videoDuration}
-                    onChange={handleInputChange}
-                    className="form-select"
+                <DurationSelector
+                    value={formData.videoDuration || 16}
+                    onChange={(newValue) => setFormData(prev => ({
+                        ...prev,
+                        videoDuration: newValue
+                    }))}
                     disabled={isLoading}
-                    required
-                >
-                    {VIDEO_DURATION_OPTIONS.map(option => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
+                    min={8}
+                    max={120}
+                    step={8}
+                />
             </div>
 
             <div className="form-group">

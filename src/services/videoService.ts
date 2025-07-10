@@ -7,7 +7,7 @@
 // NEW: Thêm Staff Salary APIs và cập nhật Assigned Staff API
 
 import axios from 'axios';
-import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse, CreatorsResponse, VideoAuditHistoryResponse, CustomerContactResponse, CustomerContactFilterParams, CustomerContactDto} from '../types/video.types';
+import {ApiResponse, Video, VideoFormData, VideoListResponse, VideoStatus, DeliveryStatus, PaymentStatus, VideoFilterParams, CustomerExistsResponse, CreatorsResponse, VideoAuditHistoryResponse, CustomerContactResponse, CustomerContactFilterParams, CustomerContactDto, VideoPricingResponseDto} from '../types/video.types';
 import {StaffSalariesResponse, AssignedStaffResponse} from '../types/staff.types';
 import {SalesSalariesResponse, RevenueStatisticsResponse} from '../types/sales.types';
 import {AuthService} from './authService';
@@ -606,6 +606,27 @@ export class VideoService {
         } catch (error) {
             console.error('Error fetching customer contact by name:', error);
             const errorMessage = createOperationErrorMessage('fetch', `thông tin liên hệ khách hàng '${customerName}'`, error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    // ===== PRICING APIs =====
+
+    /**
+     * Lấy thông tin pricing cho tất cả duration từ 8s-120s
+     * GET /api/v1/videos/pricing/all
+     */
+    static async getAllPricingInfo(): Promise<ApiResponse<VideoPricingResponseDto[]>> {
+        try {
+            console.log('Fetching all pricing info from API...');
+            
+            const response = await apiClient.get('/videos/pricing/all');
+            
+            console.log('All pricing info response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching all pricing info:', error);
+            const errorMessage = createOperationErrorMessage('fetch', 'thông tin bảng giá', error);
             throw new Error(errorMessage);
         }
     }

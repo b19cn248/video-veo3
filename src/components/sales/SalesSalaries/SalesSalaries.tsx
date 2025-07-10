@@ -13,6 +13,8 @@ import Loading from '../../common/Loading/Loading';
 import ErrorDisplay from '../../common/ErrorDisplay/ErrorDisplay';
 import { extractErrorMessage } from '../../../utils/errorUtils';
 import { useIsVideoVeo3BeAdmin } from '../../../contexts/AuthContext';
+import PricingTable from '../../video/PricingTable/PricingTable';
+import { usePricingData } from '../../video/PricingTable/hooks/usePricingData';
 
 const SalesSalaries: React.FC = () => {
     // Kiểm tra quyền admin trong video-veo3-be
@@ -42,6 +44,14 @@ const SalesSalaries: React.FC = () => {
         error: revenueError,
         loadRevenueStatistics
     } = useRevenueStatistics();
+
+    // NEW: Hook để lấy pricing data
+    const {
+        pricingData,
+        loading: pricingLoading,
+        error: pricingError,
+        refreshPricingData
+    } = usePricingData();
 
     // NEW: Auto-load revenue statistics khi date range thay đổi
     useEffect(() => {
@@ -310,7 +320,21 @@ const SalesSalaries: React.FC = () => {
                         error={revenueError}
                     />
                 </div>
-            )}            {/* Search and Controls với Date Selector */}
+            )}
+
+            {/* NEW: Pricing Table */}
+            {!loading && !error && (
+                <div style={{ marginBottom: '30px' }}>
+                    <PricingTable
+                        pricingData={pricingData}
+                        loading={pricingLoading}
+                        error={pricingError || undefined}
+                        onThemeChange={(theme) => console.log('Theme changed to:', theme)}
+                    />
+                </div>
+            )}
+
+            {/* Search and Controls với Date Selector */}
             {!loading && !error && (
                 <div style={{
                     background: 'white',
