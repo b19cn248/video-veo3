@@ -5,7 +5,6 @@
 import React from 'react';
 import { FilterState, FilterOptions, VideoStatus, DeliveryStatus, PaymentStatus } from '../../../../types/video.types';
 import { formatVideoStatus, formatDeliveryStatus, formatPaymentStatus } from '../../../../utils/formatters';
-import { PAGE_OPTIONS } from '../../../../constants/pageConstants';
 import {
     createButtonStyle,
     createButtonHoverHandlers,
@@ -29,7 +28,6 @@ interface LocalFilterState {
     toDateCreatedVideo: string;
     createdBy: string;
     videoId: string;
-    pageName: string;
 }
 
 interface AdvancedFilterBarProps {
@@ -318,34 +316,6 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                             {filterOptions.creatorsList.map(creator => (
                                 <option key={creator} value={creator}>
                                     {creator || 'Không rõ'}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-
-                {/* Page Name Filter - Admin Only */}
-                {isAdmin && (
-                    <div>
-                        <label style={{
-                            display: 'block',
-                            fontSize: '12px',
-                            color: '#374151',
-                            marginBottom: '4px',
-                            fontWeight: '500'
-                        }}>
-                            📄 Tên Page
-                        </label>
-                        <select
-                            value={filters.pageName}
-                            onChange={(e) => onFilterChange('pageName', e.target.value)}
-                            style={createFilterInputStyle()}
-                            {...createInputFocusHandlers()}
-                        >
-                            <option value="">Tất cả pages</option>
-                            {PAGE_OPTIONS.map(option => (
-                                <option key={option.value} value={option.label}>
-                                    {option.label}
                                 </option>
                             ))}
                         </select>
@@ -710,11 +680,6 @@ const AdvancedFilterBar: React.FC<AdvancedFilterBarProps> = ({
                         {isAdmin && filters.createdBy && (
                             <span style={createFilterBadgeStyle(filterBadgeColors.createdBy || filterBadgeColors.assignedStaff)}>
                                 {formatFilterDisplayText('createdBy', filters.createdBy)}
-                            </span>
-                        )}
-                        {isAdmin && filters.pageName && (
-                            <span style={createFilterBadgeStyle(filterBadgeColors.pageName || filterBadgeColors.status)}>
-                                {formatFilterDisplayText('pageName', filters.pageName)}
                             </span>
                         )}
                     </div>

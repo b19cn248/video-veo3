@@ -37,7 +37,6 @@ export interface Video {
     linkfb?: string; // NEW: Link Facebook
     phoneNumber?: string; // NEW: Số điện thoại khách hàng
     videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
-    pageName?: string; // NEW: Tên page để đăng video
     deliveryTime?: string;
     assignedStaff?: string;
     assignedAt?: string; // NEW: Thời gian assign staff
@@ -68,7 +67,6 @@ export interface VideoFormData {
     linkfb?: string; // NEW: Link Facebook
     phoneNumber?: string; // NEW: Số điện thoại khách hàng
     videoDuration?: number; // Thay đổi từ string thành number (đơn vị: giây)
-    pageName?: string; // NEW: Tên page để đăng video
     deliveryTime?: string;
     assignedStaff?: string;
     assignedAt?: string; // NEW: Thời gian assign staff
@@ -99,7 +97,6 @@ export interface VideoFilterParams {
     toDateCreatedVideo?: string; // NEW: Thêm toDateCreatedVideo cho date range
     createdBy?: string; // NEW: Thêm filter theo người tạo
     videoId?: number; // NEW: Thêm search theo ID video
-    pageName?: string; // NEW: Thêm filter theo tên page (admin only)
 }
 
 // Interface cho response từ API khi lấy danh sách có phân trang
@@ -148,7 +145,6 @@ export interface FilterState {
     toDateCreatedVideo: string; // NEW: Thêm toDateCreatedVideo cho date range
     createdBy: string; // NEW: Thêm filter theo người tạo
     videoId: string; // NEW: Thêm search theo ID video
-    pageName: string; // NEW: Thêm filter theo tên page (admin only)
 }
 
 // NEW: Interface cho filter options

@@ -39,8 +39,7 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
         fromDateCreatedVideo: '', // NEW: Thêm fromDateCreatedVideo cho date range
         toDateCreatedVideo: '', // NEW: Thêm toDateCreatedVideo cho date range
         createdBy: '', // NEW: Thêm filter người tạo
-        videoId: '', // NEW: Thêm filter video ID
-        pageName: '' // NEW: Thêm filter theo tên page (admin only)
+        videoId: '' // NEW: Thêm filter video ID
     });
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -195,9 +194,6 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
                 filterParams.videoId = videoIdNumber;
             }
         }
-        if (currentFilters.pageName && currentFilters.pageName.trim()) {
-            filterParams.pageName = currentFilters.pageName.trim();
-        }
 
         return Object.keys(filterParams).length > 0 ? filterParams : undefined;
     }, []); // Empty dependency - function chỉ đọc từ ref
@@ -249,8 +245,7 @@ export const useVideoFilters = (): UseVideoFiltersReturn => {
             fromDateCreatedVideo: '', // NEW: Reset fromDateCreatedVideo
             toDateCreatedVideo: '', // NEW: Reset toDateCreatedVideo
             createdBy: '', // NEW: Reset created by filter
-            videoId: '', // NEW: Reset video ID filter
-            pageName: '' // NEW: Reset page name filter
+            videoId: '' // NEW: Reset video ID filter
         });
 
         // Apply empty filters immediately

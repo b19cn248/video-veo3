@@ -153,9 +153,6 @@ export class VideoService {
                 if (filters.videoId) {
                     params.videoId = filters.videoId;
                 }
-                if (filters.pageName && filters.pageName.trim()) {
-                    params.pageName = filters.pageName.trim();
-                }
             }
 
             console.log('Making API call with params:', params);

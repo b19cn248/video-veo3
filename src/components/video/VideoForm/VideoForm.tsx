@@ -7,7 +7,6 @@ import { VideoFormData, Video, VideoStatus, DeliveryStatus, PaymentStatus } from
 import { useAuth } from '../../../contexts/AuthContext';
 import { useCustomerCheck } from '../hooks/useCustomerCheck';
 import CustomerWarning from '../components/CustomerWarning';
-import { PAGE_OPTIONS, getPageFullName, getPageShortValue } from '../../../constants/pageConstants';
 import { DurationSelector } from './components';
 import { VideoService } from '../../../services/videoService';
 
@@ -47,7 +46,6 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         linkfb: '', // NEW: Link Facebook
         phoneNumber: '', // NEW: Số điện thoại
         videoDuration: 16, // Mặc định là 16 giây
-        pageName: '', // NEW: Tên page để đăng video
         deliveryTime: '',
         assignedStaff: '',
         status: VideoStatus.CHUA_AI_NHAN,
@@ -94,7 +92,6 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 linkfb: video.linkfb || '', // NEW: Link Facebook
                 phoneNumber: video.phoneNumber || '', // NEW: Số điện thoại
                 videoDuration: video.videoDuration || 16,
-                pageName: getPageShortValue(video.pageName || ''), // NEW: Convert full name về short value cho form
                 deliveryTime: video.deliveryTime || '',
                 assignedStaff: video.assignedStaff || '',
                 status: video.status,
@@ -149,14 +146,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
     // Hàm xử lý submit form
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // Transform pageName từ short value sang full name trước khi submit
-        const submissionData = {
-            ...formData,
-            pageName: getPageFullName(formData.pageName || '')
-        };
-        
-        onSubmit(submissionData);
+        onSubmit(formData);
     };
 
     // Helper function để hiển thị customer input với loading indicator
@@ -275,24 +265,6 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                     max={120}
                     step={8}
                 />
-            </div>
-
-            <div className="form-group">
-                <label className="form-label">Tên page đăng video</label>
-                <select
-                    name="pageName"
-                    value={formData.pageName}
-                    onChange={handleInputChange}
-                    className="form-select"
-                    disabled={isLoading}
-                >
-                    <option value="">-- Chọn page --</option>
-                    {PAGE_OPTIONS.map(option => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
             </div>
 
             {/* Dropdown chọn Staff - chỉ hiển thị cho admin */}
