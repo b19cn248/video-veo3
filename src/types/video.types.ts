@@ -41,6 +41,7 @@ export interface Video {
     deliveryTime?: string;
     assignedStaff?: string;
     assignedAt?: string; // NEW: Thời gian assign staff
+    isReset?: boolean; // NEW: Flag để reset video
     status: VideoStatus;
     videoUrl?: string;
     completedTime?: string;
@@ -71,6 +72,7 @@ export interface VideoFormData {
     deliveryTime?: string;
     assignedStaff?: string;
     assignedAt?: string; // NEW: Thời gian assign staff
+    isReset?: boolean; // NEW: Flag để reset video
     status: VideoStatus;
     videoUrl?: string;
     completedTime?: string;

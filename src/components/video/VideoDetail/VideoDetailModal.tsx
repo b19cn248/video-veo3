@@ -411,13 +411,9 @@ const VideoDetailModal: React.FC<VideoDetailModalProps> = ({ isOpen, videoId, on
                                 </div>
 
                                 {/* Giá trị đơn hàng - chỉ hiển thị cho admin */}
-                                {isAdmin ? (
+                                {isAdmin && (
                                     <div style={{ marginBottom: 16 }}>
                                         <strong>Giá trị đơn hàng:</strong> {formatCurrency(video.orderValue)}
-                                    </div>
-                                ) : (
-                                    <div style={{ marginBottom: 16 }}>
-                                        <strong>Trạng thái xử lý:</strong> {video.checked ? '✔️ Đã kiểm tra' : '⏳ Đang xử lý'}
                                     </div>
                                 )}
 
@@ -444,10 +440,10 @@ const VideoDetailModal: React.FC<VideoDetailModalProps> = ({ isOpen, videoId, on
                                     <strong>Khách hàng đã duyệt:</strong> {video.customerApproved ? '✔️ Đã duyệt' : '❌ Chưa duyệt'}
                                 </div>
 
-                                {/* Thông tin kiểm tra - chỉ hiển thị cho admin */}
+                                {/* Thông tin reset - chỉ hiển thị cho admin */}
                                 {isAdmin && (
                                     <div style={{ marginBottom: 16 }}>
-                                        <strong>Đã kiểm tra:</strong> {video.checked ? '✔️ Đã kiểm tra' : '❌ Chưa kiểm tra'}
+                                        <strong>Yêu cầu làm lại:</strong> {video.isReset ? '✔️ Có' : '❌ Không'}
                                     </div>
                                 )}
 

@@ -9,6 +9,7 @@ import { useCustomerCheck } from '../hooks/useCustomerCheck';
 import CustomerWarning from '../components/CustomerWarning';
 import { PAGE_OPTIONS, getPageFullName, getPageShortValue } from '../../../constants/pageConstants';
 import { DurationSelector } from './components';
+import { VideoService } from '../../../services/videoService';
 
 interface VideoFormProps {
     video?: Video;                              // Video để edit (undefined nếu tạo mới)
@@ -34,6 +35,10 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         clearCheck
     } = useCustomerCheck();
 
+    // State để lưu danh sách staff
+    const [staffList, setStaffList] = useState<string[]>([]);
+    const [loadingStaff, setLoadingStaff] = useState(false);
+
     // useState hook để quản lý state của form
     const [formData, setFormData] = useState<VideoFormData>({
         customerName: '',
@@ -54,8 +59,30 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
         deliveryStatus: DeliveryStatus.CHUA_GUI,
         paymentStatus: PaymentStatus.CHUA_THANH_TOAN,
         paymentDate: '',
-        orderValue: 0
+        orderValue: 0,
+        isReset: true // NEW: Thêm trường isReset - mặc định là true
     });
+
+    // Fetch danh sách staff khi component mount
+    useEffect(() => {
+        const fetchStaffList = async () => {
+            if (!isAdmin) return; // Chỉ admin mới cần load staff list
+            
+            setLoadingStaff(true);
+            try {
+                const response = await VideoService.getAssignedStaffList();
+                if (response.data) {
+                    setStaffList(response.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch staff list:', error);
+            } finally {
+                setLoadingStaff(false);
+            }
+        };
+
+        fetchStaffList();
+    }, [isAdmin]);
 
     // useEffect hook chạy khi component mount hoặc video prop thay đổi
     useEffect(() => {
@@ -79,7 +106,8 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 deliveryStatus: video.deliveryStatus,
                 paymentStatus: video.paymentStatus,
                 paymentDate: video.paymentDate || '',
-                orderValue: video.orderValue || 0
+                orderValue: video.orderValue || 0,
+                isReset: video.isReset || false // NEW: Thêm isReset
             });
         }
     }, [video]);
@@ -267,6 +295,27 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 </select>
             </div>
 
+            {/* Dropdown chọn Staff - chỉ hiển thị cho admin */}
+            {isAdmin && (
+                <div className="form-group">
+                    <label className="form-label">Nhân viên phụ trách</label>
+                    <select
+                        name="assignedStaff"
+                        value={formData.assignedStaff}
+                        onChange={handleInputChange}
+                        className="form-select"
+                        disabled={isLoading || loadingStaff}
+                    >
+                        <option value="">-- Chọn nhân viên --</option>
+                        {staffList.map(staff => (
+                            <option key={staff} value={staff}>
+                                {staff}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
             {/* Ghi chú khách hàng - chỉ hiển thị cho admin */}
             {isAdmin && (
                 <div className="form-group">
@@ -282,18 +331,21 @@ const VideoForm: React.FC<VideoFormProps> = ({ video, onSubmit, onCancel, isLoad
                 </div>
             )}
 
-            <div className="form-group">
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <input
-                        type="checkbox"
-                        name="checked"
-                        checked={formData.checked}
-                        onChange={handleInputChange}
-                        disabled={isLoading}
-                    />
-                    Đã kiểm tra
-                </label>
-            </div>
+            {/* Checkbox Reset Video - chỉ hiển thị cho admin */}
+            {isAdmin && (
+                <div className="form-group">
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                            type="checkbox"
+                            name="isReset"
+                            checked={formData.isReset}
+                            onChange={handleInputChange}
+                            disabled={isLoading}
+                        />
+                        Reset Video
+                    </label>
+                </div>
+            )}
 
             {/* Buttons */}
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '30px' }}>

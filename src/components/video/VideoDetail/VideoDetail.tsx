@@ -106,10 +106,8 @@ const VideoDetail: React.FC = () => {
                         <div style={{ marginBottom: 16 }}><b>Trạng thái thanh toán:</b> <span className="status-badge" style={{ fontSize: 13 }}>{formatPaymentStatus(video.paymentStatus)}</span></div>
 
                         {/* Giá trị đơn hàng - chỉ hiển thị cho admin */}
-                        {isAdmin ? (
+                        {isAdmin && (
                             <div style={{ marginBottom: 16 }}><b>Giá trị đơn hàng:</b> {formatCurrency(video.orderValue)}</div>
-                        ) : (
-                            <div style={{ marginBottom: 16 }}><b>Trạng thái xử lý:</b> {video.checked ? '✔️ Đã kiểm tra' : '⏳ Đang xử lý'}</div>
                         )}
 
                         {/* Ghi chú khách hàng - chỉ hiển thị cho admin */}
@@ -119,9 +117,9 @@ const VideoDetail: React.FC = () => {
 
                         <div style={{ marginBottom: 16 }}><b>Khách hàng đã duyệt:</b> {video.customerApproved ? '✔️' : '❌'}</div>
 
-                        {/* Thông tin kiểm tra - chỉ hiển thị cho admin */}
+                        {/* Thông tin reset - chỉ hiển thị cho admin */}
                         {isAdmin && (
-                            <div style={{ marginBottom: 16 }}><b>Đã kiểm tra:</b> {video.checked ? '✔️' : '❌'}</div>
+                            <div style={{ marginBottom: 16 }}><b>Yêu cầu làm lại:</b> {video.isReset ? '✔️ Có' : '❌ Không'}</div>
                         )}
 
                         {video.videoUrl && <div style={{ marginBottom: 16 }}><b>URL video:</b> <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">Xem video</a></div>}
