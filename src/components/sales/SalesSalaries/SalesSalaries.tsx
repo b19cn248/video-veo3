@@ -526,6 +526,40 @@ const SalesSalaries: React.FC = () => {
                                 >
                                     💰 Hoa hồng (10%) {getSortIcon('commissionSalary')}
                                 </th>
+                                <th
+                                    style={{
+                                        padding: '14px 16px',
+                                        textAlign: 'right',
+                                        fontWeight: '600',
+                                        fontSize: '13px',
+                                        color: '#374151',
+                                        cursor: 'pointer',
+                                        borderBottom: '1px solid #e5e7eb',
+                                        transition: 'background-color 0.2s ease'
+                                    }}
+                                    onClick={() => handleSortChange('paymentRate')}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                >
+                                    📈 Tỷ lệ TT (%) {getSortIcon('paymentRate')}
+                                </th>
+                                <th
+                                    style={{
+                                        padding: '14px 16px',
+                                        textAlign: 'right',
+                                        fontWeight: '600',
+                                        fontSize: '13px',
+                                        color: '#374151',
+                                        cursor: 'pointer',
+                                        borderBottom: '1px solid #e5e7eb',
+                                        transition: 'background-color 0.2s ease'
+                                    }}
+                                    onClick={() => handleSortChange('finalSalary')}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                >
+                                    🎯 Lương cuối {getSortIcon('finalSalary')}
+                                </th>
                                 <th style={{
                                     padding: '14px 16px',
                                     textAlign: 'right',
@@ -541,7 +575,7 @@ const SalesSalaries: React.FC = () => {
                             <tbody>
                             {filteredSalaries.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} style={{
+                                    <td colSpan={7} style={{
                                         textAlign: 'center',
                                         padding: '60px 20px',
                                         color: '#6b7280',
@@ -662,6 +696,49 @@ const SalesSalaries: React.FC = () => {
                                                 color: sales.commissionSalary > 0 ? '#dc2626' : '#6b7280'
                                             }}>
                                                 {formatCurrency(sales.commissionSalary)}
+                                            </td>
+
+                                            {/* Payment Rate */}
+                                            <td style={{
+                                                padding: '16px',
+                                                textAlign: 'right',
+                                                fontSize: '14px',
+                                                fontWeight: '600',
+                                                color: sales.paymentRate >= 80 ? '#059669' : sales.paymentRate >= 50 ? '#d97706' : '#dc2626'
+                                            }}>
+                                                <div style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    background: sales.paymentRate >= 80 ? '#d1fae5' : sales.paymentRate >= 50 ? '#fef3c7' : '#fee2e2',
+                                                    color: sales.paymentRate >= 80 ? '#065f46' : sales.paymentRate >= 50 ? '#92400e' : '#991b1b',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    {sales.paymentRate.toFixed(1)}%
+                                                </div>
+                                            </td>
+
+                                            {/* Final Salary */}
+                                            <td style={{
+                                                padding: '16px',
+                                                textAlign: 'right',
+                                                fontSize: '14px',
+                                                fontWeight: '700',
+                                                color: sales.finalSalary > 0 ? '#059669' : '#6b7280'
+                                            }}>
+                                                <div style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    background: sales.finalSalary > 0 ? '#ecfdf5' : '#f9fafb',
+                                                    color: sales.finalSalary > 0 ? '#047857' : '#6b7280',
+                                                    padding: '6px 10px',
+                                                    borderRadius: '8px',
+                                                    fontWeight: '700'
+                                                }}>
+                                                    {formatCurrency(sales.finalSalary)}
+                                                </div>
                                             </td>
 
                                             {/* Average Commission per Video */}

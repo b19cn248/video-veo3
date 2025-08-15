@@ -6,6 +6,8 @@ export interface StaffSalary {
     staffName: string;
     totalSalary: number;
     totalVideos: number;
+    paymentRate: number; // Tỷ lệ thanh toán
+    finalSalary: number; // Lương cuối cùng
 }
 
 // Interface cho response API lấy danh sách lương nhân viên
@@ -29,7 +31,7 @@ export interface AssignedStaffResponse {
 
 // Interface cho filter/sort trong Staff Salaries
 export interface StaffSalaryFilter {
-    sortBy: 'staffName' | 'totalSalary' | 'totalVideos';
+    sortBy: 'staffName' | 'totalSalary' | 'totalVideos' | 'paymentRate' | 'finalSalary';
     sortDirection: 'asc' | 'desc';
     searchTerm?: string;
     selectedDate?: string; // Backward compatibility

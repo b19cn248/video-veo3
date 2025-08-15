@@ -9,6 +9,8 @@ export interface SalesSalary {
     totalSalesValue: number;
     commissionSalary: number;
     commissionRate: number; // Tỷ lệ hoa hồng (mặc định 0.12)
+    paymentRate: number; // Tỷ lệ thanh toán
+    finalSalary: number; // Lương cuối cùng
 }
 
 // Interface cho response API lấy danh sách lương sales
@@ -30,7 +32,7 @@ export interface SalesSalariesResponse {
 
 // Interface cho filter/sort trong Sales Salaries
 export interface SalesSalaryFilter {
-    sortBy: 'salesName' | 'commissionSalary' | 'totalPaidVideos' | 'totalSalesValue';
+    sortBy: 'salesName' | 'commissionSalary' | 'totalPaidVideos' | 'totalSalesValue' | 'paymentRate' | 'finalSalary';
     sortDirection: 'asc' | 'desc';
     searchTerm?: string;
     selectedDate?: string; // Backward compatibility
